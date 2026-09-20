@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fig 7.1 - Contexto Modular Citas | NexoVitalis360</title>
+  <style>
+    
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important; /* Esquinas 100% rectas y filosas */
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #ffffff;
+      color: #000000;
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Lienzo navegable interactivo */
+    .viewport {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      cursor: grab;
+      background-color: #ffffff;
+    }
+
+    .viewport:active {
+      cursor: grabbing;
+    }
+
+    .canvas-world {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+      background-color: #ffffff;
+    }
+
+    /* BARRA DE CONTROL SUPERIOR (HUD MINIMALISTA B&W) */
+    /* BARRA DE CONTROL FLOTANTE (HUD COMPACTO EN ESQUINA SUPERIOR DERECHA) */
+    .hud-bar {
+      position: fixed;
+      top: 10px;
+      right: 16px;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1.5px solid #000000;
+      padding: 5px 12px;
+      font-family: Arial, sans-serif;
+      font-size: 11.5px;
+      box-shadow: 2px 2px 0px #000000;
+    }
+
+    .hud-status-badge {
+      background: #000000;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      padding: 3px 7px;
+      text-transform: uppercase;
+      transition: background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .hud-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-hud {
+      background: #ffffff;
+      color: #000000;
+      border: 1.5px solid #000000;
+      padding: 4px 10px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .btn-hud:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .zoom-text {
+      font-weight: bold;
+      min-width: 44px;
+      text-align: center;
+      font-size: 11.5px;
+    }
+
+    .hud-hint {
+      font-size: 10.5px;
+      color: #666666;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+
+    /* ESTILO BASE DE CAJAS Y TARJETAS */
+    .box-card {
+      position: absolute;
+      border: 1.8px solid #000000;
+      background: #ffffff;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: background 0.15s ease, box-shadow 0.15s ease, border 0.15s ease;
+      z-index: 5;
+      box-sizing: border-box;
+    }
+
+    .box-card:hover {
+      background: #fafafa;
+      box-shadow: 3px 3px 0px #000000;
+    }
+
+    .box-card.focused {
+      background: #fcfcfc !important;
+      border: 2.5px solid #000000 !important;
+      box-shadow: 5px 5px 0px #000000 !important;
+      z-index: 50 !important;
+    }
+
+    .box-card.card-hub {
+      border: 2.5px solid #000000;
+      background: #fafafa;
+      box-shadow: 3px 3px 0px #000000;
+    }
+
+    .box-card.card-ext {
+      border: 1.8px solid #000000;
+      background: #ffffff;
+    }
+
+    .box-card.card-dashed {
+      border: 2px dashed #000000;
+      background: #ffffff;
+    }
+
+    .box-title {
+      font-weight: 800;
+      color: #000000;
+      line-height: 1.25;
+      transition: font-size 0.2s ease, margin 0.2s ease, text-align 0.2s ease;
+    }
+
+    .box-subtitle {
+      font-size: 10.5px;
+      font-weight: bold;
+      color: #333333;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 6px;
+    }
+
+    .box-tag {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 9.5px;
+      font-weight: bold;
+      background: #000000;
+      color: #ffffff;
+      padding: 2px 6px;
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    .box-content {
+      font-size: 11px;
+      line-height: 1.35;
+      color: #222222;
+      border-top: 1px solid #000000;
+      padding-top: 6px;
+      margin-top: 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: opacity 0.2s ease, max-height 0.25s ease;
+    }
+
+    .box-content p {
+      margin: 0;
+    }
+
+    /* ETIQUETAS DE FLECHAS Y CONECTORES CON REVELACIÓN PROGRESIVA */
+    .flow-pill {
+      position: absolute;
+      background: #ffffff;
+      border: 1.6px solid #000000;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #000000;
+      white-space: nowrap;
+      transform: translate(-50%, -50%);
+      z-index: 15;
+      pointer-events: auto;
+      cursor: pointer;
+      box-shadow: 2px 2px 0px #000000;
+      line-height: 1.25;
+      letter-spacing: 0.2px;
+      transition: all 0.15s ease;
+    }
+
+    .flow-pill:hover {
+      background: #000000;
+      color: #ffffff;
+      z-index: 100;
+      box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.5);
+    }
+
+    .flow-pill .pill-core {
+      font-weight: 800;
+    }
+
+    .flow-pill .pill-detail {
+      font-weight: normal;
+      font-size: 11px;
+    }
+
+    /* 1. MODO GENERAL (SIN ZOOM / VISTA MACRO - mode-titles-only): Muestra solo lo esencial */
+    body.mode-titles-only .flow-pill {
+      font-size: 12.5px !important;
+      font-weight: 800 !important;
+      padding: 3px 8px !important;
+      border: 1.8px solid #000000 !important;
+      box-shadow: 2px 2px 0px #000000 !important;
+    }
+
+    body.mode-titles-only .flow-pill .pill-detail {
+      display: none !important;
+    }
+
+    body.mode-titles-only .flow-pill:hover .pill-detail {
+      display: inline !important;
+      color: #ffffff !important;
+    }
+
+    /* 3. MODO DETALLE (CON ZOOM >= 0.82 O MODO FORZADO - mode-details-visible): Muestra todo */
+    body.mode-details-visible .flow-pill {
+      font-size: 12px;
+      padding: 3px 9px;
+    }
+
+    body.mode-details-visible .flow-pill .pill-detail {
+      display: inline !important;
+      color: #333333;
+    }
+
+    /* CÍRCULOS DE ESTADO UML */
+    .uml-state-circle {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transform: translate(-50%, -50%);
+      z-index: 6;
+      cursor: pointer;
+    }
+
+    .circle-initial {
+      width: 32px;
+      height: 32px;
+      background: #000000;
+      border-radius: 50% !important;
+      margin-bottom: 6px;
+    }
+
+    .circle-final-outer {
+      width: 36px;
+      height: 36px;
+      border: 2.2px solid #000000;
+      border-radius: 50% !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .circle-final-inner {
+      width: 22px;
+      height: 22px;
+      background: #000000;
+      border-radius: 50% !important;
+    }
+
+    .circle-label {
+      font-size: 11.5px;
+      font-weight: bold;
+      color: #000000;
+      white-space: nowrap;
+    }
+
+    .circle-sub {
+      font-size: 10px;
+      font-style: italic;
+      color: #444444;
+      white-space: nowrap;
+    }
+
+    /* BARRAS DE ACTIVACIÓN UML (SECUENCIA) */
+    .activation-bar {
+      position: absolute;
+      width: 16px;
+      border: 1.8px solid #000000;
+      background: #ffffff;
+      transform: translateX(-50%);
+      z-index: 4;
+    }
+
+    /* CAPA SVG */
+    .svg-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* LÍNEAS DE VIDA (SECUENCIA) */
+    .lifeline-line {
+      stroke: #333333;
+      stroke-width: 2.0;
+      stroke-dasharray: 6, 5;
+    }
+
+    /* FLECHAS DIRECTAS Y RETORNOS REFORZADOS */
+    .msg-arrow-call {
+      stroke: #000000;
+      stroke-width: 2.8;
+      fill: none;
+    }
+
+    .msg-arrow-return {
+      stroke: #000000;
+      stroke-width: 2.2;
+      stroke-dasharray: 7, 4;
+      fill: none;
+    }
+
+    /* ========================================================= */
+    /* SEMANTIC ZOOM AVANZADO: MODO VISTA GENERAL VS MODO DETALLE */
+    /* ========================================================= */
+
+    /* 1. MODO GENERAL (SIN ZOOM / VISTA MACRO - mode-titles-only) */
+    body.mode-titles-only .box-card {
+      justify-content: center !important;
+      align-items: center !important;
+      text-align: center !important;
+      padding: 10px 14px !important;
+    }
+
+    body.mode-titles-only .box-card .box-title {
+      font-size: 19px !important;
+      font-weight: 900 !important;
+      letter-spacing: 0.5px !important;
+      text-align: center !important;
+      margin: 0 !important;
+      width: 100% !important;
+      line-height: 1.25 !important;
+      text-transform: uppercase !important;
+    }
+
+    body.mode-titles-only .box-card.card-hub .box-title {
+      font-size: 23px !important;
+      letter-spacing: 0.8px !important;
+    }
+
+    body.mode-titles-only .box-card .box-subtitle,
+    body.mode-titles-only .box-card .box-tag,
+    body.mode-titles-only .box-card .box-content {
+      display: none !important;
+      opacity: 0 !important;
+      max-height: 0 !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      pointer-events: none !important;
+    }
+
+    body.mode-titles-only .box-card.card-dashed .box-title {
+      font-size: 13px !important;
+    }
+
+    /* 2. NODO CON FOCO (CLICK EN MODO GENERAL): Revela sus detalles sin alterar los demás */
+    body.mode-titles-only .box-card.focused {
+      justify-content: flex-start !important;
+      align-items: stretch !important;
+      text-align: left !important;
+      padding: 12px 14px !important;
+      background: #fcfcfc !important;
+      box-shadow: 5px 5px 0px #000000 !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-title {
+      font-size: 13.5px !important;
+      font-weight: 800 !important;
+      text-align: left !important;
+      margin-bottom: 3px !important;
+      width: auto !important;
+    }
+
+    body.mode-titles-only .box-card.focused.card-hub .box-title {
+      font-size: 15px !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-subtitle {
+      display: block !important;
+      opacity: 1 !important;
+      max-height: 40px !important;
+      margin-bottom: 6px !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-tag {
+      display: inline-block !important;
+      opacity: 1 !important;
+      margin-bottom: 6px !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-content {
+      display: flex !important;
+      opacity: 1 !important;
+      max-height: 450px !important;
+      border-top: 1px solid #000000 !important;
+      padding-top: 6px !important;
+      margin-top: 2px !important;
+      pointer-events: auto !important;
+    }
+
+    /* 3. MODO DETALLE (CON ZOOM >= 0.85 O MODO FORZADO - mode-details-visible) */
+    body.mode-details-visible .box-card {
+      justify-content: flex-start;
+      align-items: stretch;
+      text-align: left;
+      padding: 12px 14px;
+    }
+
+    body.mode-details-visible .box-card .box-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      text-align: left;
+      margin-bottom: 3px;
+    }
+
+    body.mode-details-visible .box-card.card-hub .box-title {
+      font-size: 15px;
+    }
+
+    body.mode-details-visible .box-card .box-subtitle {
+      display: block;
+      opacity: 1;
+    }
+
+    body.mode-details-visible .box-card .box-tag {
+      display: inline-block;
+      opacity: 1;
+    }
+
+    body.mode-details-visible .box-card .box-content {
+      display: flex;
+      opacity: 1;
+      max-height: 480px;
+      overflow: visible;
+      pointer-events: auto;
+    }
+
+  </style>
+</head>
+<body class="mode-titles-only">
+
+  <!-- BARRA DE CONTROL FLOTANTE (HUD COMPACTO) -->
+  <header class="hud-bar">
+    <span class="hud-status-badge" id="statusBadge">MODO TÍTULOS</span>
+    <span class="hud-hint">Arrastrar: Pan | Rueda: Zoom</span>
+    <div class="hud-controls">
+      <button class="btn-hud" id="btnZoomOut">− Zoom</button>
+      <span class="zoom-text" id="zoomText">100%</span>
+      <button class="btn-hud" id="btnZoomIn">+ Zoom</button>
+      <button class="btn-hud" id="btnFit">Ajustar</button>
+      <button class="btn-hud" id="btnReset">Reset</button>
+      <button class="btn-hud" id="btnToggleMode">Modo: AUTO</button>
+    </div>
+  </header>
+
+  <div class="viewport" id="viewport">
+    <div class="canvas-world" id="canvasWorld" style="width: 2100px; height: 1240px;">
+
+      <!-- CAPA SVG DE CONEXIONES Y FLECHAS BIDIRECCIONALES -->
+      <svg class="svg-layer" width="2100" height="1240">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#000000" />
+          </marker>
+        </defs>
+
+        <!-- Conexiones con Actores Superiores -->
+        <line x1="380" y1="290" x2="850" y2="530" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="850" y1="545" x2="390" y2="305" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+
+        <line x1="1035" y1="290" x2="1035" y2="530" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="1065" y1="530" x2="1065" y2="290" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+
+        <line x1="1700" y1="290" x2="1250" y2="530" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="1250" y1="545" x2="1690" y2="305" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+
+        <!-- Conexiones con Subsistemas Izquierda -->
+        <line x1="500" y1="445" x2="850" y2="570" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="500" y1="635" x2="850" y2="635" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="500" y1="825" x2="850" y2="710" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+
+        <!-- Conexiones con Subsistemas Derecha -->
+        <line x1="1250" y1="570" x2="1600" y2="445" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="1600" y1="625" x2="1250" y2="625" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="1250" y1="645" x2="1600" y2="645" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="1250" y1="710" x2="1600" y2="825" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+
+        <!-- Conexiones Inferiores -->
+        <line x1="900" y1="780" x2="400" y2="1040" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="1035" y1="780" x2="1035" y2="1040" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="1065" y1="1040" x2="1065" y2="780" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+        <line x1="1200" y1="780" x2="1700" y2="1040" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+      </svg>
+
+      <!-- ETIQUETAS DE FLUJOS INTER-MÓDULO (REVELACIÓN PROGRESIVA: CORTO EN VISTA GENERAL, DETALLE EN ZOOM/HOVER) -->
+      <div class="flow-pill" style="left: 570px; top: 360px;"><span class="pill-core">1. Solicitud reserva</span><span class="pill-detail"> / Voucher</span></div>
+      <div class="flow-pill" style="left: 640px; top: 410px;"><span class="pill-core">Confirmación cita</span><span class="pill-detail"> + Enlace Meet</span></div>
+      <div class="flow-pill" style="left: 1050px; top: 380px;"><span class="pill-core">3. Gestión agendas</span><span class="pill-detail"> / Drag &amp; drop</span></div>
+      <div class="flow-pill" style="left: 1470px; top: 360px;"><span class="pill-core">4. Cierre clínico</span><span class="pill-detail"> (Atendida)</span></div>
+      <div class="flow-pill" style="left: 1530px; top: 410px;"><span class="pill-core">Agenda del día</span><span class="pill-detail"> y turnos</span></div>
+
+      <div class="flow-pill" style="left: 670px; top: 480px;"><span class="pill-core">Filiación menor</span><span class="pill-detail"> validada</span></div>
+      <div class="flow-pill" style="left: 670px; top: 610px;"><span class="pill-core">Pre-triaje OK</span><span class="pill-detail"> &amp; Consentimiento</span></div>
+      <div class="flow-pill" style="left: 670px; top: 745px;"><span class="pill-core">Franjas libres</span><span class="pill-detail"> / Bloqueo pesimista</span></div>
+
+      <div class="flow-pill" style="left: 1430px; top: 480px;"><span class="pill-core">Turno en atención</span><span class="pill-detail"> / Interconsulta</span></div>
+      <div class="flow-pill" style="left: 1430px; top: 610px;"><span class="pill-core">Saldo paquete OK</span><span class="pill-detail"> / Deducción sesión</span></div>
+      <div class="flow-pill" style="left: 1430px; top: 745px;"><span class="pill-core">Aviso T-24h</span><span class="pill-detail"> programado</span></div>
+
+      <div class="flow-pill" style="left: 640px; top: 900px;"><span class="pill-core">Traza forense</span><span class="pill-detail"> / Políticas RBAC</span></div>
+      <div class="flow-pill" style="left: 1160px; top: 910px;"><span class="pill-core">OAuth2 Meet</span><span class="pill-detail"> / URL criptográfica</span></div>
+      <div class="flow-pill" style="left: 1480px; top: 900px;"><span class="pill-core">Transacciones ACID</span><span class="pill-detail"> / Persistencia atómica</span></div>
+
+      <!-- NÚCLEO CENTRAL: MÓDULO BAJO ESTUDIO (B4) -->
+      <div class="box-card card-hub" style="left: 850px; top: 530px; width: 400px; height: 250px;">
+        <div class="box-title">GESTIÓN DE CITAS Y AGENDAS</div>
+        <div class="box-subtitle">[Sujeto de Estudio - Bloque B4 (Capa 3 Negocio)]</div>
+        <span class="box-tag">EDU-0008, EDU-0012, EDU-0013, EDU-0018, RNF-0004</span>
+        <div class="box-content" style="font-size: 11px; gap: 4px;">
+          <p>• <b>Orquestador Multimodal:</b> Presencial, Teleconsulta Meet y Domicilio.</p>
+          <p>• <b>Control Anticolisión (RNF-0004):</b> Bloqueo pesimista con aislamiento serializable.</p>
+          <p>• <b>Reglas de Negocio:</b> Reprogramación (&gt;= 24h), cancelaciones e inasistencias.</p>
+          <p>• <b>Autómata Finito:</b> 8 estados deterministas asistenciales.</p>
+          <p>• <b>Integración Sincrónica:</b> Teleconsultas Meet OAuth2 y WhatsApp T-24h.</p>
+        </div>
+      </div>
+
+      <!-- ACTORES SUPERIORES -->
+      <div class="box-card" style="left: 200px; top: 140px; width: 360px; height: 150px;">
+        <div class="box-title">Apoderado / Paciente</div>
+        <div class="box-subtitle">[Actor Humano Directo]</div>
+        <span class="box-tag">Capa 1: Interacción</span>
+        <div class="box-content">
+          <p>• Solicitud de cita asistencial y selección de especialista.</p>
+          <p>• Cancelación y reprogramación anticipada (&gt;= 24h).</p>
+          <p>• Confirmación de turno y recepción de enlace Google Meet.</p>
+        </div>
+      </div>
+
+      <div class="box-card" style="left: 870px; top: 140px; width: 360px; height: 150px;">
+        <div class="box-title">Asistente / Administrador</div>
+        <div class="box-subtitle">[Actor Humano Directo]</div>
+        <span class="box-tag">Capa 1: Interacción</span>
+        <div class="box-content">
+          <p>• Registro manual y agendamiento asistido de turnos.</p>
+          <p>• Calendario interactivo (drag &amp; drop) y sobrecupo.</p>
+          <p>• Gestión de contingencias y excepciones operativas de agenda.</p>
+        </div>
+      </div>
+
+      <div class="box-card" style="left: 1540px; top: 140px; width: 360px; height: 150px;">
+        <div class="box-title">Especialista Clínico</div>
+        <div class="box-subtitle">[Actor Humano Directo]</div>
+        <span class="box-tag">Capa 1: Interacción</span>
+        <div class="box-content">
+          <p>• Visualización de agenda consolidada y turnos del día.</p>
+          <p>• Cierre clínico formal de la atención médica (Atendida).</p>
+          <p>• Recepción de alertas de pacientes de alto riesgo en turno.</p>
+        </div>
+      </div>
+
+      <!-- SUBSISTEMAS HERMANOS (IZQUIERDA) -->
+      <div class="box-card" style="left: 140px; top: 370px; width: 360px; height: 150px;">
+        <div class="box-title">Pacientes y Apoderados (B1)</div>
+        <div class="box-subtitle">[Subsistema Hermano (B1)]</div>
+        <span class="box-tag">EDU-0014, EDU-0021</span>
+        <div class="box-content">
+          <p>• Filiación del menor y apoderado legal validada.</p>
+          <p>• Validación de identidad y vínculo parental legal.</p>
+          <p>• Habilitación de registro para agendamiento asistencial.</p>
+        </div>
+      </div>
+
+      <div class="box-card" style="left: 140px; top: 560px; width: 360px; height: 150px;">
+        <div class="box-title">Pre-triaje y Consentimiento (B2)</div>
+        <div class="box-subtitle">[Subsistema Hermano (B2)]</div>
+        <span class="box-tag">EDU-0023, EDU-0029</span>
+        <div class="box-content">
+          <p>• Validación de pre-triaje clínico completado.</p>
+          <p>• Consentimiento informado firmado legalmente.</p>
+          <p>• Habilitación médica previa al agendamiento de turnos.</p>
+        </div>
+      </div>
+
+      <div class="box-card" style="left: 140px; top: 750px; width: 360px; height: 150px;">
+        <div class="box-title">Especialistas y Horarios (B3)</div>
+        <div class="box-subtitle">[Subsistema Hermano (B3)]</div>
+        <span class="box-tag">EDU-0016, EDU-0017</span>
+        <div class="box-content">
+          <p>• Catálogo de disponibilidad y franjas horarias libres.</p>
+          <p>• Parámetros de consulta y tarifas por especialidad.</p>
+          <p>• Bloqueo atómico definitivo de franja reservada.</p>
+        </div>
+      </div>
+
+      <!-- SUBSISTEMAS HERMANOS (DERECHA) -->
+      <div class="box-card" style="left: 1600px; top: 370px; width: 360px; height: 150px;">
+        <div class="box-title">Historia Clínica Digital (B7)</div>
+        <div class="box-subtitle">[Subsistema Hermano (B7)]</div>
+        <span class="box-tag">EDU-0015, EDU-0025, EDU-0028</span>
+        <div class="box-content">
+          <p>• Vinculación de cita a la historia médica única.</p>
+          <p>• Registro de diagnóstico, evolución y recetas.</p>
+          <p>• Alertas médicas de banderas rojas en tiempo real.</p>
+        </div>
+      </div>
+
+      <div class="box-card" style="left: 1600px; top: 560px; width: 360px; height: 150px;">
+        <div class="box-title">Paquetes y Facturas (B8)</div>
+        <div class="box-subtitle">[Subsistema Hermano (B8)]</div>
+        <span class="box-tag">EDU-0033, EDU-0036</span>
+        <div class="box-content">
+          <p>• Validación de saldo de paquetes terapéuticos.</p>
+          <p>• Deducción atómica de sesión al marcar 'Atendida'.</p>
+          <p>• Facturación y emisión de boletas/facturas electrónicas.</p>
+        </div>
+      </div>
+
+      <div class="box-card" style="left: 1600px; top: 750px; width: 360px; height: 150px;">
+        <div class="box-title">Mensajería y Notificaciones (B6)</div>
+        <div class="box-subtitle">[Subsistema Hermano (B6)]</div>
+        <span class="box-tag">EDU-0020</span>
+        <div class="box-content">
+          <p>• Despacho automático de avisos recordatorios T-24h.</p>
+          <p>• Envío de enlace Google Meet por WhatsApp.</p>
+          <p>• Confirmaciones y reprogramaciones al apoderado.</p>
+        </div>
+      </div>
+
+      <!-- CAPAS DE SERVICIOS Y PERSISTENCIA (INFERIOR) -->
+      <div class="box-card" style="left: 200px; top: 970px; width: 360px; height: 150px;">
+        <div class="box-title">Permisos y Auditoría (B10)</div>
+        <div class="box-subtitle">[Capa 2: Seguridad / RBAC]</div>
+        <span class="box-tag">EDU-0009, EDU-0011</span>
+        <div class="box-content">
+          <p>• Verificación de roles y privilegios RBAC.</p>
+          <p>• Registro de traza forense inmutable con IP y UTC.</p>
+          <p>• Auditoría de modificaciones de agenda y excepciones.</p>
+        </div>
+      </div>
+
+      <div class="box-card card-ext" style="left: 870px; top: 970px; width: 360px; height: 150px;">
+        <div class="box-title">Google Meet API</div>
+        <div class="box-subtitle">[Capa 5: Servicio Externo]</div>
+        <span class="box-tag">Telemedicina WebRTC</span>
+        <div class="box-content">
+          <p>• Aprovisionamiento automático de sala virtual OAuth2.</p>
+          <p>• Generación de URL criptográfica segura para teleconsulta.</p>
+          <p>• Monitoreo de estado de conexión y acceso.</p>
+        </div>
+      </div>
+
+      <div class="box-card card-ext" style="left: 1540px; top: 970px; width: 360px; height: 150px;">
+        <div class="box-title">Vitalis_BD (PostgreSQL)</div>
+        <div class="box-subtitle">[Capa 4: Repositorio Transaccional]</div>
+        <span class="box-tag">Persistencia ACID</span>
+        <div class="box-content">
+          <p>• Persistencia relacional de turnos y agendas.</p>
+          <p>• Transacciones ACID con aislamiento serializable.</p>
+          <p>• Garantía de consistencia frente a reservas concurrentes.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const CANVAS_W = 2100;
+    const CANVAS_H = 1240;
+    
+  // ============================================================
+  // MOTOR DE NAVEGACIÓN, PAN, ZOOM Y SEMÁNTICA INTERACTIVA B&W
+  // ============================================================
+  const viewport = document.getElementById('viewport');
+  const canvasWorld = document.getElementById('canvasWorld');
+  const zoomText = document.getElementById('zoomText');
+  const statusBadge = document.getElementById('statusBadge');
+  const btnToggleMode = document.getElementById('btnToggleMode');
+
+  let scale = 1.0;
+  let panX = 0;
+  let panY = 0;
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+
+  // Modos: 'auto' (semántico dinámico) o 'details' (siempre forzado)
+  let userMode = 'auto';
+
+  function applyTransform() {
+    canvasWorld.style.transform = `matrix(${scale}, 0, 0, ${scale}, ${panX}, ${panY})`;
+    zoomText.textContent = `${Math.round(scale * 100)}%`;
+  }
+
+  function updateSemanticZoom() {
+    if (userMode === 'details') {
+      document.body.classList.remove('mode-titles-only');
+      document.body.classList.add('mode-details-visible');
+      statusBadge.textContent = 'MODO DETALLE (FORZADO)';
+      statusBadge.style.background = '#000000';
+      statusBadge.style.color = '#ffffff';
+      return;
+    }
+
+    // En modo 'auto': si scale < 0.82 muestra solo títulos grandes; si scale >= 0.82 revela detalles completos
+    if (scale >= 0.82) {
+      document.body.classList.remove('mode-titles-only');
+      document.body.classList.add('mode-details-visible');
+      statusBadge.textContent = 'MODO DETALLE';
+      statusBadge.style.background = '#000000';
+      statusBadge.style.color = '#ffffff';
+    } else {
+      document.body.classList.remove('mode-details-visible');
+      document.body.classList.add('mode-titles-only');
+      statusBadge.textContent = 'MODO TÍTULOS';
+      statusBadge.style.background = '#444444';
+      statusBadge.style.color = '#ffffff';
+    }
+  }
+
+  function fitToScreen() {
+    const padX = 40;
+    const padY = 35;
+    const availW = window.innerWidth - padX;
+    const availH = window.innerHeight - padY;
+    const sW = availW / CANVAS_W;
+    const sH = availH / CANVAS_H;
+    const s = Math.min(sW, sH);
+    scale = Math.max(0.25, Math.min(s, 1.0));
+    panX = (window.innerWidth - CANVAS_W * scale) / 2;
+    panY = Math.max(12, (window.innerHeight - CANVAS_H * scale) / 2);
+    applyTransform();
+    updateSemanticZoom();
+  }
+
+  function zoomAtPoint(factor, clientX, clientY) {
+    const prevScale = scale;
+    const newScale = Math.min(Math.max(0.25, scale * factor), 2.8);
+    if (newScale === prevScale) return;
+
+    // Zoom centrado en el punto del cursor
+    const mouseX = clientX - panX;
+    const mouseY = clientY - panY;
+
+    panX -= mouseX * (newScale / prevScale - 1);
+    panY -= mouseY * (newScale / prevScale - 1);
+    scale = newScale;
+
+    applyTransform();
+    updateSemanticZoom();
+  }
+
+  // EVENTOS DEL RATÓN: ARRASTRE (PAN)
+  viewport.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.hud-bar')) return;
+    isDragging = true;
+    startX = e.clientX - panX;
+    startY = e.clientY - panY;
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    panX = e.clientX - startX;
+    panY = e.clientY - startY;
+    applyTransform();
+  });
+
+  window.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+
+  // ZOOM POR RUEDA DEL RATÓN
+  viewport.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const factor = e.deltaY < 0 ? 1.12 : 0.89;
+    zoomAtPoint(factor, e.clientX, e.clientY);
+  }, { passive: false });
+
+  // BOTONES DEL HUD
+  document.getElementById('btnZoomIn').addEventListener('click', () => {
+    zoomAtPoint(1.20, window.innerWidth / 2, window.innerHeight / 2);
+  });
+
+  document.getElementById('btnZoomOut').addEventListener('click', () => {
+    zoomAtPoint(0.83, window.innerWidth / 2, window.innerHeight / 2);
+  });
+
+  document.getElementById('btnFit').addEventListener('click', fitToScreen);
+
+  document.getElementById('btnReset').addEventListener('click', () => {
+    scale = 1.0;
+    panX = (window.innerWidth - CANVAS_W) / 2;
+    panY = Math.max(12, (window.innerHeight - CANVAS_H) / 2);
+    applyTransform();
+    updateSemanticZoom();
+  });
+
+  btnToggleMode.addEventListener('click', () => {
+    if (userMode === 'auto') {
+      userMode = 'details';
+      btnToggleMode.textContent = 'Modo: SIEMPRE DETALLES';
+    } else {
+      userMode = 'auto';
+      btnToggleMode.textContent = 'Modo: AUTO (Semántico)';
+    }
+    updateSemanticZoom();
+  });
+
+  // CLIC EN CUALQUIER CAJA PARA CENTRAR Y ENFOCAR
+  document.querySelectorAll('.box-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.querySelectorAll('.box-card').forEach(c => c.classList.remove('focused'));
+      card.classList.add('focused');
+
+      const left = parseFloat(card.style.left);
+      const top = parseFloat(card.style.top);
+      const width = parseFloat(card.style.width || card.offsetWidth);
+      const height = parseFloat(card.style.height || card.offsetHeight);
+
+      const targetScale = Math.max(scale, 1.15);
+      scale = targetScale;
+      panX = (window.innerWidth / 2) - (left + width / 2) * scale;
+      panY = (window.innerHeight / 2) - (top + height / 2) * scale;
+
+      applyTransform();
+      updateSemanticZoom();
+    });
+  });
+
+  // CLIC EN EL FONDO DESENFOCA Y RESTAURA VISTA
+  viewport.addEventListener('click', (e) => {
+    if (!e.target.closest('.box-card')) {
+      document.querySelectorAll('.box-card').forEach(c => c.classList.remove('focused'));
+    }
+  });
+
+  // TECLAS RÁPIDAS
+  window.addEventListener('keydown', (e) => {
+    if (e.key === '+' || e.key === '=') {
+      zoomAtPoint(1.20, window.innerWidth / 2, window.innerHeight / 2);
+    } else if (e.key === '-') {
+      zoomAtPoint(0.83, window.innerWidth / 2, window.innerHeight / 2);
+    } else if (e.key === '0') {
+      fitToScreen();
+    } else if (e.key === 'Escape') {
+      document.querySelectorAll('.box-card').forEach(c => c.classList.remove('focused'));
+      fitToScreen();
+    }
+  });
+
+  window.addEventListener('resize', fitToScreen);
+  window.addEventListener('DOMContentLoaded', () => {
+    fitToScreen();
+  });
+
+  </script>
+</body>
+</html>

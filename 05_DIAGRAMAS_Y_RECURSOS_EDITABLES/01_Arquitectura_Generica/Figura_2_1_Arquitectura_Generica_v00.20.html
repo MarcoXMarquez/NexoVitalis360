@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fig 2.1 - Arquitectura Genérica | NexoVitalis360</title>
+  <style>
+    /* ============================================================
+       RESET Y ESTILOS: 100% BLANCO Y NEGRO PURO & SHARP EDGES (0px)
+       ============================================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important; /* Esquinas 100% rectas y filosas */
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #ffffff;
+      color: #000000;
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Lienzo navegable interactivo */
+    .viewport {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      cursor: grab;
+      background-color: #ffffff;
+    }
+
+    .viewport:active {
+      cursor: grabbing;
+    }
+
+    .canvas-world {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+      padding: 30px 60px 40px 60px;
+    }
+
+    /* ============================================================
+       BARRA DE CONTROL FLOTANTE (HUD COMPACTO SUPERIOR DERECHO)
+       ============================================================ */
+    .hud-bar {
+      position: fixed;
+      top: 10px;
+      right: 16px;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1.5px solid #000000;
+      padding: 5px 12px;
+      font-family: Arial, sans-serif;
+      font-size: 11.5px;
+      box-shadow: 2px 2px 0px #000000;
+    }
+
+    .hud-status-badge {
+      background: #000000;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      padding: 3px 7px;
+      text-transform: uppercase;
+      transition: background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .hud-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-hud {
+      background: #ffffff;
+      color: #000000;
+      border: 1.5px solid #000000;
+      padding: 4px 10px;
+      font-family: inherit;
+      font-size: 11.5px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .btn-hud:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .zoom-text {
+      font-weight: bold;
+      min-width: 44px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .hud-hint {
+      font-size: 11px;
+      color: #555555;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+
+    /* ============================================================
+       ESTRUCTURA DEL DIAGRAMA
+       ============================================================ */
+    .diagram-frame {
+      width: 1320px;
+      margin: 0 auto;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ============================================================
+       CAPAS DEL SISTEMA
+       ============================================================ */
+    .layer-container {
+      background: #ffffff;
+      padding: 16px 20px 20px 20px;
+      position: relative;
+    }
+
+    /* CAPA 1: BORDE PUNTEADO (LÍNEA DISCONTINUA EXACTA) */
+    .layer-dashed {
+      border: 2px dashed #000000;
+    }
+
+    /* CAPAS 2, 3, 4, 5: BORDES SÓLIDOS */
+    .layer-solid {
+      border: 1.8px solid #000000;
+    }
+
+    .layer-heading {
+      font-size: 12.5px;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #000000;
+      margin-bottom: 12px;
+      letter-spacing: 0.3px;
+    }
+
+    /* Grillas de Cajas */
+    .grid-3-columns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .grid-2-rows-3-cols {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .grid-bottom-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    /* ============================================================
+       CAJAS INDIVIDUALES DE MÓDULOS / SUBSISTEMAS
+       ============================================================ */
+    .box-card {
+      border: 1.5px solid #000000;
+      background: #ffffff;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.15s ease, box-shadow 0.15s ease, padding 0.25s ease;
+    }
+
+    .box-card:hover {
+      background: #fafafa;
+      box-shadow: 3px 3px 0px #000000;
+    }
+
+    .box-card.focused {
+      background: #f4f4f4;
+      border: 2.5px solid #000000;
+      box-shadow: 4px 4px 0px #000000;
+    }
+
+    /* Título de la Caja */
+    .box-title {
+      font-size: 13.5px;
+      font-weight: bold;
+      color: #000000;
+      width: 100%;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    /* Contenedor del texto detallado */
+    .box-content {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: opacity 0.25s ease, max-height 0.3s ease, margin 0.25s ease, padding 0.25s ease;
+    }
+
+    .box-content p {
+      font-size: 11.5px;
+      line-height: 1.35;
+      color: #222222;
+      margin: 0;
+      text-align: center;
+    }
+
+    /* ============================================================
+       CONECTORES Y FLECHAS SVG DE DOBLE PUNTA
+       ============================================================ */
+    .arrow-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 6px 0;
+      height: 48px;
+    }
+
+    .arrow-container svg {
+      flex-shrink: 0;
+    }
+
+    .arrow-label {
+      font-size: 11.5px;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #000000;
+      letter-spacing: 0.3px;
+    }
+
+    .arrow-split-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      height: 48px;
+    }
+
+    .arrow-sub-split {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    /* ============================================================
+       DINÁMICA DE ZOOM SEMÁNTICO (MODO TÍTULOS VS MODO DETALLE)
+       ============================================================ */
+    body.mode-titles-only .box-card {
+      padding: 16px 10px;
+      min-height: 52px;
+      justify-content: center;
+    }
+
+    body.mode-titles-only .box-title {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+      font-size: 14px;
+      line-height: 1.2;
+    }
+
+    body.mode-titles-only .box-content {
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      pointer-events: none;
+    }
+
+    body.mode-details-visible .box-card {
+      padding: 14px 12px 16px 12px;
+    }
+
+    body.mode-details-visible .box-title {
+      border-bottom: 1px solid #000000;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+      font-size: 13.5px;
+    }
+
+    body.mode-details-visible .box-content {
+      opacity: 1;
+      max-height: 350px;
+    }
+  </style>
+</head>
+<body class="mode-titles-only">
+
+  <!-- BARRA DE CONTROL FLOTANTE (HUD COMPACTO) -->
+  <header class="hud-bar">
+    <span class="hud-status-badge" id="status-badge">MODO TÍTULOS</span>
+    <span class="hud-hint">Arrastrar: Pan | Rueda: Zoom</span>
+    <div class="hud-controls">
+      <button class="btn-hud" id="btn-zoom-out" title="Alejar">− Zoom</button>
+      <span class="zoom-text" id="zoom-text">100%</span>
+      <button class="btn-hud" id="btn-zoom-in" title="Acercar">+ Zoom</button>
+      <button class="btn-hud" id="btn-reset" title="Ajustar a pantalla">Ajustar</button>
+      <button class="btn-hud" id="btn-toggle-mode" title="Alternar modo de detalle">Modo: AUTO</button>
+    </div>
+  </header>
+
+  <!-- VIEWPORT INTERACTIVO (CANVAS DEL DIAGRAMA) -->
+  <main class="viewport" id="viewport">
+    <div class="canvas-world" id="canvas-world">
+      
+      <div class="diagram-frame" id="diagram-frame">
+        
+        <!-- ========================================================
+             CAPA 1: PRESENTACIÓN (BORDE PUNTEADO EXACTO)
+             ======================================================== -->
+        <section class="layer-container layer-dashed" data-layer="1">
+          <div class="layer-heading">CAPA 1: PRESENTACIÓN (Clientes / Canales de Acceso)</div>
+          
+          <div class="grid-3-columns">
+            
+            <!-- Caja 1.1 -->
+            <article class="box-card" data-box="1.1">
+              <div class="box-title">Portal Web Médico / Especialista</div>
+              <div class="box-content">
+                <p>Aplicación Web SPA (React.js / TypeScript)</p>
+                <p>Gestión de agenda médica y turnos asistenciales</p>
+                <p>Consulta y edición de ficha clínica bajo rol RBAC</p>
+                <p>Sala de atención virtual y prescripción médica</p>
+              </div>
+            </article>
+
+            <!-- Caja 1.2 -->
+            <article class="box-card" data-box="1.2">
+              <div class="box-title">Portal Web Administrativo</div>
+              <div class="box-content">
+                <p>Panel de Gestión y Finanzas (React.js / Web)</p>
+                <p>Administración de usuarios, roles y tarifas clínicas</p>
+                <p>Supervisión de interconsultas y derivaciones</p>
+                <p>Generación de reportes operativos y de auditoría</p>
+              </div>
+            </article>
+
+            <!-- Caja 1.3 -->
+            <article class="box-card" data-box="1.3">
+              <div class="box-title">PWA Móvil Pacientes / Tutores</div>
+              <div class="box-content">
+                <p>Aplicación Web Progresiva (PWA Móvil)</p>
+                <p>Reserva de citas (Presencial / Virtual / Domicilio)</p>
+                <p>Sala de espera virtual y visualización de recetas</p>
+                <p>Seguimiento de indicaciones terapéuticas</p>
+              </div>
+            </article>
+
+          </div>
+        </section>
+
+        <!-- FLECHA CONECTOR 1 <-> 2 -->
+        <div class="arrow-container">
+          <svg width="18" height="38" viewBox="0 0 18 38">
+            <polygon points="9,0 3,10 15,10" fill="#000000" />
+            <line x1="9" y1="8" x2="9" y2="30" stroke="#000000" stroke-width="2.4" />
+            <polygon points="9,38 3,28 15,28" fill="#000000" />
+          </svg>
+          <span class="arrow-label">HTTPS / TLS 1.3 (API REST JSON / WSS)</span>
+        </div>
+
+        <!-- ========================================================
+             CAPA 2: SEGURIDAD, ENRUTAMIENTO Y API GATEWAY
+             ======================================================== -->
+        <section class="layer-container layer-solid" data-layer="2">
+          <div class="layer-heading">CAPA 2: SEGURIDAD, ENRUTAMIENTO Y API GATEWAY</div>
+          
+          <div class="grid-3-columns">
+            
+            <!-- Caja 2.1 -->
+            <article class="box-card" data-box="2.1">
+              <div class="box-title">Reverse Proxy &amp; Rate Limiting</div>
+              <div class="box-content">
+                <p>Enrutamiento centralizado y balanceo de tráfico</p>
+                <p>Mitigación de ataques DoS y políticas CORS</p>
+                <p>Compresión gzip y terminación TLS 1.3</p>
+              </div>
+            </article>
+
+            <!-- Caja 2.2 -->
+            <article class="box-card" data-box="2.2">
+              <div class="box-title">Autenticación Stateless (JWT)</div>
+              <div class="box-content">
+                <p>Emisión y validación de tokens criptográficos</p>
+                <p>Gestión desacoplada de sesiones seguras</p>
+                <p>Mecanismo de revocación con refresh tokens</p>
+              </div>
+            </article>
+
+            <!-- Caja 2.3 -->
+            <article class="box-card" data-box="2.3">
+              <div class="box-title">Control de Acceso por Roles (RBAC)</div>
+              <div class="box-content">
+                <p>Filtro perimetral estricto de privilegios</p>
+                <p>Perfiles: Administrador, Especialista, Tutor</p>
+                <p>Políticas de autorización contextual</p>
+              </div>
+            </article>
+
+          </div>
+        </section>
+
+        <!-- FLECHA CONECTOR 2 <-> 3 -->
+        <div class="arrow-container">
+          <svg width="18" height="38" viewBox="0 0 18 38">
+            <polygon points="9,0 3,10 15,10" fill="#000000" />
+            <line x1="9" y1="8" x2="9" y2="30" stroke="#000000" stroke-width="2.4" />
+            <polygon points="9,38 3,28 15,28" fill="#000000" />
+          </svg>
+          <span class="arrow-label">Invocación de Servicios Internos (REST / gRPC)</span>
+        </div>
+
+        <!-- ========================================================
+             CAPA 3: LÓGICA DEL NEGOCIO (Servicios Clínicos y Hospitalarios)
+             ======================================================== -->
+        <section class="layer-container layer-solid" data-layer="3">
+          <div class="layer-heading">CAPA 3: LÓGICA DEL NEGOCIO (Servicios Clínicos y Hospitalarios)</div>
+          
+          <div class="grid-2-rows-3-cols">
+            
+            <!-- Caja 3.1 -->
+            <article class="box-card" data-box="3.1">
+              <div class="box-title">Subsistema Gestión de Citas y Agendas</div>
+              <div class="box-content">
+                <p>Orquestación de citas presenciales, virtuales y domiciliarias</p>
+                <p>Validación de disponibilidad en tiempo real sin colisiones</p>
+                <p>Gestión de franjas horarias y bloqueos temporales</p>
+                <p>Políticas de reprogramación, cancelación y sobrecupo</p>
+              </div>
+            </article>
+
+            <!-- Caja 3.2 -->
+            <article class="box-card" data-box="3.2">
+              <div class="box-title">Subsistema Pre-triaje y Consentimiento</div>
+              <div class="box-content">
+                <p>Formularios estructurados de pre-triaje clínico pediátrico</p>
+                <p>Generación y firma digital de consentimientos informados</p>
+                <p>Verificación de documentos legales y patria potestad</p>
+                <p>Reglas de derivación automática según gravedad</p>
+              </div>
+            </article>
+
+            <!-- Caja 3.3 -->
+            <article class="box-card" data-box="3.3">
+              <div class="box-title">Subsistema Historia Clínica Digital</div>
+              <div class="box-content">
+                <p>Evoluciones médicas con codificación internacional CIE-10</p>
+                <p>Prescripciones farmacológicas e indicaciones terapéuticas</p>
+                <p>Módulo de interconsultas y derivaciones entre especialistas</p>
+                <p>Alertas clínicas automatizadas y banderas rojas</p>
+              </div>
+            </article>
+
+            <!-- Caja 3.4 -->
+            <article class="box-card" data-box="3.4">
+              <div class="box-title">Subsistema Facturación y Paquetes</div>
+              <div class="box-content">
+                <p>Gestión de paquetes de sesiones terapéuticas prepagadas</p>
+                <p>Deducción atómica de saldo por consulta atendida</p>
+                <p>Cálculo de liquidaciones periódicas por especialista</p>
+                <p>Emisión de comprobantes electrónicos con validez fiscal</p>
+              </div>
+            </article>
+
+            <!-- Caja 3.5 -->
+            <article class="box-card" data-box="3.5">
+              <div class="box-title">Subsistema Notificaciones y Mensajería</div>
+              <div class="box-content">
+                <p>Despacho automatizado de notificaciones de citas</p>
+                <p>Recordatorios previos vía WhatsApp, SMS y Email</p>
+                <p>Envío de enlaces de teleconsulta y comprobantes</p>
+                <p>Gestión asíncrona de eventos y colas de entrega</p>
+              </div>
+            </article>
+
+            <!-- Caja 3.6 -->
+            <article class="box-card" data-box="3.6">
+              <div class="box-title">Subsistema Auditoría y Permisos</div>
+              <div class="box-content">
+                <p>Bitácora inmutable de eventos y operaciones CRUD</p>
+                <p>Trazabilidad forense de modificaciones en fichas clínicas</p>
+                <p>Registro de accesos con timestamp UTC, usuario e IP</p>
+                <p>Gestión granular de políticas y directivas de seguridad</p>
+              </div>
+            </article>
+
+          </div>
+        </section>
+
+        <!-- FLECHAS INFERIORES HACIA CAPA 4 Y CAPA 5 -->
+        <div class="arrow-split-container">
+          <!-- Conector Capa 3 -> Capa 4 -->
+          <div class="arrow-sub-split">
+            <svg width="18" height="38" viewBox="0 0 18 38">
+              <polygon points="9,0 3,10 15,10" fill="#000000" />
+              <line x1="9" y1="8" x2="9" y2="30" stroke="#000000" stroke-width="2.4" />
+              <polygon points="9,38 3,28 15,28" fill="#000000" />
+            </svg>
+            <span class="arrow-label">ORM / Repositorios (Transacciones ACID)</span>
+          </div>
+
+          <!-- Conector Capa 3 -> Capa 5 -->
+          <div class="arrow-sub-split">
+            <svg width="18" height="38" viewBox="0 0 18 38">
+              <polygon points="9,0 3,10 15,10" fill="#000000" />
+              <line x1="9" y1="8" x2="9" y2="30" stroke="#000000" stroke-width="2.4" />
+              <polygon points="9,38 3,28 15,28" fill="#000000" />
+            </svg>
+            <span class="arrow-label">APIs REST / Webhooks Seguros</span>
+          </div>
+        </div>
+
+        <!-- ========================================================
+             CAPAS 4 Y 5 (DISTRIBUCIÓN PARALELA INFERIOR)
+             ======================================================== -->
+        <div class="grid-bottom-split">
+          
+          <!-- CAPA 4: ACCESO A DATOS Y PERSISTENCIA -->
+          <section class="layer-container layer-solid" data-layer="4">
+            <div class="layer-heading">CAPA 4: ACCESO A DATOS Y PERSISTENCIA</div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              
+              <!-- Caja 4.1 -->
+              <article class="box-card" data-box="4.1">
+                <div class="box-title">BD Relacional (Vitalis_BD)</div>
+                <div class="box-content">
+                  <p>Motor Relacional PostgreSQL</p>
+                  <p>Integridad referencial y esquema relacional</p>
+                  <p>Garantías transaccionales estrictas (ACID)</p>
+                  <p>Cifrado en reposo a nivel de volumen (AES-256)</p>
+                  <p>Índices optimizados para consulta rápida</p>
+                  <p>Política de borrado lógico (Soft Delete)</p>
+                </div>
+              </article>
+
+              <!-- Caja 4.2 -->
+              <article class="box-card" data-box="4.2">
+                <div class="box-title">Almacén de Documentos Clínicos</div>
+                <div class="box-content">
+                  <p>Almacenamiento de Objetos Cifrado</p>
+                  <p>Historias clínicas y recetas en formato PDF</p>
+                  <p>Consentimientos firmados digitalmente</p>
+                  <p>Informes diagnósticos complementarios</p>
+                  <p>Control estricto de acceso por expediente</p>
+                </div>
+              </article>
+
+            </div>
+          </section>
+
+          <!-- CAPA 5: SERVICIOS EXTERNOS (Integraciones) -->
+          <section class="layer-container layer-solid" data-layer="5">
+            <div class="layer-heading">CAPA 5: SERVICIOS EXTERNOS (Integraciones)</div>
+            
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              
+              <!-- Caja 5.1 (Ancho Completo) -->
+              <article class="box-card" data-box="5.1">
+                <div class="box-title">Servidor de Telemedicina</div>
+                <div class="box-content">
+                  <p>Servidor WebRTC Media Server / API de Videoconferencia</p>
+                  <p>Canales de streaming audiovisual cifrado de extremo a extremo</p>
+                  <p>Salas temporales aisladas con token de un solo uso</p>
+                </div>
+              </article>
+
+              <!-- Cajas 5.2 y 5.3 -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                
+                <!-- Caja 5.2 -->
+                <article class="box-card" data-box="5.2">
+                  <div class="box-title">Pasarela de Pagos</div>
+                  <div class="box-content">
+                    <p>Niubiz / Stripe API</p>
+                    <p>Tokens de pago seguros</p>
+                    <p>Conciliación vía Webhooks</p>
+                    <p>Cálculo de comisiones</p>
+                  </div>
+                </article>
+
+                <!-- Caja 5.3 -->
+                <article class="box-card" data-box="5.3">
+                  <div class="box-title">Gateways Mensajería</div>
+                  <div class="box-content">
+                    <p>Twilio / WhatsApp Business</p>
+                    <p>Gateway SMS Masivo</p>
+                    <p>Servidor SMTP Seguro</p>
+                    <p>Colas de reintento</p>
+                  </div>
+                </article>
+
+              </div>
+
+            </div>
+          </section>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ============================================================
+       SCRIPT: AJUSTE INICIAL A PANTALLA COMPLETA & ZOOM SEMÁNTICO
+       ============================================================ -->
+  <script>
+    (function() {
+      const viewport = document.getElementById('viewport');
+      const canvasWorld = document.getElementById('canvas-world');
+      const diagramFrame = document.getElementById('diagram-frame');
+      const zoomText = document.getElementById('zoom-text');
+      const statusBadge = document.getElementById('status-badge');
+      const btnZoomIn = document.getElementById('btn-zoom-in');
+      const btnZoomOut = document.getElementById('btn-zoom-out');
+      const btnReset = document.getElementById('btn-reset');
+      const btnToggleMode = document.getElementById('btn-toggle-mode');
+      const boxCards = document.querySelectorAll('.box-card');
+
+      let scale = 1.0;
+      let initialFittedScale = 1.0;
+      let panX = 0;
+      let panY = 0;
+      let isDragging = false;
+      let startX = 0;
+      let startY = 0;
+
+      const MIN_SCALE = 0.35;
+      const MAX_SCALE = 2.80;
+
+      let currentMode = 'auto';
+
+      function fitToScreenInitial() {
+        document.body.className = 'mode-titles-only';
+        statusBadge.textContent = 'MODO TÍTULOS';
+        statusBadge.style.background = '#000000';
+
+        const vpWidth = window.innerWidth;
+        const vpHeight = window.innerHeight;
+
+        const frameWidth = 1320 + 120; // con margen
+        const frameHeight = diagramFrame.offsetHeight + 60;
+
+        const scaleX = (vpWidth - 40) / frameWidth;
+        const scaleY = (vpHeight - 40) / frameHeight;
+
+        scale = Math.min(scaleX, scaleY, 1.0);
+        initialFittedScale = scale;
+
+        panX = (vpWidth - (frameWidth * scale)) / 2;
+        panY = Math.max(12, (vpHeight - (frameHeight * scale)) / 2);
+
+        applyTransform();
+      }
+
+      function applyTransform() {
+        canvasWorld.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+        updateSemanticState();
+      }
+
+      function updateSemanticState() {
+        const percentage = Math.round((scale / initialFittedScale) * 100);
+        zoomText.textContent = `${percentage}%`;
+
+        if (currentMode === 'forced-details') {
+          document.body.className = 'mode-details-visible';
+          statusBadge.textContent = 'DETALLE FORZADO';
+          statusBadge.style.background = '#000000';
+          return;
+        }
+
+        const zoomRatio = scale / initialFittedScale;
+
+        if (zoomRatio >= 1.18) {
+          document.body.className = 'mode-details-visible';
+          statusBadge.textContent = 'DETALLE VISIBLE';
+          statusBadge.style.background = '#333333';
+        } else {
+          document.body.className = 'mode-titles-only';
+          statusBadge.textContent = 'MODO TÍTULOS';
+          statusBadge.style.background = '#000000';
+        }
+      }
+
+      function zoomAtPoint(factor, clientX, clientY) {
+        const oldScale = scale;
+        let newScale = scale * factor;
+
+        if (newScale < MIN_SCALE) newScale = MIN_SCALE;
+        if (newScale > MAX_SCALE) newScale = MAX_SCALE;
+
+        if (newScale === oldScale) return;
+
+        const originX = (clientX - panX) / oldScale;
+        const originY = (clientY - panY) / oldScale;
+
+        panX = clientX - originX * newScale;
+        panY = clientY - originY * newScale;
+        scale = newScale;
+
+        applyTransform();
+      }
+
+      // Wheel Zoom
+      viewport.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        const factor = e.deltaY < 0 ? 1.12 : 0.89;
+        zoomAtPoint(factor, e.clientX, e.clientY);
+      }, { passive: false });
+
+      // Pan
+      viewport.addEventListener('mousedown', function(e) {
+        if (e.target.closest('.hud-bar')) return;
+        isDragging = true;
+        startX = e.clientX - panX;
+        startY = e.clientY - panY;
+      });
+
+      window.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        panX = e.clientX - startX;
+        panY = e.clientY - startY;
+        applyTransform();
+      });
+
+      window.addEventListener('mouseup', function() {
+        isDragging = false;
+      });
+
+      // HUD Buttons
+      btnZoomIn.addEventListener('click', function() {
+        zoomAtPoint(1.25, window.innerWidth / 2, window.innerHeight / 2);
+      });
+
+      btnZoomOut.addEventListener('click', function() {
+        zoomAtPoint(0.80, window.innerWidth / 2, window.innerHeight / 2);
+      });
+
+      btnReset.addEventListener('click', function() {
+        boxCards.forEach(b => b.classList.remove('focused'));
+        fitToScreenInitial();
+      });
+
+      btnToggleMode.addEventListener('click', function() {
+        if (currentMode === 'auto') {
+          currentMode = 'forced-details';
+          btnToggleMode.textContent = 'Modo: SIEMPRE DETALLES';
+        } else {
+          currentMode = 'auto';
+          btnToggleMode.textContent = 'Modo: AUTO';
+        }
+        updateSemanticState();
+      });
+
+      // Focus on box click
+      boxCards.forEach(box => {
+        box.addEventListener('click', function(e) {
+          e.stopPropagation();
+          boxCards.forEach(b => b.classList.remove('focused'));
+          this.classList.add('focused');
+
+          const rect = this.getBoundingClientRect();
+          const targetScale = Math.max(initialFittedScale * 1.5, 1.35);
+
+          const boxX = (rect.left - panX) / scale;
+          const boxY = (rect.top - panY) / scale;
+          const boxW = rect.width / scale;
+          const boxH = rect.height / scale;
+
+          panX = (window.innerWidth / 2) - (boxX + boxW / 2) * targetScale;
+          panY = (window.innerHeight / 2) - (boxY + boxH / 2) * targetScale;
+          scale = targetScale;
+
+          canvasWorld.style.transition = 'transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)';
+          applyTransform();
+          setTimeout(() => {
+            canvasWorld.style.transition = 'none';
+          }, 290);
+        });
+      });
+
+      viewport.addEventListener('click', function(e) {
+        if (!e.target.closest('.box-card')) {
+          boxCards.forEach(b => b.classList.remove('focused'));
+        }
+      });
+
+      window.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          boxCards.forEach(b => b.classList.remove('focused'));
+          fitToScreenInitial();
+        } else if (e.key === '+' || e.key === '=') {
+          zoomAtPoint(1.20, window.innerWidth / 2, window.innerHeight / 2);
+        } else if (e.key === '-') {
+          zoomAtPoint(0.83, window.innerWidth / 2, window.innerHeight / 2);
+        } else if (e.key === '0') {
+          fitToScreenInitial();
+        }
+      });
+
+      window.addEventListener('resize', fitToScreenInitial);
+      window.addEventListener('DOMContentLoaded', fitToScreenInitial);
+      setTimeout(fitToScreenInitial, 40);
+
+    })();
+  </script>
+</body>
+</html>

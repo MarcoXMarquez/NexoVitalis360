@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fig 7.2 - Contexto Global Nivel 0 | NexoVitalis360</title>
+  <style>
+    
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important; /* Esquinas 100% rectas y filosas */
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #ffffff;
+      color: #000000;
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Lienzo navegable interactivo */
+    .viewport {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      cursor: grab;
+      background-color: #ffffff;
+    }
+
+    .viewport:active {
+      cursor: grabbing;
+    }
+
+    .canvas-world {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+      background-color: #ffffff;
+    }
+
+    /* BARRA DE CONTROL SUPERIOR (HUD MINIMALISTA B&W) */
+    /* BARRA DE CONTROL FLOTANTE (HUD COMPACTO EN ESQUINA SUPERIOR DERECHA) */
+    .hud-bar {
+      position: fixed;
+      top: 10px;
+      right: 16px;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1.5px solid #000000;
+      padding: 5px 12px;
+      font-family: Arial, sans-serif;
+      font-size: 11.5px;
+      box-shadow: 2px 2px 0px #000000;
+    }
+
+    .hud-status-badge {
+      background: #000000;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      padding: 3px 7px;
+      text-transform: uppercase;
+      transition: background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .hud-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-hud {
+      background: #ffffff;
+      color: #000000;
+      border: 1.5px solid #000000;
+      padding: 4px 10px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .btn-hud:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .zoom-text {
+      font-weight: bold;
+      min-width: 44px;
+      text-align: center;
+      font-size: 11.5px;
+    }
+
+    .hud-hint {
+      font-size: 10.5px;
+      color: #666666;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+
+    /* ESTILO BASE DE CAJAS Y TARJETAS */
+    .box-card {
+      position: absolute;
+      border: 1.8px solid #000000;
+      background: #ffffff;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: background 0.15s ease, box-shadow 0.15s ease, border 0.15s ease;
+      z-index: 5;
+      box-sizing: border-box;
+    }
+
+    .box-card:hover {
+      background: #fafafa;
+      box-shadow: 3px 3px 0px #000000;
+    }
+
+    .box-card.focused {
+      background: #fcfcfc !important;
+      border: 2.5px solid #000000 !important;
+      box-shadow: 5px 5px 0px #000000 !important;
+      z-index: 50 !important;
+    }
+
+    .box-card.card-hub {
+      border: 2.5px solid #000000;
+      background: #fafafa;
+      box-shadow: 3px 3px 0px #000000;
+    }
+
+    .box-card.card-ext {
+      border: 1.8px solid #000000;
+      background: #ffffff;
+    }
+
+    .box-card.card-dashed {
+      border: 2px dashed #000000;
+      background: #ffffff;
+    }
+
+    .box-title {
+      font-weight: 800;
+      color: #000000;
+      line-height: 1.25;
+      transition: font-size 0.2s ease, margin 0.2s ease, text-align 0.2s ease;
+    }
+
+    .box-subtitle {
+      font-size: 10.5px;
+      font-weight: bold;
+      color: #333333;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 6px;
+    }
+
+    .box-tag {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 9.5px;
+      font-weight: bold;
+      background: #000000;
+      color: #ffffff;
+      padding: 2px 6px;
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    .box-content {
+      font-size: 11px;
+      line-height: 1.35;
+      color: #222222;
+      border-top: 1px solid #000000;
+      padding-top: 6px;
+      margin-top: 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: opacity 0.2s ease, max-height 0.25s ease;
+    }
+
+    .box-content p {
+      margin: 0;
+    }
+
+    /* ETIQUETAS DE FLECHAS Y CONECTORES CON REVELACIÓN PROGRESIVA */
+    .flow-pill {
+      position: absolute;
+      background: #ffffff;
+      border: 1.6px solid #000000;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #000000;
+      white-space: nowrap;
+      transform: translate(-50%, -50%);
+      z-index: 15;
+      pointer-events: auto;
+      cursor: pointer;
+      box-shadow: 2px 2px 0px #000000;
+      line-height: 1.25;
+      letter-spacing: 0.2px;
+      transition: all 0.15s ease;
+    }
+
+    .flow-pill:hover {
+      background: #000000;
+      color: #ffffff;
+      z-index: 100;
+      box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.5);
+    }
+
+    .flow-pill .pill-core {
+      font-weight: 800;
+    }
+
+    .flow-pill .pill-detail {
+      font-weight: normal;
+      font-size: 11px;
+    }
+
+    /* 1. MODO GENERAL (SIN ZOOM / VISTA MACRO - mode-titles-only): Muestra solo lo esencial */
+    body.mode-titles-only .flow-pill {
+      font-size: 12.5px !important;
+      font-weight: 800 !important;
+      padding: 3px 8px !important;
+      border: 1.8px solid #000000 !important;
+      box-shadow: 2px 2px 0px #000000 !important;
+    }
+
+    body.mode-titles-only .flow-pill .pill-detail {
+      display: none !important;
+    }
+
+    body.mode-titles-only .flow-pill:hover .pill-detail {
+      display: inline !important;
+      color: #ffffff !important;
+    }
+
+    /* 3. MODO DETALLE (CON ZOOM >= 0.82 O MODO FORZADO - mode-details-visible): Muestra todo */
+    body.mode-details-visible .flow-pill {
+      font-size: 12px;
+      padding: 3px 9px;
+    }
+
+    body.mode-details-visible .flow-pill .pill-detail {
+      display: inline !important;
+      color: #333333;
+    }
+
+    /* CÍRCULOS DE ESTADO UML */
+    .uml-state-circle {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transform: translate(-50%, -50%);
+      z-index: 6;
+      cursor: pointer;
+    }
+
+    .circle-initial {
+      width: 32px;
+      height: 32px;
+      background: #000000;
+      border-radius: 50% !important;
+      margin-bottom: 6px;
+    }
+
+    .circle-final-outer {
+      width: 36px;
+      height: 36px;
+      border: 2.2px solid #000000;
+      border-radius: 50% !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .circle-final-inner {
+      width: 22px;
+      height: 22px;
+      background: #000000;
+      border-radius: 50% !important;
+    }
+
+    .circle-label {
+      font-size: 11.5px;
+      font-weight: bold;
+      color: #000000;
+      white-space: nowrap;
+    }
+
+    .circle-sub {
+      font-size: 10px;
+      font-style: italic;
+      color: #444444;
+      white-space: nowrap;
+    }
+
+    /* BARRAS DE ACTIVACIÓN UML (SECUENCIA) */
+    .activation-bar {
+      position: absolute;
+      width: 16px;
+      border: 1.8px solid #000000;
+      background: #ffffff;
+      transform: translateX(-50%);
+      z-index: 4;
+    }
+
+    /* CAPA SVG */
+    .svg-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* LÍNEAS DE VIDA (SECUENCIA) */
+    .lifeline-line {
+      stroke: #333333;
+      stroke-width: 2.0;
+      stroke-dasharray: 6, 5;
+    }
+
+    /* FLECHAS DIRECTAS Y RETORNOS REFORZADOS */
+    .msg-arrow-call {
+      stroke: #000000;
+      stroke-width: 2.8;
+      fill: none;
+    }
+
+    .msg-arrow-return {
+      stroke: #000000;
+      stroke-width: 2.2;
+      stroke-dasharray: 7, 4;
+      fill: none;
+    }
+
+    /* ========================================================= */
+    /* SEMANTIC ZOOM AVANZADO: MODO VISTA GENERAL VS MODO DETALLE */
+    /* ========================================================= */
+
+    /* 1. MODO GENERAL (SIN ZOOM / VISTA MACRO - mode-titles-only) */
+    body.mode-titles-only .box-card {
+      justify-content: center !important;
+      align-items: center !important;
+      text-align: center !important;
+      padding: 10px 14px !important;
+    }
+
+    body.mode-titles-only .box-card .box-title {
+      font-size: 19px !important;
+      font-weight: 900 !important;
+      letter-spacing: 0.5px !important;
+      text-align: center !important;
+      margin: 0 !important;
+      width: 100% !important;
+      line-height: 1.25 !important;
+      text-transform: uppercase !important;
+    }
+
+    body.mode-titles-only .box-card.card-hub .box-title {
+      font-size: 23px !important;
+      letter-spacing: 0.8px !important;
+    }
+
+    body.mode-titles-only .box-card .box-subtitle,
+    body.mode-titles-only .box-card .box-tag,
+    body.mode-titles-only .box-card .box-content {
+      display: none !important;
+      opacity: 0 !important;
+      max-height: 0 !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      pointer-events: none !important;
+    }
+
+    body.mode-titles-only .box-card.card-dashed .box-title {
+      font-size: 13px !important;
+    }
+
+    /* 2. NODO CON FOCO (CLICK EN MODO GENERAL): Revela sus detalles sin alterar los demás */
+    body.mode-titles-only .box-card.focused {
+      justify-content: flex-start !important;
+      align-items: stretch !important;
+      text-align: left !important;
+      padding: 12px 14px !important;
+      background: #fcfcfc !important;
+      box-shadow: 5px 5px 0px #000000 !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-title {
+      font-size: 13.5px !important;
+      font-weight: 800 !important;
+      text-align: left !important;
+      margin-bottom: 3px !important;
+      width: auto !important;
+    }
+
+    body.mode-titles-only .box-card.focused.card-hub .box-title {
+      font-size: 15px !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-subtitle {
+      display: block !important;
+      opacity: 1 !important;
+      max-height: 40px !important;
+      margin-bottom: 6px !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-tag {
+      display: inline-block !important;
+      opacity: 1 !important;
+      margin-bottom: 6px !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-content {
+      display: flex !important;
+      opacity: 1 !important;
+      max-height: 450px !important;
+      border-top: 1px solid #000000 !important;
+      padding-top: 6px !important;
+      margin-top: 2px !important;
+      pointer-events: auto !important;
+    }
+
+    /* 3. MODO DETALLE (CON ZOOM >= 0.85 O MODO FORZADO - mode-details-visible) */
+    body.mode-details-visible .box-card {
+      justify-content: flex-start;
+      align-items: stretch;
+      text-align: left;
+      padding: 12px 14px;
+    }
+
+    body.mode-details-visible .box-card .box-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      text-align: left;
+      margin-bottom: 3px;
+    }
+
+    body.mode-details-visible .box-card.card-hub .box-title {
+      font-size: 15px;
+    }
+
+    body.mode-details-visible .box-card .box-subtitle {
+      display: block;
+      opacity: 1;
+    }
+
+    body.mode-details-visible .box-card .box-tag {
+      display: inline-block;
+      opacity: 1;
+    }
+
+    body.mode-details-visible .box-card .box-content {
+      display: flex;
+      opacity: 1;
+      max-height: 480px;
+      overflow: visible;
+      pointer-events: auto;
+    }
+
+  </style>
+</head>
+<body class="mode-titles-only">
+
+  <!-- BARRA DE CONTROL FLOTANTE (HUD COMPACTO) -->
+  <header class="hud-bar">
+    <span class="hud-status-badge" id="statusBadge">MODO TÍTULOS</span>
+    <span class="hud-hint">Arrastrar: Pan | Rueda: Zoom</span>
+    <div class="hud-controls">
+      <button class="btn-hud" id="btnZoomOut">− Zoom</button>
+      <span class="zoom-text" id="zoomText">100%</span>
+      <button class="btn-hud" id="btnZoomIn">+ Zoom</button>
+      <button class="btn-hud" id="btnFit">Ajustar</button>
+      <button class="btn-hud" id="btnReset">Reset</button>
+      <button class="btn-hud" id="btnToggleMode">Modo: AUTO</button>
+    </div>
+  </header>
+
+  <div class="viewport" id="viewport">
+    <div class="canvas-world" id="canvasWorld" style="width: 2100px; height: 1240px;">
+
+      <!-- CAPA SVG DE INTERACCIONES GLOBALES (8 ENTIDADES PERIMETRALES) REFORZADA -->
+      <svg class="svg-layer" width="2100" height="1240">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#000000" />
+          </marker>
+        </defs>
+
+        <!-- 1. Especialista (Top Center: x=1050, y=290) <-> Caja Negra (x=1050, y=420) -->
+        <line x1="1035" y1="290" x2="1035" y2="420" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="1065" y1="420" x2="1065" y2="290" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+
+        <!-- 2. Apoderado (Top Left: x=520, y=270) <-> Caja Negra (x=680, y=420) -->
+        <line x1="520" y1="270" x2="680" y2="420" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="695" y1="435" x2="535" y2="285" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+
+        <!-- 3. Administrador (Top Right: x=1580, y=270) <-> Caja Negra (x=1200, y=420) -->
+        <line x1="1580" y1="270" x2="1200" y2="420" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="1185" y1="435" x2="1565" y2="285" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+
+        <!-- 4. Google Meet (Mid Left: x=500, y=635) <-> Caja Negra (x=600, y=635) -->
+        <line x1="500" y1="620" x2="600" y2="620" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="600" y1="650" x2="500" y2="650" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+
+        <!-- 5. Gerente General (Mid Right: x=1600, y=635) <-> Caja Negra (x=1280, y=635) -->
+        <line x1="1600" y1="620" x2="1280" y2="620" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="1280" y1="650" x2="1600" y2="650" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+
+        <!-- 6. Medios de Pago (Bottom Left: x=520, y=1030) <-> Caja Negra (x=680, y=770) -->
+        <line x1="520" y1="1030" x2="680" y2="770" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="695" y1="755" x2="535" y2="1015" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+
+        <!-- 7. WhatsApp (Bottom Center: x=1050, y=1030) <-> Caja Negra (x=1050, y=770) -->
+        <line x1="1035" y1="770" x2="1035" y2="1030" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="1065" y1="1030" x2="1065" y2="770" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+
+        <!-- 8. SUNAT (Bottom Right: x=1580, y=1030) <-> Caja Negra (x=1200, y=770) -->
+        <line x1="1200" y1="770" x2="1580" y2="1030" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="1565" y1="1045" x2="1185" y2="785" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+      </svg>
+
+      <!-- ETIQUETAS DE FLUJOS EN EL PERÍMETRO (REVELACIÓN PROGRESIVA: CORTO EN VISTA GENERAL, DETALLE EN ZOOM/HOVER) -->
+      <div class="flow-pill" style="left: 1050px; top: 335px;"><span class="pill-core">Evolución clínica</span><span class="pill-detail"> / Cierre turnos</span></div>
+      <div class="flow-pill" style="left: 560px; top: 335px;"><span class="pill-core">Solicitud cita</span><span class="pill-detail"> / Voucher pago</span></div>
+      <div class="flow-pill" style="left: 1390px; top: 335px;"><span class="pill-core">Agendas y tarifas</span><span class="pill-detail"> parametrizadas</span></div>
+
+      <div class="flow-pill" style="left: 550px; top: 585px;"><span class="pill-core">Google Meet</span><span class="pill-detail"> (URL criptográfica)</span></div>
+      <div class="flow-pill" style="left: 1440px; top: 585px;"><span class="pill-core">Liquidación médica</span><span class="pill-detail"> / Reportes</span></div>
+
+      <div class="flow-pill" style="left: 560px; top: 875px;"><span class="pill-core">Confirmación pago</span><span class="pill-detail"> / Token</span></div>
+      <div class="flow-pill" style="left: 1160px; top: 895px;"><span class="pill-core">Recordatorios T-24h</span><span class="pill-detail"> / WhatsApp</span></div>
+      <div class="flow-pill" style="left: 1390px; top: 875px;"><span class="pill-core">Facturación XML</span><span class="pill-detail"> / CDR SUNAT</span></div>
+
+      <!-- CAJA NEGRA CENTRAL (SISTEMA INTEGRAL NEXOVITALIS360) -->
+      <div class="box-card card-hub" style="left: 600px; top: 420px; width: 680px; height: 350px;">
+        <div class="box-title">NEXOVITALIS360</div>
+        <div class="box-subtitle">[SISTEMA INTEGRAL DE GESTIÓN CLÍNICA PEDIÁTRICA Y AGENDAMIENTO MULTIMODAL]</div>
+        <span class="box-tag">Frontera de Caja Negra: EDU-0008 a EDU-0038</span>
+        <div class="box-content" style="font-size: 11.5px; gap: 5px;">
+          <p>• <b>Propósito Central:</b> Plataforma hospitalaria integral especializada en neuropediatría y desarrollo infantil temprano, orquestando atención presencial y teleconsulta.</p>
+          <p>• <b>Capacidades Encapsuladas:</b> Admisión, triaje, agendamiento anticolisión (RNF-0004), historia clínica electrónica, facturación SUNAT y liquidación médica.</p>
+          <p>• <b>Modelo de Despliegue:</b> Arquitectura multicapa contenerizada en alta disponibilidad con base de datos PostgreSQL transaccional y APIs REST seguras.</p>
+        </div>
+      </div>
+
+      <!-- 8 ENTIDADES EXTERNAS PERIMETRALES -->
+      <div class="box-card" style="left: 860px; top: 140px; width: 380px; height: 150px;">
+        <div class="box-title">Especialista Clínico</div>
+        <div class="box-subtitle">[Actor Humano Externo]</div>
+        <span class="box-tag">Perímetro Asistencial</span>
+        <div class="box-content">
+          <p><b>Entradas:</b> Evolución clínica, CIE-10, prescripción médica y cierre de atención.</p>
+          <p><b>Salidas:</b> Agenda consolidada diaria, turnos del día y ficha con alertas de riesgo.</p>
+        </div>
+      </div>
+
+      <div class="box-card" style="left: 140px; top: 140px; width: 380px; height: 150px;">
+        <div class="box-title">Apoderado / Paciente</div>
+        <div class="box-subtitle">[Actor Humano Externo]</div>
+        <span class="box-tag">Perímetro Asistencial</span>
+        <div class="box-content">
+          <p><b>Entradas:</b> Filiación menor/tutor, formulario pre-triaje, consentimiento y voucher.</p>
+          <p><b>Salidas:</b> Confirmación de cita, enlace seguro Meet, comprobantes y avisos T-24h.</p>
+        </div>
+      </div>
+
+      <div class="box-card" style="left: 1580px; top: 140px; width: 380px; height: 150px;">
+        <div class="box-title">Administrador / Asistente</div>
+        <div class="box-subtitle">[Actor Humano Externo]</div>
+        <span class="box-tag">Perímetro Administrativo</span>
+        <div class="box-content">
+          <p><b>Entradas:</b> Parametrización de franjas horarias, tarifas, paquetes (EDU-0033) y sobrecupo.</p>
+          <p><b>Salidas:</b> Alertas de conflicto, estado operativo de agendas y bitácoras operativas.</p>
+        </div>
+      </div>
+
+      <div class="box-card card-ext" style="left: 120px; top: 560px; width: 380px; height: 150px;">
+        <div class="box-title">Google Meet API</div>
+        <div class="box-subtitle">[Servicio Externo (Capa 5)]</div>
+        <span class="box-tag">Telemedicina Criptográfica</span>
+        <div class="box-content">
+          <p><b>Entradas:</b> URL criptográfica de sala virtual, room tokens y códigos de acceso.</p>
+          <p><b>Salidas:</b> Petición POST OAuth2 con fecha, hora y parámetros de la teleconsulta.</p>
+        </div>
+      </div>
+
+      <div class="box-card" style="left: 1600px; top: 560px; width: 380px; height: 150px;">
+        <div class="box-title">Gerente General / Jefaturas</div>
+        <div class="box-subtitle">[Actor Administrativo]</div>
+        <span class="box-tag">Gobernanza y Finanzas</span>
+        <div class="box-content">
+          <p><b>Entradas:</b> Aprobación de liquidación mensual médica y definición de políticas RBAC.</p>
+          <p><b>Salidas:</b> Reportes consolidados de cierre financiero y bitácora forense de auditoría.</p>
+        </div>
+      </div>
+
+      <div class="box-card card-ext" style="left: 140px; top: 1030px; width: 380px; height: 150px;">
+        <div class="box-title">Medios de Pago / Pasarela</div>
+        <div class="box-subtitle">[Pasarela Financiera Externa]</div>
+        <span class="box-tag">Transacciones Monetarias</span>
+        <div class="box-content">
+          <p><b>Entradas:</b> Confirmación de transferencia bancaria, abono de paquetes y voucher digital.</p>
+          <p><b>Salidas:</b> Solicitud de validación de pago y token de transacción asistencial.</p>
+        </div>
+      </div>
+
+      <div class="box-card card-ext" style="left: 860px; top: 1030px; width: 380px; height: 150px;">
+        <div class="box-title">WhatsApp / Telefonía</div>
+        <div class="box-subtitle">[Pasarela Omnicanal Externa]</div>
+        <span class="box-tag">Mensajería Notificadora</span>
+        <div class="box-content">
+          <p><b>Entradas:</b> Acuse de entrega y lectura del recordatorio anticipado por el tutor.</p>
+          <p><b>Salidas:</b> Despacho automatizado del mensaje con fecha, especialista y enlace Meet.</p>
+        </div>
+      </div>
+
+      <div class="box-card card-ext" style="left: 1580px; top: 1030px; width: 380px; height: 150px;">
+        <div class="box-title">SUNAT (Tributario)</div>
+        <div class="box-subtitle">[Ente Regulatorio Electrónico]</div>
+        <span class="box-tag">Facturación Electrónica</span>
+        <div class="box-content">
+          <p><b>Entradas:</b> Constancia de Recepción (CDR) y estado de validez fiscal del comprobante.</p>
+          <p><b>Salidas:</b> Boletas y Facturas electrónicas firmadas digitalmente en formato XML.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const CANVAS_W = 2100;
+    const CANVAS_H = 1240;
+    
+  // ============================================================
+  // MOTOR DE NAVEGACIÓN, PAN, ZOOM Y SEMÁNTICA INTERACTIVA B&W
+  // ============================================================
+  const viewport = document.getElementById('viewport');
+  const canvasWorld = document.getElementById('canvasWorld');
+  const zoomText = document.getElementById('zoomText');
+  const statusBadge = document.getElementById('statusBadge');
+  const btnToggleMode = document.getElementById('btnToggleMode');
+
+  let scale = 1.0;
+  let panX = 0;
+  let panY = 0;
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+
+  // Modos: 'auto' (semántico dinámico) o 'details' (siempre forzado)
+  let userMode = 'auto';
+
+  function applyTransform() {
+    canvasWorld.style.transform = `matrix(${scale}, 0, 0, ${scale}, ${panX}, ${panY})`;
+    zoomText.textContent = `${Math.round(scale * 100)}%`;
+  }
+
+  function updateSemanticZoom() {
+    if (userMode === 'details') {
+      document.body.classList.remove('mode-titles-only');
+      document.body.classList.add('mode-details-visible');
+      statusBadge.textContent = 'MODO DETALLE (FORZADO)';
+      statusBadge.style.background = '#000000';
+      statusBadge.style.color = '#ffffff';
+      return;
+    }
+
+    // En modo 'auto': si scale < 0.82 muestra solo títulos grandes; si scale >= 0.82 revela detalles completos
+    if (scale >= 0.82) {
+      document.body.classList.remove('mode-titles-only');
+      document.body.classList.add('mode-details-visible');
+      statusBadge.textContent = 'MODO DETALLE';
+      statusBadge.style.background = '#000000';
+      statusBadge.style.color = '#ffffff';
+    } else {
+      document.body.classList.remove('mode-details-visible');
+      document.body.classList.add('mode-titles-only');
+      statusBadge.textContent = 'MODO TÍTULOS';
+      statusBadge.style.background = '#444444';
+      statusBadge.style.color = '#ffffff';
+    }
+  }
+
+  function fitToScreen() {
+    const padX = 40;
+    const padY = 35;
+    const availW = window.innerWidth - padX;
+    const availH = window.innerHeight - padY;
+    const sW = availW / CANVAS_W;
+    const sH = availH / CANVAS_H;
+    const s = Math.min(sW, sH);
+    scale = Math.max(0.25, Math.min(s, 1.0));
+    panX = (window.innerWidth - CANVAS_W * scale) / 2;
+    panY = Math.max(12, (window.innerHeight - CANVAS_H * scale) / 2);
+    applyTransform();
+    updateSemanticZoom();
+  }
+
+  function zoomAtPoint(factor, clientX, clientY) {
+    const prevScale = scale;
+    const newScale = Math.min(Math.max(0.25, scale * factor), 2.8);
+    if (newScale === prevScale) return;
+
+    // Zoom centrado en el punto del cursor
+    const mouseX = clientX - panX;
+    const mouseY = clientY - panY;
+
+    panX -= mouseX * (newScale / prevScale - 1);
+    panY -= mouseY * (newScale / prevScale - 1);
+    scale = newScale;
+
+    applyTransform();
+    updateSemanticZoom();
+  }
+
+  // EVENTOS DEL RATÓN: ARRASTRE (PAN)
+  viewport.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.hud-bar')) return;
+    isDragging = true;
+    startX = e.clientX - panX;
+    startY = e.clientY - panY;
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    panX = e.clientX - startX;
+    panY = e.clientY - startY;
+    applyTransform();
+  });
+
+  window.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+
+  // ZOOM POR RUEDA DEL RATÓN
+  viewport.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const factor = e.deltaY < 0 ? 1.12 : 0.89;
+    zoomAtPoint(factor, e.clientX, e.clientY);
+  }, { passive: false });
+
+  // BOTONES DEL HUD
+  document.getElementById('btnZoomIn').addEventListener('click', () => {
+    zoomAtPoint(1.20, window.innerWidth / 2, window.innerHeight / 2);
+  });
+
+  document.getElementById('btnZoomOut').addEventListener('click', () => {
+    zoomAtPoint(0.83, window.innerWidth / 2, window.innerHeight / 2);
+  });
+
+  document.getElementById('btnFit').addEventListener('click', fitToScreen);
+
+  document.getElementById('btnReset').addEventListener('click', () => {
+    scale = 1.0;
+    panX = (window.innerWidth - CANVAS_W) / 2;
+    panY = Math.max(12, (window.innerHeight - CANVAS_H) / 2);
+    applyTransform();
+    updateSemanticZoom();
+  });
+
+  btnToggleMode.addEventListener('click', () => {
+    if (userMode === 'auto') {
+      userMode = 'details';
+      btnToggleMode.textContent = 'Modo: SIEMPRE DETALLES';
+    } else {
+      userMode = 'auto';
+      btnToggleMode.textContent = 'Modo: AUTO (Semántico)';
+    }
+    updateSemanticZoom();
+  });
+
+  // CLIC EN CUALQUIER CAJA PARA CENTRAR Y ENFOCAR
+  document.querySelectorAll('.box-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.querySelectorAll('.box-card').forEach(c => c.classList.remove('focused'));
+      card.classList.add('focused');
+
+      const left = parseFloat(card.style.left);
+      const top = parseFloat(card.style.top);
+      const width = parseFloat(card.style.width || card.offsetWidth);
+      const height = parseFloat(card.style.height || card.offsetHeight);
+
+      const targetScale = Math.max(scale, 1.15);
+      scale = targetScale;
+      panX = (window.innerWidth / 2) - (left + width / 2) * scale;
+      panY = (window.innerHeight / 2) - (top + height / 2) * scale;
+
+      applyTransform();
+      updateSemanticZoom();
+    });
+  });
+
+  // CLIC EN EL FONDO DESENFOCA Y RESTAURA VISTA
+  viewport.addEventListener('click', (e) => {
+    if (!e.target.closest('.box-card')) {
+      document.querySelectorAll('.box-card').forEach(c => c.classList.remove('focused'));
+    }
+  });
+
+  // TECLAS RÁPIDAS
+  window.addEventListener('keydown', (e) => {
+    if (e.key === '+' || e.key === '=') {
+      zoomAtPoint(1.20, window.innerWidth / 2, window.innerHeight / 2);
+    } else if (e.key === '-') {
+      zoomAtPoint(0.83, window.innerWidth / 2, window.innerHeight / 2);
+    } else if (e.key === '0') {
+      fitToScreen();
+    } else if (e.key === 'Escape') {
+      document.querySelectorAll('.box-card').forEach(c => c.classList.remove('focused'));
+      fitToScreen();
+    }
+  });
+
+  window.addEventListener('resize', fitToScreen);
+  window.addEventListener('DOMContentLoaded', () => {
+    fitToScreen();
+  });
+
+  </script>
+</body>
+</html>
