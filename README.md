@@ -56,7 +56,9 @@ NexoVitalis360/
 
 ## 🖥️ Visor Interactivo de Arquitectura
 
-Se incluye una suite navegable completa en HTML5/SVG interactivo con zoom semántico, renderizado B&W puro y esquinas rectas (*sharp edges*), accesible localmente abriendo:
+🌐 **Visor en línea (GitHub Pages):** [https://marcoxmarquez.github.io/NexoVitalis360/](https://marcoxmarquez.github.io/NexoVitalis360/)
+
+Se incluye una suite navegable completa en HTML5/SVG interactivo con zoom semántico, renderizado B&W puro y esquinas rectas (*sharp edges*), accesible también localmente abriendo:
 
 📁 `05_DIAGRAMAS_Y_RECURSOS_EDITABLES/VISOR_HTML_ARQUITECTURA_v01.00/index.html`
 
