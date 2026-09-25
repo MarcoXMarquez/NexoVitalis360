@@ -10,7 +10,7 @@ Este directorio contiene el portal interactivo y la suite completa de diagramas 
 - **`fig7_2_contexto_global_nivel0.html`**: Diagrama de Contexto Global Nivel 0 (NexoVitalis360 como Caja Negra).
 - **`fig7_3_bloques_funcionales_nivel1.html`**: Diagrama de Bloques Funcionales Nivel 1 (11 bloques B1-B11 y 28 flujos correlativos F1-F28).
 - **`fig7_4_maquina_estados_cita.html`**: Diagrama de Máquina de Estados del Ciclo de Vida de la Cita Médica (8 estados, guardas y 3 finales).
-- **`fig7_5_secuencia_agendamiento.html`**: Diagrama de Secuencia de Arquitectura (Escenario de Agendamiento en 14 pasos a través de las 5 capas).
+- **`fig7_5_secuencia_agendamiento.html`**: Diagrama de Agendamiento (Escenario transaccional en 14 pasos a través de las 5 capas).
 
 ## Instrucciones de Uso Local
 

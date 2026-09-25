@@ -68,4 +68,4 @@ Se incluye una suite navegable completa en HTML5/SVG interactivo con zoom semán
 3. **Figura 7.2:** Diagrama de Contexto Global Nivel 0 (NexoVitalis360 como Caja Negra).
 4. **Figura 7.3:** Diagrama de Bloques Funcionales Nivel 1 (11 Bloques B1-B11 y 28 Flujos F1-F28).
 5. **Figura 7.4:** Diagrama de Máquina de Estados del Ciclo de Vida de la Cita Médica (8 estados deterministas).
-6. **Figura 7.5:** Diagrama de Secuencia de Arquitectura (Escenario de Agendamiento en 14 pasos a través de las 5 capas).
+6. **Figura 7.5:** Diagrama de Agendamiento (Escenario transaccional en 14 pasos a través de las 5 capas).

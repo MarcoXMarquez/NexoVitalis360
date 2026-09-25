@@ -70,14 +70,14 @@ La carpeta se encuentra organizada en subdirectorios correspondientes a las **8 
 | **Fig 7.2** | Contexto Global Nivel 0 (Caja Negra) | `Figura_7_2_Contexto_Global_Nivel0_v00.20.png` | Cobertura perimetral total: EDU-0008 a EDU-0038, SUNAT, Meet, Pasarela. |
 | **Fig 7.3** | Bloques Funcionales Nivel 1 | `Figura_7_3_Bloques_Funcionales_Nivel1_v00.20.png` | 11 Bloques funcionales (B1 a B11), 28 flujos correlativos (F1 a F28), 100% de requisitos. |
 | **Fig 7.4** | Máquina de Estados del Ciclo de Vida | `Figura_7_4_Maquina_Estados_Cita_v00.20.png` | EDU-0008, EDU-0012, EDU-0013, RNF-0004 (8 estados, guardas formales, 3 finales). |
-| **Fig 7.5** | Secuencia de Arquitectura (Agendamiento) | `Figura_7_5_Secuencia_Arquitectura_v00.20.png` | EDU-0012, EDU-0019, RNF-0004 (Traza sincrónica/asincrónica de 14 pasos en 5 capas). |
+| **Fig 7.5** | Diagrama de Agendamiento | `Figura_7_5_Secuencia_Arquitectura_v00.20.png` | EDU-0012, EDU-0019, RNF-0004 (Traza sincrónica/asincrónica de 14 pasos en 5 capas). |
 
 ---
 
 ## 4. Trazabilidad de Evolución (`v00.10` $\rightarrow$ `v00.20`)
 
 1. **Eliminación de Redundancia y Ambigüedad:**
-   - En `v00.10`, existían tres diagramas de secuencia separados (`Figura_3`, `Figura_4`, `Figura_5`). En `v00.20`, se unificaron formalmente bajo el **Diagrama de Secuencia de Arquitectura (Figura 7.5)**, cubriendo el ciclo completo transaccional de agendamiento y aprovisionamiento de Google Meet en 14 pasos estrictamente cronológicos.
+   - En `v00.10`, existían tres diagramas de secuencia separados (`Figura_3`, `Figura_4`, `Figura_5`). En `v00.20`, se unificaron formalmente bajo el **Diagrama de Agendamiento (Figura 7.5)**, cubriendo el ciclo completo transaccional de agendamiento y aprovisionamiento de Google Meet en 14 pasos estrictamente cronológicos.
    - En `v00.10`, las actividades de pretriaje y liquidación estaban fragmentadas. En `v00.20`, se integraron sistémicamente como flujos correlativos (F2, F8, F10, F28) en el **Diagrama de Bloques Funcionales Nivel 1 (Figura 7.3)**.
 2. **Estandarización Notacional:**
    - La versión `v00.20` adopta estrictamente la notación UML 2.5 y diagramas de bloques formales con esquinas filosas (*sharp edges*), grosor vectorial de 2.8px y eliminación de elementos extra-estándar en el lienzo.
