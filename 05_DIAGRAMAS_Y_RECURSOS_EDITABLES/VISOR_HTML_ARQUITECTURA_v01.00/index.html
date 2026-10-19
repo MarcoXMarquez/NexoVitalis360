@@ -432,58 +432,68 @@
       </div>
 
       <!-- CARPETAS DE HITOS / PLANTILLAS SIGUIENTES (PREPARADAS) -->
-      <div class="folder-group" id="group-vista-logica">
+      <div class="folder-group open" id="group-vista-logica">
         <div class="folder-header" onclick="toggleFolder('group-vista-logica')">
           <div class="folder-title-row">
             <span class="folder-arrow">▼</span>
             <span class="folder-name">3. Vista Lógica</span>
           </div>
-          <span class="folder-badge pending">Próximamente</span>
+          <span class="folder-badge">2 Diagramas</span>
         </div>
         <div class="folder-items">
-          <div class="menu-item disabled">
-            <span class="item-title">Diagrama de Paquetes y Subsistemas</span>
-            <span class="item-sub">Modelado de capas y dependencias lógicas</span>
-            <span class="item-tag pending">Plantilla 3 / Hito 1</span>
+          <div class="menu-item" onclick="loadDiagram('fig3_1_vista_logica_educciones.html', this, 'Figura 7.1: Vista Lógica — Interconexión Modular de 27 Educciones', 'Agrupación funcional exhaustiva de EDU-0008 a EDU-0038 en 6 paquetes («subsystem») y dependencias lógicas «use» y «import». Cumple la regla estricta de cero RNF.')">
+            <span class="item-title">7.1 Interconexión Educciones</span>
+            <span class="item-sub">27 Educciones en 6 paquetes funcionales</span>
+            <span class="item-tag">Módulos Funcionales (Cero RNF)</span>
           </div>
-          <div class="menu-item disabled">
-            <span class="item-title">Diagrama de Clases del Dominio</span>
-            <span class="item-sub">Entidades asistenciales, servicios y repositorios</span>
-            <span class="item-tag pending">Plantilla 3 / Hito 1</span>
+          <div class="menu-item" onclick="loadDiagram('fig3_2_vista_logica_clases_uml.html', this, 'Figura 7.2: Vista Lógica — Diagrama de Clases UML 2.5 y Modelo de Dominio', 'Modelo de dominio clínico con clases tipadas, operaciones CRUD, jerarquía de herencia Persona, relaciones de composición/agregación y mapeo a tablas TB_*.')">
+            <span class="item-title">7.2 Diagrama de Clases UML</span>
+            <span class="item-sub">Entidades del dominio, herencia y tablas TB_*</span>
+            <span class="item-tag">Modelo de Dominio UML 2.5</span>
           </div>
         </div>
       </div>
 
-      <div class="folder-group" id="group-vista-procesos">
+      <div class="folder-group open" id="group-vista-procesos">
         <div class="folder-header" onclick="toggleFolder('group-vista-procesos')">
           <div class="folder-title-row">
             <span class="folder-arrow">▼</span>
             <span class="folder-name">4. Vista de Procesos</span>
           </div>
-          <span class="folder-badge pending">Próximamente</span>
+          <span class="folder-badge">3 Diagramas</span>
         </div>
         <div class="folder-items">
-          <div class="menu-item disabled">
-            <span class="item-title">Modelo de Hilos y Concurrencia</span>
-            <span class="item-sub">Orquestación asíncrona y teleconsultas</span>
-            <span class="item-tag pending">Plantilla 4 / Hito 2</span>
+          <div class="menu-item" onclick="loadDiagram('fig4_1_vista_procesos_ila0017.html', this, 'Figura 7.1: Vista de Procesos — ILA-0017 Registro de Cita Médica (BPMN 2.0)', 'Orquestación transaccional en 5 carriles (Paciente, Admisión, Backend, PostgreSQL y Google Meet) con bloqueo pesimista anticolisión.')">
+            <span class="item-title">7.1 Proceso 01: ILA-0017 Cita Médica</span>
+            <span class="item-sub">BPMN 2.0 en Bonita BPM (5 Carriles)</span>
+            <span class="item-tag">Orquestación Transaccional</span>
+          </div>
+          <div class="menu-item" onclick="loadDiagram('fig4_2_vista_procesos_ila0062.html', this, 'Figura 7.2: Vista de Procesos — ILA-0062 Pre-Triaje Clínico y Alerta Roja (BPMN 2.0)', 'Detección automática de signos vitales pediátricos críticos, activación de Alerta Roja hospitalaria y despacho prioritario por WebSockets.')">
+            <span class="item-title">7.2 Proceso 02: ILA-0062 Alerta Roja</span>
+            <span class="item-sub">BPMN 2.0 en Bonita BPM (4 Carriles)</span>
+            <span class="item-tag">Urgencia Hospitalaria</span>
+          </div>
+          <div class="menu-item" onclick="loadDiagram('fig4_3_vista_procesos_ila0106.html', this, 'Figura 7.3: Vista de Procesos — ILA-0106 Facturación Electrónica SUNAT UBL 2.1', 'Generación de XML UBL 2.1, firma digital X.509 SHA-256, transmisión SOAP al OSE/SUNAT y recepción de Constancia de Recepción (CDR).')">
+            <span class="item-title">7.3 Proceso 03: ILA-0106 Facturación SUNAT</span>
+            <span class="item-sub">BPMN 2.0 en Bonita BPM (4 Carriles)</span>
+            <span class="item-tag">Facturación UBL 2.1</span>
           </div>
         </div>
       </div>
 
-      <div class="folder-group" id="group-vista-fisica">
+      <div class="folder-group open" id="group-vista-fisica">
         <div class="folder-header" onclick="toggleFolder('group-vista-fisica')">
           <div class="folder-title-row">
             <span class="folder-arrow">▼</span>
             <span class="folder-name">5. Vista Física</span>
           </div>
-          <span class="folder-badge pending">Próximamente</span>
+          <span class="folder-badge">1 Diagrama</span>
         </div>
         <div class="folder-items">
-          <div class="menu-item disabled">
-            <span class="item-title">Diagrama de Despliegue</span>
-            <span class="item-sub">Topología cloud, contenedores Docker y BD</span>
-            <span class="item-tag pending">Plantilla 5 / Hito 2</span>
+          <div class="menu-item" onclick="loadDiagram('fig5_1_vista_fisica_despliegue.html', this, 'Figura 7.1: Vista Física — Diagrama de Despliegue UML 2.5 (Hardware, Software y RNF)', 'Topología en 4 zonas físicas, affordance visual de dispositivos, memoria virtual pagefile.sys, puertos TCP y correspondencia 100% con RNF-0001 a RNF-0025.')">
+            <span class="item-title">7.1 Diagrama de Despliegue UML</span>
+            <span class="item-sub">Hardware, Software, pagefile.sys y RNF-0001 a RNF-0025</span>
+            <span class="item-tag">Topología Física Completa</span>
           </div>
         </div>
       </div>

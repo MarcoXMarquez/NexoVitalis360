@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Figura 7.2 - Vista de Procesos ILA-0062 | NexoVitalis360</title>
+  <style>
+    /* ============================================================
+       RESET Y ESTILOS: 100% BLANCO Y NEGRO PURO & SHARP EDGES (0px)
+       ============================================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important; /* Esquinas 100% rectas y filosas */
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #ffffff;
+      color: #000000;
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Lienzo navegable interactivo */
+    .viewport {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      cursor: grab;
+      background-color: #ffffff;
+    }
+
+    .viewport:active {
+      cursor: grabbing;
+    }
+
+    .canvas-world {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+      background-color: #ffffff;
+    }
+
+    /* BARRA DE CONTROL FLOTANTE (HUD COMPACTO EN ESQUINA SUPERIOR DERECHA) */
+    .hud-bar {
+      position: fixed;
+      top: 10px;
+      right: 16px;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1.5px solid #000000;
+      padding: 5px 12px;
+      font-family: Arial, sans-serif;
+      font-size: 11.5px;
+      box-shadow: 2px 2px 0px #000000;
+    }
+
+    .hud-status-badge {
+      background: #000000;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      padding: 3px 7px;
+      text-transform: uppercase;
+      transition: background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .hud-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-hud {
+      background: #ffffff;
+      color: #000000;
+      border: 1.5px solid #000000;
+      padding: 4px 10px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .btn-hud:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .btn-hud.btn-active {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .zoom-text {
+      font-weight: bold;
+      min-width: 44px;
+      text-align: center;
+      font-size: 11.5px;
+    }
+
+    .hud-hint {
+      font-size: 10.5px;
+      color: #666666;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+
+    /* ENCABEZADO SUPERIOR DEL DIAGRAMA */
+    .diagram-title-block {
+      position: absolute;
+      top: 20px;
+      left: 60px;
+      right: 60px;
+      text-align: center;
+      z-index: 10;
+    }
+
+    .diagram-title-block h1 {
+      font-size: 18.5px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      color: #000000;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .diagram-title-block p {
+      font-size: 11.5px;
+      font-style: italic;
+      color: #444444;
+      line-height: 1.3;
+    }
+
+    /* ESTILO BASE DE CAJAS Y TARJETAS (BOX-CARD) */
+    .box-card {
+      position: absolute;
+      border: 1.8px solid #000000;
+      background: #ffffff;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: background 0.15s ease, box-shadow 0.15s ease, border 0.15s ease;
+      z-index: 5;
+      box-sizing: border-box;
+    }
+
+    .box-card:hover {
+      background: #fafafa;
+      box-shadow: 3px 3px 0px #000000;
+    }
+
+    .box-card.focused {
+      background: #fcfcfc !important;
+      border: 2.5px solid #000000 !important;
+      box-shadow: 5px 5px 0px #000000 !important;
+      z-index: 50 !important;
+    }
+
+    .box-card.card-hub {
+      border: 2.5px solid #000000;
+      background: #fafafa;
+      box-shadow: 3px 3px 0px #000000;
+    }
+
+    .box-card.card-dashed {
+      border: 2px dashed #000000;
+      background: #ffffff;
+    }
+
+    .box-title {
+      font-weight: 800;
+      color: #000000;
+      line-height: 1.25;
+      transition: font-size 0.2s ease, margin 0.2s ease, text-align 0.2s ease;
+    }
+
+    .box-subtitle {
+      font-size: 10.5px;
+      font-weight: bold;
+      color: #333333;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 4px;
+    }
+
+    .box-tag {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 9.5px;
+      font-weight: bold;
+      background: #000000;
+      color: #ffffff;
+      padding: 2px 6px;
+      margin-bottom: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .box-content {
+      font-size: 11px;
+      line-height: 1.35;
+      color: #222222;
+      border-top: 1px solid #000000;
+      padding-top: 5px;
+      margin-top: 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      transition: opacity 0.2s ease, max-height 0.25s ease;
+    }
+
+    .box-content p, .box-content li {
+      margin: 0;
+      font-size: 10.5px;
+      line-height: 1.3;
+    }
+
+    .box-content ul {
+      list-style-type: square;
+      padding-left: 14px;
+      margin: 0;
+    }
+
+    /* TARJETA DE LEYENDA ARQUITECTÓNICA (SIEMPRE LEGIBLE Y RESALTADA) */
+    .legend-box {
+      background: #fafafa !important;
+      border: 2px solid #000000 !important;
+      box-shadow: 3px 3px 0px #000000 !important;
+      z-index: 6 !important;
+    }
+
+    .legend-box .box-title {
+      font-size: 12px !important;
+      font-weight: 900 !important;
+      text-align: left !important;
+      margin-bottom: 2px !important;
+      color: #000000 !important;
+    }
+
+    .legend-box .box-subtitle {
+      font-size: 10px !important;
+      margin-bottom: 4px !important;
+      display: block !important;
+      opacity: 1 !important;
+      color: #333333 !important;
+    }
+
+    .legend-box .box-content {
+      display: flex !important;
+      opacity: 1 !important;
+      max-height: 260px !important;
+      font-size: 10px !important;
+      gap: 2.5px !important;
+      border-top: 1px solid #000000 !important;
+      padding-top: 4px !important;
+    }
+
+    .legend-box .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1.25;
+    }
+
+    .legend-box .symbol-badge {
+      display: inline-block;
+      font-weight: 900;
+      font-family: monospace;
+      background: #ffffff;
+      border: 1px solid #000000;
+      padding: 0 4px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    /* CONTENEDORES DE ZONAS O PAQUETES (FONDO NO COLISIONANTE) */
+    .zone-container {
+      position: absolute;
+      border: 1.5px solid #000000;
+      background: #ffffff;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .zone-container.dashed {
+      border: 2px dashed #000000;
+    }
+
+    .zone-header {
+      position: absolute;
+      top: -12px;
+      left: 14px;
+      background: #000000;
+      color: #ffffff;
+      font-size: 10.5px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 2px 10px;
+    }
+
+    /* SWIMLANES BPMN */
+    .swimlane {
+      position: absolute;
+      border-top: 1.5px solid #000000;
+      border-bottom: 1.5px solid #000000;
+      background: #ffffff;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .swimlane-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 44px;
+      background: #000000;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 8px 0;
+    }
+
+    /* ETIQUETAS DE FLUJO Y CONECTORES (FLOW-PILL) */
+    .flow-pill {
+      position: absolute;
+      background: #ffffff;
+      border: 1.6px solid #000000;
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #000000;
+      white-space: nowrap;
+      transform: translate(-50%, -50%);
+      z-index: 25;
+      pointer-events: auto;
+      cursor: pointer;
+      box-shadow: 2px 2px 0px #000000;
+      line-height: 1.2;
+      letter-spacing: 0.2px;
+      transition: all 0.15s ease;
+    }
+
+    .flow-pill:hover {
+      background: #000000;
+      color: #ffffff;
+      z-index: 100;
+    }
+
+    .flow-pill .pill-core {
+      font-weight: 800;
+    }
+
+    .flow-pill .pill-detail {
+      font-weight: normal;
+      font-size: 10px;
+    }
+
+    /* COMPONENTES BPMN (EVENTOS Y COMPUERTAS) */
+    .bpmn-event {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 6;
+      cursor: pointer;
+    }
+
+    .bpmn-circle-start {
+      width: 34px;
+      height: 34px;
+      border: 2.2px solid #000000;
+      border-radius: 50% !important;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bpmn-circle-end {
+      width: 36px;
+      height: 36px;
+      border: 3.5px solid #000000;
+      border-radius: 50% !important;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bpmn-circle-end-inner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #000000;
+      border-radius: 50% !important;
+      background: #000000;
+    }
+
+    .bpmn-event-label {
+      font-size: 10.5px;
+      font-weight: bold;
+      color: #000000;
+      margin-top: 4px;
+      white-space: nowrap;
+    }
+
+    .bpmn-gateway {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      border: 2.2px solid #000000;
+      background: #ffffff;
+      transform: translate(-50%, -50%) rotate(45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 6;
+      cursor: pointer;
+    }
+
+    .bpmn-gateway-inner {
+      transform: rotate(-45deg);
+      font-size: 20px;
+      font-weight: 900;
+      color: #000000;
+      line-height: 1;
+    }
+
+    .bpmn-gateway-label {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      font-size: 10.5px;
+      font-weight: bold;
+      color: #000000;
+      white-space: nowrap;
+      background: #ffffff;
+      border: 1px solid #000000;
+      padding: 1px 5px;
+      z-index: 7;
+    }
+
+    /* CAPA SVG PARA FLECHAS Y LÍNEAS (z-index: 10 para garantizar que nada cubra las cabezas) */
+    .svg-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10; /* Renderizado por encima de los contenedores para visibilidad perfecta */
+    }
+
+    /* ETIQUETAS DE TEXTO SVG PARA MULTIPLICIDADES Y NOTACIÓN UML */
+    .svg-uml-text {
+      font-family: Arial, "Helvetica Neue", sans-serif;
+      font-size: 11px;
+      font-weight: bold;
+      fill: #000000;
+      user-select: none;
+    }
+
+    .svg-uml-meta {
+      font-family: Arial, "Helvetica Neue", sans-serif;
+      font-size: 9.5px;
+      font-style: italic;
+      fill: #333333;
+      user-select: none;
+    }
+
+    /* ============================================================
+       REGLAS ESTRICTAS DE ZOOM SEMÁNTICO (AUDITORÍA 100% PASS)
+       ============================================================ */
+    body.mode-titles-only .box-card {
+      justify-content: center !important;
+      align-items: center !important;
+      text-align: center !important;
+      padding: 8px 10px !important;
+    }
+
+    body.mode-titles-only .box-card .box-title {
+      font-size: 14px !important;
+      font-weight: 900 !important;
+      letter-spacing: 0.3px !important;
+      text-align: center !important;
+      margin: 0 !important;
+      width: 100% !important;
+      line-height: 1.25 !important;
+      text-transform: uppercase !important;
+    }
+
+    body.mode-titles-only .box-card.card-hub .box-title {
+      font-size: 16px !important;
+    }
+
+    body.mode-titles-only .box-card .box-subtitle,
+    body.mode-titles-only .box-card .box-tag,
+    body.mode-titles-only .box-card .box-content {
+      display: none !important;
+      opacity: 0 !important;
+      max-height: 0 !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      pointer-events: none !important;
+    }
+
+    body.mode-titles-only .flow-pill .pill-detail {
+      display: none !important;
+    }
+
+    body.mode-titles-only .flow-pill:hover .pill-detail {
+      display: inline !important;
+    }
+
+    /* EXCEPCIÓN: La tarjeta de leyenda permanece siempre legible para orientar al observador */
+    body.mode-titles-only .legend-box {
+      justify-content: flex-start !important;
+      align-items: stretch !important;
+      text-align: left !important;
+    }
+
+    body.mode-titles-only .legend-box .box-title {
+      font-size: 12px !important;
+      text-align: left !important;
+      margin-bottom: 2px !important;
+      text-transform: uppercase !important;
+    }
+
+    body.mode-titles-only .legend-box .box-subtitle {
+      display: block !important;
+      opacity: 1 !important;
+      max-height: 40px !important;
+      margin-bottom: 4px !important;
+    }
+
+    body.mode-titles-only .legend-box .box-content {
+      display: flex !important;
+      opacity: 1 !important;
+      max-height: 260px !important;
+      overflow: visible !important;
+      pointer-events: auto !important;
+      border-top: 1px solid #000000 !important;
+      padding-top: 4px !important;
+    }
+
+    /* NODO CON FOCO (CLICK EN MODO GENERAL): Revela sus detalles sin alterar los demás */
+    body.mode-titles-only .box-card.focused {
+      justify-content: flex-start !important;
+      align-items: stretch !important;
+      text-align: left !important;
+      padding: 10px 12px !important;
+      background: #fcfcfc !important;
+      box-shadow: 5px 5px 0px #000000 !important;
+      z-index: 50 !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-title {
+      font-size: 13.5px !important;
+      font-weight: 800 !important;
+      text-align: left !important;
+      margin-bottom: 3px !important;
+      width: auto !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-subtitle {
+      display: block !important;
+      opacity: 1 !important;
+      max-height: 40px !important;
+      margin-bottom: 4px !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-tag {
+      display: inline-block !important;
+      opacity: 1 !important;
+      margin-bottom: 4px !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-content {
+      display: flex !important;
+      opacity: 1 !important;
+      max-height: 450px !important;
+      overflow: visible !important;
+      pointer-events: auto !important;
+      border-top: 1px solid #000000 !important;
+      padding-top: 4px !important;
+    }
+
+    /* MODO DETALLE (CON ZOOM O FORZADO) */
+    body.mode-details-visible .box-card {
+      justify-content: flex-start;
+      align-items: stretch;
+      text-align: left;
+      padding: 10px 12px;
+    }
+
+    body.mode-details-visible .box-card .box-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      text-align: left;
+      margin-bottom: 3px;
+      line-height: 1.25;
+    }
+
+    body.mode-details-visible .box-card .box-subtitle {
+      display: block;
+      opacity: 1;
+    }
+
+    body.mode-details-visible .box-card .box-tag {
+      display: inline-block;
+      opacity: 1;
+    }
+
+    body.mode-details-visible .box-card .box-content {
+      display: flex;
+      opacity: 1;
+      max-height: 480px;
+      overflow: visible;
+      pointer-events: auto;
+    }
+
+    body.mode-details-visible .flow-pill .pill-detail {
+      display: inline !important;
+    }
+
+    /* MODAL DE RENDER PNG 300-DPI (MODO DUAL-VIEW) */
+    .image-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 3000;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .image-modal.open {
+      display: flex;
+    }
+
+    .image-modal-content {
+      position: relative;
+      background: #ffffff;
+      border: 2px solid #000000;
+      box-shadow: 6px 6px 0px #000000;
+      max-width: 95vw;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .image-modal-header {
+      background: #000000;
+      color: #ffffff;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .btn-close-modal {
+      background: #ffffff;
+      color: #000000;
+      border: 1px solid #ffffff;
+      font-weight: bold;
+      padding: 2px 8px;
+      cursor: pointer;
+    }
+
+    .btn-close-modal:hover {
+      background: #ff0000;
+      color: #ffffff;
+      border-color: #ff0000;
+    }
+
+    .image-modal-body {
+      overflow: auto;
+      padding: 12px;
+      background: #ffffff;
+      text-align: center;
+    }
+
+    .image-modal-body img {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #000000;
+    }
+  </style>
+</head>
+<body class="mode-titles-only">
+
+  <!-- BARRA DE CONTROL FLOTANTE (HUD COMPACTO) -->
+  <header class="hud-bar">
+    <span class="hud-status-badge" id="statusBadge">SOLO TÍTULOS</span>
+    <span class="hud-hint">Arrastrar: Pan | Rueda: Zoom</span>
+    <div class="hud-controls">
+      <button class="btn-hud" id="btnZoomOut">− Zoom</button>
+      <span class="zoom-text" id="zoomText">100%</span>
+      <button class="btn-hud" id="btnZoomIn">+ Zoom</button>
+      <button class="btn-hud" id="btnFit">Ajustar</button>
+      <button class="btn-hud" id="btnReset">Reset</button>
+      <button class="btn-hud" id="btnToggleMode">Modo: AUTO</button>
+      <button class="btn-hud" id="btnToggleImage" title="Ver render oficial 300 DPI">Render PNG 300-DPI</button>
+    </div>
+  </header>
+
+  <!-- MODAL DE VISUALIZACIÓN DE RENDER EN ALTA DEFINICIÓN (DUAL-VIEW) -->
+  <div class="image-modal" id="imageModal">
+    <div class="image-modal-content">
+      <div class="image-modal-header">
+        <span>RENDER OFICIAL 300-DPI — Figura 7.2 - Vista de Procesos ILA-0062</span>
+        <button class="btn-close-modal" id="btnCloseModal">✕ Cerrar</button>
+      </div>
+      <div class="image-modal-body">
+        <img src="fig4_2_vista_procesos_ila0062.png" alt="Render Oficial 300 DPI - Figura 7.2 - Vista de Procesos ILA-0062" />
+      </div>
+    </div>
+  </div>
+
+  <div class="viewport" id="viewport">
+    <div class="canvas-world" id="canvasWorld" style="width: 2360px; height: 1350px;">
+
+      <!-- ENCABEZADO SUPERIOR DEL DIAGRAMA -->
+      <div class="diagram-title-block">
+        <h1>SISTEMA NEXOVITALIS360 — VISTA DE PROCESOS: PROCESO 02 (ILA-0062 PRE-TRIAJE Y ALERTA ROJA)</h1>
+        <p>Diagrama BPMN 2.0 en Bonita BPM con Clasificación Automática de Signos Vitales, Disparo de Alerta Roja Hospitalaria y Notificación Prioritaria al Médico de Guardia</p>
+      </div>
+
+      <!-- CAPA SVG DE CONEXIONES Y FLECHAS (z-index: 10 para cero superposición de cajas) -->
+      <svg class="svg-layer" width="2360" height="1350">
+        <defs>
+          <!-- Flecha Sólida Estándar -->
+          <marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto">
+            <path d="M 1 2 L 11 6 L 1 10 z" fill="#000000" />
+          </marker>
+          
+          <!-- Flecha de Triángulo Hueco Blanco (Generalización / Herencia UML) -->
+          <marker id="uml-generalization" viewBox="0 0 16 14" refX="15" refY="7" markerWidth="14" markerHeight="12" orient="auto">
+            <polygon points="1,2 14,7 1,12" fill="#ffffff" stroke="#000000" stroke-width="2.0" />
+          </marker>
+
+          <!-- Rombo Relleno Negro (Composición Fuerte UML) -->
+          <marker id="diamond-filled" viewBox="0 0 16 10" refX="0" refY="5" markerWidth="14" markerHeight="9" orient="auto">
+            <polygon points="0,5 7,1 14,5 7,9" fill="#000000" stroke="#000000" stroke-width="1.2" />
+          </marker>
+
+          <!-- Rombo Hueco Blanco (Agregación Débil UML) -->
+          <marker id="diamond-hollow" viewBox="0 0 16 10" refX="0" refY="5" markerWidth="14" markerHeight="9" orient="auto">
+            <polygon points="0,5 7,1 14,5 7,9" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+          </marker>
+
+          <!-- Flecha Abierta de Dependencia -->
+          <marker id="dependency-arrow" viewBox="0 0 12 10" refX="11" refY="5" markerWidth="10" markerHeight="8" orient="auto">
+            <path d="M 1 1.5 L 10 5 L 1 8.5" fill="none" stroke="#000000" stroke-width="2.2" stroke-linecap="square" />
+          </marker>
+        </defs>
+
+        
+      <line x1="125" y1="245" x2="160" y2="245" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow)" />
+      
+      <!-- Task 1 a Task 2 -->
+      <path d="M 400 245 L 430 245 L 430 495 L 460 495" fill="none" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow)" />
+      
+      <!-- Task 2 a Gateway XOR -->
+      <line x1="710" y1="495" x2="748" y2="495" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow)" />
+
+      <!-- Gateway XOR a Alerta Roja (Rama SÍ) -->
+      <line x1="792" y1="495" x2="880" y2="495" stroke="#000000" stroke-width="2.6" marker-end="url(#arrow)" />
+
+      <!-- Gateway XOR a Prioridad Estándar (Rama NO) -->
+      <path d="M 770 517 L 770 615 L 880 615" fill="none" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow)" />
+
+      <!-- Alerta Roja a WebSocket -->
+      <path d="M 1005 560 L 1005 1075 L 1200 1075" fill="none" stroke="#000000" stroke-width="2.4" marker-end="url(#arrow)" />
+
+      <!-- WebSocket a Interrupción Médico -->
+      <path d="M 1460 1075 L 1495 1075 L 1495 785 L 1530 785" fill="none" stroke="#000000" stroke-width="2.4" marker-end="url(#arrow)" />
+
+      <!-- Prioridad Estándar a Sala de Espera -->
+      <path d="M 1130 615 L 1165 615 L 1165 242 L 1200 242" fill="none" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow)" />
+
+      <!-- Interrupción Médico a Persistencia TB_PRETRIAJE -->
+      <path d="M 1790 785 L 1825 785 L 1825 495 L 1860 495" fill="none" stroke="#000000" stroke-width="2.4" marker-end="url(#arrow)" />
+
+      <!-- Sala de Espera a Persistencia -->
+      <path d="M 1440 242 L 1825 242 L 1825 495" fill="none" stroke="#000000" stroke-width="2.0" />
+
+      <!-- Persistencia a Fin -->
+      <line x1="2100" y1="495" x2="2162" y2="495" stroke="#000000" stroke-width="2.4" marker-end="url(#arrow)" />
+    
+      </svg>
+
+      <!-- ELEMENTOS DOM DEL DIAGRAMA (ZONAS, CARDS, PILLS, LEYENDAS) -->
+      
+      <!-- SWIMLANES BPMN (4 CARRILES) -->
+      <div class="swimlane" style="left: 60px; top: 120px; width: 2240px; height: 250px;">
+        <div class="swimlane-header">ENFERMERÍA / TRIAJE</div>
+      </div>
+      <div class="swimlane" style="left: 60px; top: 380px; width: 2240px; height: 290px;">
+        <div class="swimlane-header">MOTOR DE REGLAS CLÍNICAS</div>
+      </div>
+      <div class="swimlane" style="left: 60px; top: 680px; width: 2240px; height: 270px;">
+        <div class="swimlane-header">MÉDICO ESPECIALISTA / GUARDIA</div>
+      </div>
+      <div class="swimlane" style="left: 60px; top: 960px; width: 2240px; height: 280px;">
+        <div class="swimlane-header">SERVICIO DE ALERTAS WEBSOCKET</div>
+      </div>
+
+      <!-- EVENTO INICIO -->
+      <div class="bpmn-event" style="left: 105px; top: 245px;">
+        <div class="bpmn-circle-start"></div>
+        <span class="bpmn-event-label">Paciente en Triaje</span>
+      </div>
+
+      <div class="box-card" style="left: 160px; top: 180px; width: 240px; height: 130px;">
+        <span class="box-tag">Paso 1 &bull; Tablet</span>
+        <div class="box-title">Registrar Signos Vitales Pediátricos</div>
+        <div class="box-subtitle">Lane: Enfermería</div>
+        <div class="box-content">
+          <p>Medición y registro de SpO2, Frecuencia Cardíaca, Frecuencia Respiratoria, Temperatura y GCS.</p>
+        </div>
+      </div>
+
+      <!-- LEYENDA BPMN EN CARRIL 1 (ESPACIO CENTRAL) -->
+      <div class="box-card legend-box" style="left: 450px; top: 175px; width: 500px; height: 140px;">
+        <span class="box-tag">«legend» NOTACIÓN BPMN 2.0</span>
+        <div class="box-title">Leyenda de Protocolo de Triaje y Alertas</div>
+        <div class="box-subtitle">Detección Crítica y Despacho Hospitalario</div>
+        <div class="box-content">
+          <div class="legend-item"><span class="symbol-badge">○ / ◎</span> <strong>Inicio / Fin:</strong> Entrada a triaje y finalización con registro en HC.</div>
+          <div class="legend-item"><span class="symbol-badge">◇ [X]</span> <strong>Compuerta Exclusiva:</strong> Decisión según rango de signos vitales.</div>
+          <div class="legend-item"><span class="symbol-badge">────&gt;</span> <strong>Flujo de Control:</strong> Despacho asíncrono hacia consolas médicas.</div>
+        </div>
+      </div>
+
+      <div class="box-card card-hub" style="left: 460px; top: 430px; width: 250px; height: 130px;">
+        <span class="box-tag">Paso 2 &bull; Drools Engine</span>
+        <div class="box-title">Evaluar Reglas y Cribado Clínico</div>
+        <div class="box-subtitle">Lane: Motor Clínico</div>
+        <div class="box-content">
+          <p>Comparación automatizada de los valores contra tablas percentiladas pediátricas y umbrales de shock.</p>
+        </div>
+      </div>
+
+      <!-- COMPUERTA XOR RANGO CRÍTICO -->
+      <div class="bpmn-gateway" style="left: 770px; top: 495px;">
+        <span class="bpmn-gateway-inner">✕</span>
+      </div>
+      <div class="bpmn-gateway-label" style="left: 770px; top: 535px;">¿Signo Crítico?</div>
+
+      <!-- RAMA ALERTA ROJA -->
+      <div class="box-card card-hub" style="left: 880px; top: 430px; width: 250px; height: 130px;">
+        <span class="box-tag">Paso 3 &bull; ALERTA ROJA</span>
+        <div class="box-title">Clasificar PRIORIDAD I - CÓDIGO ROJO</div>
+        <div class="box-subtitle">Lane: Motor Clínico</div>
+        <div class="box-content">
+          <p>Detección de SpO2 &lt; 90%, Temp &gt; 39.5°C o convulsión activa; se inicia protocolo de trauma/reanimación.</p>
+        </div>
+      </div>
+
+      <!-- RAMA ESTÁNDAR -->
+      <div class="box-card" style="left: 880px; top: 575px; width: 250px; height: 80px;">
+        <span class="box-tag">Paso 3B &bull; Estándar</span>
+        <div class="box-title">Clasificar Prioridad II / Verde</div>
+        <div class="box-subtitle">Lane: Motor Clínico</div>
+        <div class="box-content">
+          <p>Signos estables dentro de parámetros normales para la edad.</p>
+        </div>
+      </div>
+
+      <div class="box-card" style="left: 1200px; top: 180px; width: 240px; height: 125px;">
+        <span class="box-tag">Paso 4B &bull; Sala</span>
+        <div class="box-title">Asignar Sala de Espera Regular</div>
+        <div class="box-subtitle">Lane: Enfermería</div>
+        <div class="box-content">
+          <p>Paciente aguarda llamado según orden correlativo de cita programada.</p>
+        </div>
+      </div>
+
+      <div class="box-card card-hub" style="left: 1200px; top: 1010px; width: 260px; height: 130px;">
+        <span class="box-tag">Paso 4 &bull; Push/WebSocket</span>
+        <div class="box-title">Disparar Alarma Sonora y WebSocket</div>
+        <div class="box-subtitle">Lane: Servidor de Eventos</div>
+        <div class="box-content">
+          <p>Transmisión de evento STOMP prioritario hacia todas las consolas médicas conectadas en consultorios.</p>
+        </div>
+      </div>
+
+      <div class="box-card" style="left: 1530px; top: 720px; width: 260px; height: 130px;">
+        <span class="box-tag">Paso 5 &bull; Médico</span>
+        <div class="box-title">Interrupción Prioritaria y Recepción</div>
+        <div class="box-subtitle">Lane: Médico Guardia</div>
+        <div class="box-content">
+          <p>Médico confirma recepción de alerta roja y prepara box de atención inmediata para el paciente.</p>
+        </div>
+      </div>
+
+      <div class="box-card" style="left: 1860px; top: 430px; width: 240px; height: 130px;">
+        <span class="box-tag">Paso 6 &bull; Persistencia</span>
+        <div class="box-title">Persistir Pre-Triaje en TB_PRETRIAJE</div>
+        <div class="box-subtitle">Lane: Motor Clínico</div>
+        <div class="box-content">
+          <p>Inyección inmutable de signos vitales y código de alerta en la Historia Clínica del menor.</p>
+        </div>
+      </div>
+
+      <!-- EVENTO FIN -->
+      <div class="bpmn-event" style="left: 2180px; top: 495px;">
+        <div class="bpmn-circle-end">
+          <div class="bpmn-circle-end-inner"></div>
+        </div>
+        <span class="bpmn-event-label">Protocolo Activado</span>
+      </div>
+
+      <!-- PÍLDORAS -->
+      <div class="flow-pill" style="left: 835px; top: 475px;">
+        <span class="pill-core">[Sí]</span> <span class="pill-detail">Alerta Roja</span>
+      </div>
+      <div class="flow-pill" style="left: 835px; top: 595px;">
+        <span class="pill-core">[No]</span> <span class="pill-detail">Estable</span>
+      </div>
+    
+
+    </div>
+  </div>
+
+  <script>
+  const CANVAS_W = 2360;
+  const CANVAS_H = 1350;
+  const viewport = document.getElementById('viewport');
+  const canvasWorld = document.getElementById('canvasWorld');
+  const zoomText = document.getElementById('zoomText');
+  const statusBadge = document.getElementById('statusBadge');
+  const btnToggleMode = document.getElementById('btnToggleMode');
+  const btnToggleImage = document.getElementById('btnToggleImage');
+  const imageModal = document.getElementById('imageModal');
+  const btnCloseModal = document.getElementById('btnCloseModal');
+
+  let scale = 1.0;
+  let initialFitScale = 1.0;
+  let panX = 0;
+  let panY = 0;
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+  let userMode = 'auto'; // 'auto' o 'details'
+
+  function applyTransform() {
+    canvasWorld.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+    zoomText.textContent = Math.round(scale * 100) + '%';
+  }
+
+  function updateSemanticZoom() {
+    if (userMode === 'details') {
+      document.body.className = 'mode-details-visible';
+      statusBadge.textContent = 'SIEMPRE DETALLES';
+      statusBadge.style.background = '#000000';
+      return;
+    }
+
+    const ratio = scale / initialFitScale;
+    if (ratio >= 1.18) {
+      document.body.className = 'mode-details-visible';
+      statusBadge.textContent = 'DETALLE VISIBLE';
+      statusBadge.style.background = '#333333';
+    } else {
+      document.body.className = 'mode-titles-only';
+      statusBadge.textContent = 'SOLO TÍTULOS';
+      statusBadge.style.background = '#000000';
+    }
+  }
+
+  function fitToScreen() {
+    const vpW = window.innerWidth;
+    const vpH = window.innerHeight;
+    const availW = vpW - 80;
+    const availH = vpH - 110;
+
+    const scaleW = availW / CANVAS_W;
+    const scaleH = availH / CANVAS_H;
+    let bestScale = Math.min(scaleW, scaleH);
+
+    if (bestScale > 1.25) bestScale = 1.25;
+    if (bestScale < 0.25) bestScale = 0.25;
+
+    scale = bestScale;
+    initialFitScale = bestScale;
+
+    panX = (vpW - (CANVAS_W * scale)) / 2;
+    panY = Math.max(10, (vpH - (CANVAS_H * scale)) / 2);
+
+    applyTransform();
+    updateSemanticZoom();
+  }
+
+  function zoomAtPoint(factor, clientX, clientY) {
+    const oldScale = scale;
+    let newScale = scale * factor;
+
+    if (newScale < 0.20) newScale = 0.20;
+    if (newScale > 3.00) newScale = 3.00;
+    if (newScale === oldScale) return;
+
+    const originX = (clientX - panX) / oldScale;
+    const originY = (clientY - panY) / oldScale;
+
+    panX = clientX - originX * newScale;
+    panY = clientY - originY * newScale;
+    scale = newScale;
+
+    applyTransform();
+    updateSemanticZoom();
+  }
+
+  // EVENTOS DE NAVEGACIÓN Y ARRASTRE
+  viewport.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.hud-bar') || e.target.closest('.image-modal')) return;
+    isDragging = true;
+    startX = e.clientX - panX;
+    startY = e.clientY - panY;
+    viewport.style.cursor = 'grabbing';
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    panX = e.clientX - startX;
+    panY = e.clientY - startY;
+    applyTransform();
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      viewport.style.cursor = 'grab';
+    }
+  });
+
+  viewport.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const factor = e.deltaY < 0 ? 1.12 : 0.89;
+    zoomAtPoint(factor, e.clientX, e.clientY);
+  }, { passive: false });
+
+  // BOTONES DEL HUD
+  document.getElementById('btnZoomIn').addEventListener('click', () => {
+    zoomAtPoint(1.20, window.innerWidth / 2, window.innerHeight / 2);
+  });
+
+  document.getElementById('btnZoomOut').addEventListener('click', () => {
+    zoomAtPoint(0.83, window.innerWidth / 2, window.innerHeight / 2);
+  });
+
+  document.getElementById('btnFit').addEventListener('click', fitToScreen);
+
+  document.getElementById('btnReset').addEventListener('click', () => {
+    scale = 1.0;
+    panX = (window.innerWidth - CANVAS_W) / 2;
+    panY = Math.max(12, (window.innerHeight - CANVAS_H) / 2);
+    applyTransform();
+    updateSemanticZoom();
+  });
+
+  btnToggleMode.addEventListener('click', () => {
+    if (userMode === 'auto') {
+      userMode = 'details';
+      btnToggleMode.textContent = 'Modo: SIEMPRE DETALLES';
+      btnToggleMode.classList.add('btn-active');
+    } else {
+      userMode = 'auto';
+      btnToggleMode.textContent = 'Modo: AUTO (Semántico)';
+      btnToggleMode.classList.remove('btn-active');
+    }
+    updateSemanticZoom();
+  });
+
+  // MODAL DE RENDER OFICIAL EN ALTA DEFINICIÓN (300 DPI)
+  btnToggleImage.addEventListener('click', () => {
+    imageModal.classList.add('open');
+  });
+
+  btnCloseModal.addEventListener('click', () => {
+    imageModal.classList.remove('open');
+  });
+
+  imageModal.addEventListener('click', (e) => {
+    if (e.target === imageModal) {
+      imageModal.classList.remove('open');
+    }
+  });
+
+  // CLIC EN CUALQUIER CAJA PARA CENTRAR Y ENFOCAR
+  document.querySelectorAll('.box-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.querySelectorAll('.box-card').forEach(c => c.classList.remove('focused'));
+      card.classList.add('focused');
+
+      const left = parseFloat(card.style.left);
+      const top = parseFloat(card.style.top);
+      const width = parseFloat(card.style.width || card.offsetWidth);
+      const height = parseFloat(card.style.height || card.offsetHeight);
+
+      const targetScale = Math.max(scale, 1.15);
+      scale = targetScale;
+      panX = (window.innerWidth / 2) - (left + width / 2) * scale;
+      panY = (window.innerHeight / 2) - (top + height / 2) * scale;
+
+      applyTransform();
+      updateSemanticZoom();
+    });
+  });
+
+  // CLIC EN EL FONDO DESENFOCA
+  viewport.addEventListener('click', (e) => {
+    if (!e.target.closest('.box-card') && !e.target.closest('.hud-bar')) {
+      document.querySelectorAll('.box-card').forEach(c => c.classList.remove('focused'));
+    }
+  });
+
+  // TECLAS RÁPIDAS
+  window.addEventListener('keydown', (e) => {
+    if (e.key === '+' || e.key === '=') {
+      zoomAtPoint(1.20, window.innerWidth / 2, window.innerHeight / 2);
+    } else if (e.key === '-') {
+      zoomAtPoint(0.83, window.innerWidth / 2, window.innerHeight / 2);
+    } else if (e.key === '0') {
+      fitToScreen();
+    } else if (e.key === 'Escape') {
+      if (imageModal.classList.contains('open')) {
+        imageModal.classList.remove('open');
+      } else {
+        document.querySelectorAll('.box-card').forEach(c => c.classList.remove('focused'));
+        fitToScreen();
+      }
+    }
+  });
+
+  window.addEventListener('resize', fitToScreen);
+  window.addEventListener('DOMContentLoaded', fitToScreen);
+  </script>
+</body>
+</html>

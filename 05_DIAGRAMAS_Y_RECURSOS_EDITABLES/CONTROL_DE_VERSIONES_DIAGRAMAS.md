@@ -81,3 +81,14 @@ La carpeta se encuentra organizada en subdirectorios correspondientes a las **8 
    - En `v00.10`, las actividades de pretriaje y liquidación estaban fragmentadas. En `v00.20`, se integraron sistémicamente como flujos correlativos (F2, F8, F10, F28) en el **Diagrama de Bloques Funcionales Nivel 1 (Figura 7.3)**.
 2. **Estandarización Notacional:**
    - La versión `v00.20` adopta estrictamente la notación UML 2.5 y diagramas de bloques formales con esquinas filosas (*sharp edges*), grosor vectorial de 2.8px y eliminación de elementos extra-estándar en el lienzo.
+
+## Entrega Hito 2: Vistas Lógica, Procesos y Física (v01.00)
+
+| Código | Diagrama Oficial | Archivo HTML Interactivo | Archivo PNG 300 DPI | Cobertura Formal |
+| :--- | :--- | :--- | :--- | :--- |
+| **FIG-3.1** | Vista Lógica: Interconexión Modular | `fig3_1_vista_logica_educciones.html` | `Figura_3_1_Vista_Logica_Educciones_v01.00.png` | 27 Educciones (EDU-0008 a EDU-0038) en 6 Paquetes (Cero RNF) |
+| **FIG-3.2** | Vista Lógica: Clases UML 2.5 | `fig3_2_vista_logica_clases_uml.html` | `Figura_3_2_Vista_Logica_Clases_UML_v01.00.png` | Dominio Clínico, Herencia Persona, Composición y Tablas TB_* |
+| **FIG-4.1** | Vista Procesos: ILA-0017 Cita Médica | `fig4_1_vista_procesos_ila0017.html` | `Figura_4_1_Vista_Procesos_ILA0017_v01.00.png` | BPMN 2.0 en Bonita BPM, 5 Carriles y Lock Pesimista |
+| **FIG-4.2** | Vista Procesos: ILA-0062 Alerta Roja | `fig4_2_vista_procesos_ila0062.html` | `Figura_4_2_Vista_Procesos_ILA0062_v01.00.png` | BPMN 2.0 en Bonita BPM, 4 Carriles y WebSockets |
+| **FIG-4.3** | Vista Procesos: ILA-0106 Facturación | `fig4_3_vista_procesos_ila0106.html` | `Figura_4_3_Vista_Procesos_ILA0106_v01.00.png` | BPMN 2.0 en Bonita BPM, XML UBL 2.1, Firma X.509 y CDR |
+| **FIG-5.1** | Vista Física: Despliegue UML | `fig5_1_vista_fisica_despliegue.html` | `Figura_5_1_Vista_Fisica_Despliegue_v01.00.png` | 4 Zonas Físicas, pagefile.sys, Puertos y RNF-0001 a RNF-0025 |

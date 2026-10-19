@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fig 7.5 - Secuencia de Arquitectura | NexoVitalis360</title>
+  <style>
+    
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important; /* Esquinas 100% rectas y filosas */
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #ffffff;
+      color: #000000;
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Lienzo navegable interactivo */
+    .viewport {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      cursor: grab;
+      background-color: #ffffff;
+    }
+
+    .viewport:active {
+      cursor: grabbing;
+    }
+
+    .canvas-world {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+      background-color: #ffffff;
+    }
+
+    /* BARRA DE CONTROL SUPERIOR (HUD MINIMALISTA B&W) */
+    /* BARRA DE CONTROL FLOTANTE (HUD COMPACTO EN ESQUINA SUPERIOR DERECHA) */
+    .hud-bar {
+      position: fixed;
+      top: 10px;
+      right: 16px;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1.5px solid #000000;
+      padding: 5px 12px;
+      font-family: Arial, sans-serif;
+      font-size: 11.5px;
+      box-shadow: 2px 2px 0px #000000;
+    }
+
+    .hud-status-badge {
+      background: #000000;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      padding: 3px 7px;
+      text-transform: uppercase;
+      transition: background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .hud-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-hud {
+      background: #ffffff;
+      color: #000000;
+      border: 1.5px solid #000000;
+      padding: 4px 10px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .btn-hud:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .zoom-text {
+      font-weight: bold;
+      min-width: 44px;
+      text-align: center;
+      font-size: 11.5px;
+    }
+
+    .hud-hint {
+      font-size: 10.5px;
+      color: #666666;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+
+    /* ESTILO BASE DE CAJAS Y TARJETAS */
+    .box-card {
+      position: absolute;
+      border: 1.8px solid #000000;
+      background: #ffffff;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: background 0.15s ease, box-shadow 0.15s ease, border 0.15s ease;
+      z-index: 5;
+      box-sizing: border-box;
+    }
+
+    .box-card:hover {
+      background: #fafafa;
+      box-shadow: 3px 3px 0px #000000;
+    }
+
+    .box-card.focused {
+      background: #fcfcfc !important;
+      border: 2.5px solid #000000 !important;
+      box-shadow: 5px 5px 0px #000000 !important;
+      z-index: 50 !important;
+    }
+
+    .box-card.card-hub {
+      border: 2.5px solid #000000;
+      background: #fafafa;
+      box-shadow: 3px 3px 0px #000000;
+    }
+
+    .box-card.card-ext {
+      border: 1.8px solid #000000;
+      background: #ffffff;
+    }
+
+    .box-card.card-dashed {
+      border: 2px dashed #000000;
+      background: #ffffff;
+    }
+
+    .box-title {
+      font-weight: 800;
+      color: #000000;
+      line-height: 1.25;
+      transition: font-size 0.2s ease, margin 0.2s ease, text-align 0.2s ease;
+    }
+
+    .box-subtitle {
+      font-size: 10.5px;
+      font-weight: bold;
+      color: #333333;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 6px;
+    }
+
+    .box-tag {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 9.5px;
+      font-weight: bold;
+      background: #000000;
+      color: #ffffff;
+      padding: 2px 6px;
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    .box-content {
+      font-size: 11px;
+      line-height: 1.35;
+      color: #222222;
+      border-top: 1px solid #000000;
+      padding-top: 6px;
+      margin-top: 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: opacity 0.2s ease, max-height 0.25s ease;
+    }
+
+    .box-content p {
+      margin: 0;
+    }
+
+    /* ETIQUETAS DE FLECHAS Y CONECTORES CON REVELACIÓN PROGRESIVA */
+    .flow-pill {
+      position: absolute;
+      background: #ffffff;
+      border: 1.6px solid #000000;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #000000;
+      white-space: nowrap;
+      transform: translate(-50%, -50%);
+      z-index: 15;
+      pointer-events: auto;
+      cursor: pointer;
+      box-shadow: 2px 2px 0px #000000;
+      line-height: 1.25;
+      letter-spacing: 0.2px;
+      transition: all 0.15s ease;
+    }
+
+    .flow-pill:hover {
+      background: #000000;
+      color: #ffffff;
+      z-index: 100;
+      box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.5);
+    }
+
+    .flow-pill .pill-core {
+      font-weight: 800;
+    }
+
+    .flow-pill .pill-detail {
+      font-weight: normal;
+      font-size: 11px;
+    }
+
+    /* 1. MODO GENERAL (SIN ZOOM / VISTA MACRO - mode-titles-only): Muestra solo lo esencial */
+    body.mode-titles-only .flow-pill {
+      font-size: 12.5px !important;
+      font-weight: 800 !important;
+      padding: 3px 8px !important;
+      border: 1.8px solid #000000 !important;
+      box-shadow: 2px 2px 0px #000000 !important;
+    }
+
+    body.mode-titles-only .flow-pill .pill-detail {
+      display: none !important;
+    }
+
+    body.mode-titles-only .flow-pill:hover .pill-detail {
+      display: inline !important;
+      color: #ffffff !important;
+    }
+
+    /* 3. MODO DETALLE (CON ZOOM >= 0.82 O MODO FORZADO - mode-details-visible): Muestra todo */
+    body.mode-details-visible .flow-pill {
+      font-size: 12px;
+      padding: 3px 9px;
+    }
+
+    body.mode-details-visible .flow-pill .pill-detail {
+      display: inline !important;
+      color: #333333;
+    }
+
+    /* CÍRCULOS DE ESTADO UML */
+    .uml-state-circle {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transform: translate(-50%, -50%);
+      z-index: 6;
+      cursor: pointer;
+    }
+
+    .circle-initial {
+      width: 32px;
+      height: 32px;
+      background: #000000;
+      border-radius: 50% !important;
+      margin-bottom: 6px;
+    }
+
+    .circle-final-outer {
+      width: 36px;
+      height: 36px;
+      border: 2.2px solid #000000;
+      border-radius: 50% !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .circle-final-inner {
+      width: 22px;
+      height: 22px;
+      background: #000000;
+      border-radius: 50% !important;
+    }
+
+    .circle-label {
+      font-size: 11.5px;
+      font-weight: bold;
+      color: #000000;
+      white-space: nowrap;
+    }
+
+    .circle-sub {
+      font-size: 10px;
+      font-style: italic;
+      color: #444444;
+      white-space: nowrap;
+    }
+
+    /* BARRAS DE ACTIVACIÓN UML (SECUENCIA) */
+    .activation-bar {
+      position: absolute;
+      width: 16px;
+      border: 1.8px solid #000000;
+      background: #ffffff;
+      transform: translateX(-50%);
+      z-index: 4;
+    }
+
+    /* CAPA SVG */
+    .svg-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* LÍNEAS DE VIDA (SECUENCIA) */
+    .lifeline-line {
+      stroke: #333333;
+      stroke-width: 2.0;
+      stroke-dasharray: 6, 5;
+    }
+
+    /* FLECHAS DIRECTAS Y RETORNOS REFORZADOS */
+    .msg-arrow-call {
+      stroke: #000000;
+      stroke-width: 2.8;
+      fill: none;
+    }
+
+    .msg-arrow-return {
+      stroke: #000000;
+      stroke-width: 2.2;
+      stroke-dasharray: 7, 4;
+      fill: none;
+    }
+
+    /* ========================================================= */
+    /* SEMANTIC ZOOM AVANZADO: MODO VISTA GENERAL VS MODO DETALLE */
+    /* ========================================================= */
+
+    /* 1. MODO GENERAL (SIN ZOOM / VISTA MACRO - mode-titles-only) */
+    body.mode-titles-only .box-card {
+      justify-content: center !important;
+      align-items: center !important;
+      text-align: center !important;
+      padding: 10px 14px !important;
+    }
+
+    body.mode-titles-only .box-card .box-title {
+      font-size: 19px !important;
+      font-weight: 900 !important;
+      letter-spacing: 0.5px !important;
+      text-align: center !important;
+      margin: 0 !important;
+      width: 100% !important;
+      line-height: 1.25 !important;
+      text-transform: uppercase !important;
+    }
+
+    body.mode-titles-only .box-card.card-hub .box-title {
+      font-size: 23px !important;
+      letter-spacing: 0.8px !important;
+    }
+
+    body.mode-titles-only .box-card .box-subtitle,
+    body.mode-titles-only .box-card .box-tag,
+    body.mode-titles-only .box-card .box-content {
+      display: none !important;
+      opacity: 0 !important;
+      max-height: 0 !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      pointer-events: none !important;
+    }
+
+    body.mode-titles-only .box-card.card-dashed .box-title {
+      font-size: 13px !important;
+    }
+
+    /* 2. NODO CON FOCO (CLICK EN MODO GENERAL): Revela sus detalles sin alterar los demás */
+    body.mode-titles-only .box-card.focused {
+      justify-content: flex-start !important;
+      align-items: stretch !important;
+      text-align: left !important;
+      padding: 12px 14px !important;
+      background: #fcfcfc !important;
+      box-shadow: 5px 5px 0px #000000 !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-title {
+      font-size: 13.5px !important;
+      font-weight: 800 !important;
+      text-align: left !important;
+      margin-bottom: 3px !important;
+      width: auto !important;
+    }
+
+    body.mode-titles-only .box-card.focused.card-hub .box-title {
+      font-size: 15px !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-subtitle {
+      display: block !important;
+      opacity: 1 !important;
+      max-height: 40px !important;
+      margin-bottom: 6px !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-tag {
+      display: inline-block !important;
+      opacity: 1 !important;
+      margin-bottom: 6px !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-content {
+      display: flex !important;
+      opacity: 1 !important;
+      max-height: 450px !important;
+      border-top: 1px solid #000000 !important;
+      padding-top: 6px !important;
+      margin-top: 2px !important;
+      pointer-events: auto !important;
+    }
+
+    /* 3. MODO DETALLE (CON ZOOM >= 0.85 O MODO FORZADO - mode-details-visible) */
+    body.mode-details-visible .box-card {
+      justify-content: flex-start;
+      align-items: stretch;
+      text-align: left;
+      padding: 12px 14px;
+    }
+
+    body.mode-details-visible .box-card .box-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      text-align: left;
+      margin-bottom: 3px;
+    }
+
+    body.mode-details-visible .box-card.card-hub .box-title {
+      font-size: 15px;
+    }
+
+    body.mode-details-visible .box-card .box-subtitle {
+      display: block;
+      opacity: 1;
+    }
+
+    body.mode-details-visible .box-card .box-tag {
+      display: inline-block;
+      opacity: 1;
+    }
+
+    body.mode-details-visible .box-card .box-content {
+      display: flex;
+      opacity: 1;
+      max-height: 480px;
+      overflow: visible;
+      pointer-events: auto;
+    }
+
+    .flow-pill {
+      padding: 2px 6px !important;
+      font-size: 11.5px !important;
+      max-width: 220px;
+    }
+  </style>
+</head>
+<body class="mode-titles-only">
+
+  <!-- BARRA DE CONTROL FLOTANTE (HUD COMPACTO) -->
+  <header class="hud-bar">
+    <span class="hud-status-badge" id="statusBadge">MODO TÍTULOS</span>
+    <span class="hud-hint">Arrastrar: Pan | Rueda: Zoom</span>
+    <div class="hud-controls">
+      <button class="btn-hud" id="btnZoomOut">− Zoom</button>
+      <span class="zoom-text" id="zoomText">100%</span>
+      <button class="btn-hud" id="btnZoomIn">+ Zoom</button>
+      <button class="btn-hud" id="btnFit">Ajustar</button>
+      <button class="btn-hud" id="btnReset">Reset</button>
+      <button class="btn-hud" id="btnToggleMode">Modo: AUTO</button>
+    </div>
+  </header>
+
+  <div class="viewport" id="viewport">
+    <div class="canvas-world" id="canvasWorld" style="width: 2050px; height: 1460px;">
+
+      <!-- CAPA SVG DE LÍNEAS DE VIDA Y MENSAJES HORIZONTALES -->
+      <svg class="svg-layer" width="2050" height="1460">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#000000" />
+          </marker>
+        </defs>
+
+        <!-- 7 LÍNEAS DE VIDA VERTICALES -->
+        <line class="lifeline-line" x1="150" y1="210" x2="150" y2="1430" />
+        <line class="lifeline-line" x1="440" y1="210" x2="440" y2="1430" />
+        <line class="lifeline-line" x1="730" y1="210" x2="730" y2="1430" />
+        <line class="lifeline-line" x1="1020" y1="210" x2="1020" y2="1430" />
+        <line class="lifeline-line" x1="1310" y1="210" x2="1310" y2="1430" />
+        <line class="lifeline-line" x1="1600" y1="210" x2="1600" y2="1430" />
+        <line class="lifeline-line" x1="1890" y1="210" x2="1890" y2="1430" />
+
+        <!-- 14 FLECHAS HORIZONTALES DE MENSAJES (BORDES LIMPIOS SIN TAPAR PUNTAS) -->
+        <!-- Paso 1: Tutor (150) -> SPA (440) -->
+        <line class="msg-arrow-call" x1="158" y1="260" x2="432" y2="260" marker-end="url(#arrow)" />
+
+        <!-- Paso 2: SPA (440) -> Gateway (730) -->
+        <line class="msg-arrow-call" x1="448" y1="345" x2="722" y2="345" marker-end="url(#arrow)" />
+
+        <!-- Paso 3: Gateway (730) -> Citas B4 (1020) -->
+        <line class="msg-arrow-call" x1="738" y1="430" x2="1012" y2="430" marker-end="url(#arrow)" />
+
+        <!-- Paso 4: Citas B4 (1020) -> Pre-triaje (1310) -->
+        <line class="msg-arrow-call" x1="1028" y1="515" x2="1302" y2="515" marker-end="url(#arrow)" />
+
+        <!-- Paso 5: Pre-triaje (1310) -> Citas B4 (1020) (Retorno) -->
+        <line class="msg-arrow-return" x1="1302" y1="600" x2="1028" y2="600" marker-end="url(#arrow)" />
+
+        <!-- Paso 6: Citas B4 (1020) -> Turnos (1310) (Bloqueo) -->
+        <line class="msg-arrow-call" x1="1028" y1="685" x2="1302" y2="685" marker-end="url(#arrow)" />
+
+        <!-- Paso 7: Turnos (1310) -> Citas B4 (1020) (Retorno) -->
+        <line class="msg-arrow-return" x1="1302" y1="770" x2="1028" y2="770" marker-end="url(#arrow)" />
+
+        <!-- Paso 8: Citas B4 (1020) -> Google Meet (1600) -->
+        <line class="msg-arrow-call" x1="1028" y1="865" x2="1592" y2="865" marker-end="url(#arrow)" />
+
+        <!-- Paso 9: Google Meet (1600) -> Citas B4 (1020) (Retorno) -->
+        <line class="msg-arrow-return" x1="1592" y1="950" x2="1028" y2="950" marker-end="url(#arrow)" />
+
+        <!-- Paso 10: Citas B4 (1020) -> Vitalis_BD (1890) -->
+        <line class="msg-arrow-call" x1="1028" y1="1045" x2="1882" y2="1045" marker-end="url(#arrow)" />
+
+        <!-- Paso 11: Vitalis_BD (1890) -> Citas B4 (1020) (Retorno) -->
+        <line class="msg-arrow-return" x1="1882" y1="1130" x2="1028" y2="1130" marker-end="url(#arrow)" />
+
+        <!-- Paso 12: Citas B4 (1020) -> Gateway (730) (Retorno) -->
+        <line class="msg-arrow-return" x1="1012" y1="1225" x2="738" y2="1225" marker-end="url(#arrow)" />
+
+        <!-- Paso 13: Gateway (730) -> SPA (440) (Retorno) -->
+        <line class="msg-arrow-return" x1="722" y1="1310" x2="448" y2="1310" marker-end="url(#arrow)" />
+
+        <!-- Paso 14: SPA (440) -> Tutor (150) (Notificación) -->
+        <line class="msg-arrow-call" x1="432" y1="1395" x2="158" y2="1395" marker-end="url(#arrow)" />
+      </svg>
+
+      <!-- CAJAS DE ACTIVACIÓN UML EN LAS LÍNEAS DE VIDA -->
+      <div class="activation-bar" style="left: 150px; top: 250px; height: 30px;"></div>
+      <div class="activation-bar" style="left: 440px; top: 250px; height: 1160px;"></div>
+      <div class="activation-bar" style="left: 730px; top: 335px; height: 990px;"></div>
+      <div class="activation-bar" style="left: 1020px; top: 420px; height: 820px;"></div>
+      <div class="activation-bar" style="left: 1310px; top: 505px; height: 280px;"></div>
+      <div class="activation-bar" style="left: 1600px; top: 855px; height: 110px;"></div>
+      <div class="activation-bar" style="left: 1890px; top: 1035px; height: 110px;"></div>
+      <div class="activation-bar" style="left: 150px; top: 1385px; height: 30px;"></div>
+
+      <!-- ETIQUETAS DE LOS 14 PASOS (DIMENSIÓN HORIZONTAL COMPACTA PARA NO TAPAR PUNTAS) -->
+      <div class="flow-pill" style="left: 295px; top: 236px;"><span class="pill-core">1. Sel. turno</span><span class="pill-detail"> (Meet)</span></div>
+      <div class="flow-pill" style="left: 585px; top: 321px;"><span class="pill-core">2. POST /citas</span><span class="pill-detail"> (JWT, DTO)</span></div>
+      <div class="flow-pill" style="left: 875px; top: 406px;"><span class="pill-core">3. Enrutar cita</span><span class="pill-detail"> (RBAC)</span></div>
+      <div class="flow-pill" style="left: 1165px; top: 491px;"><span class="pill-core">4. GET /pretriaje</span><span class="pill-detail"> (Ficha)</span></div>
+      <div class="flow-pill" style="left: 1165px; top: 576px;"><span class="pill-core">5. Triaje OK</span><span class="pill-detail"> (Consentimiento)</span></div>
+      <div class="flow-pill" style="left: 1165px; top: 661px;"><span class="pill-core">6. Bloquear turno</span><span class="pill-detail"> (Pesimista)</span></div>
+      <div class="flow-pill" style="left: 1165px; top: 746px;"><span class="pill-core">7. Franja asegurada</span><span class="pill-detail"> (#401)</span></div>
+      <div class="flow-pill" style="left: 1310px; top: 841px;"><span class="pill-core">8. POST /spaces</span><span class="pill-detail"> (Meet OAuth2)</span></div>
+      <div class="flow-pill" style="left: 1310px; top: 926px;"><span class="pill-core">9. Sala Meet creada</span><span class="pill-detail"> (URL segura)</span></div>
+      <div class="flow-pill" style="left: 1455px; top: 1021px;"><span class="pill-core">10. INSERT Cita</span><span class="pill-detail"> (BEGIN ACID)</span></div>
+      <div class="flow-pill" style="left: 1455px; top: 1106px;"><span class="pill-core">11. COMMIT</span><span class="pill-detail"> (Cita ID #1042)</span></div>
+      <div class="flow-pill" style="left: 875px; top: 1201px;"><span class="pill-core">12. HTTP 201</span><span class="pill-detail"> (DTO Cita OK)</span></div>
+      <div class="flow-pill" style="left: 585px; top: 1286px;"><span class="pill-core">13. Respuesta JSON</span><span class="pill-detail"> (A SPA)</span></div>
+      <div class="flow-pill" style="left: 295px; top: 1371px;"><span class="pill-core">14. Confirmación</span><span class="pill-detail"> + WhatsApp</span></div>
+
+      <!-- CABECERAS DE LAS 7 LÍNEAS DE VIDA -->
+      <div class="box-card" style="left: 30px; top: 125px; width: 240px; height: 95px;">
+        <div class="box-title">Tutor / Paciente</div>
+        <div class="box-subtitle">[Actor Humano Directo]</div>
+        <span class="box-tag">Capa 1: Interacción</span>
+      </div>
+
+      <div class="box-card" style="left: 320px; top: 125px; width: 240px; height: 95px;">
+        <div class="box-title">Portal Web SPA</div>
+        <div class="box-subtitle">[React / TypeScript]</div>
+        <span class="box-tag">Capa 1: Presentación</span>
+      </div>
+
+      <div class="box-card" style="left: 610px; top: 125px; width: 240px; height: 95px;">
+        <div class="box-title">API Gateway &amp; Auth</div>
+        <div class="box-subtitle">[Reverse Proxy &amp; JWT]</div>
+        <span class="box-tag">Capa 2: Seguridad</span>
+      </div>
+
+      <div class="box-card card-hub" style="left: 900px; top: 115px; width: 240px; height: 105px;">
+        <div class="box-title" style="font-size: 14px;">Sub. Citas y Agendas</div>
+        <div class="box-subtitle">[Orquestador Núcleo B4]</div>
+        <span class="box-tag">Capa 3: Lógica Negocio</span>
+      </div>
+
+      <div class="box-card" style="left: 1190px; top: 125px; width: 240px; height: 95px;">
+        <div class="box-title">Sub. Pre-triaje &amp; Turnos</div>
+        <div class="box-subtitle">[Microservicio Asistencial]</div>
+        <span class="box-tag">Capa 3: Lógica Negocio</span>
+      </div>
+
+      <div class="box-card card-ext" style="left: 1480px; top: 125px; width: 240px; height: 95px;">
+        <div class="box-title">Google Meet API</div>
+        <div class="box-subtitle">[OAuth2 / Google Cloud]</div>
+        <span class="box-tag">Capa 5: Servicio Externo</span>
+      </div>
+
+      <div class="box-card card-ext" style="left: 1770px; top: 125px; width: 240px; height: 95px;">
+        <div class="box-title">Vitalis_BD PostgreSQL</div>
+        <div class="box-subtitle">[Persistencia ACID]</div>
+        <span class="box-tag">Capa 4: Base de Datos</span>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const CANVAS_W = 2050;
+    const CANVAS_H = 1460;
+    
+  // ============================================================
+  // MOTOR DE NAVEGACIÓN, PAN, ZOOM Y SEMÁNTICA INTERACTIVA B&W
+  // ============================================================
+  const viewport = document.getElementById('viewport');
+  const canvasWorld = document.getElementById('canvasWorld');
+  const zoomText = document.getElementById('zoomText');
+  const statusBadge = document.getElementById('statusBadge');
+  const btnToggleMode = document.getElementById('btnToggleMode');
+
+  let scale = 1.0;
+  let panX = 0;
+  let panY = 0;
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+
+  // Modos: 'auto' (semántico dinámico) o 'details' (siempre forzado)
+  let userMode = 'auto';
+
+  function applyTransform() {
+    canvasWorld.style.transform = `matrix(${scale}, 0, 0, ${scale}, ${panX}, ${panY})`;
+    zoomText.textContent = `${Math.round(scale * 100)}%`;
+  }
+
+  function updateSemanticZoom() {
+    if (userMode === 'details') {
+      document.body.classList.remove('mode-titles-only');
+      document.body.classList.add('mode-details-visible');
+      statusBadge.textContent = 'MODO DETALLE (FORZADO)';
+      statusBadge.style.background = '#000000';
+      statusBadge.style.color = '#ffffff';
+      return;
+    }
+
+    // En modo 'auto': si scale < 0.82 muestra solo títulos grandes; si scale >= 0.82 revela detalles completos
+    if (scale >= 0.82) {
+      document.body.classList.remove('mode-titles-only');
+      document.body.classList.add('mode-details-visible');
+      statusBadge.textContent = 'MODO DETALLE';
+      statusBadge.style.background = '#000000';
+      statusBadge.style.color = '#ffffff';
+    } else {
+      document.body.classList.remove('mode-details-visible');
+      document.body.classList.add('mode-titles-only');
+      statusBadge.textContent = 'MODO TÍTULOS';
+      statusBadge.style.background = '#444444';
+      statusBadge.style.color = '#ffffff';
+    }
+  }
+
+  function fitToScreen() {
+    const padX = 40;
+    const padY = 35;
+    const availW = window.innerWidth - padX;
+    const availH = window.innerHeight - padY;
+    const sW = availW / CANVAS_W;
+    const sH = availH / CANVAS_H;
+    const s = Math.min(sW, sH);
+    scale = Math.max(0.25, Math.min(s, 1.0));
+    panX = (window.innerWidth - CANVAS_W * scale) / 2;
+    panY = Math.max(12, (window.innerHeight - CANVAS_H * scale) / 2);
+    applyTransform();
+    updateSemanticZoom();
+  }
+
+  function zoomAtPoint(factor, clientX, clientY) {
+    const prevScale = scale;
+    const newScale = Math.min(Math.max(0.25, scale * factor), 2.8);
+    if (newScale === prevScale) return;
+
+    // Zoom centrado en el punto del cursor
+    const mouseX = clientX - panX;
+    const mouseY = clientY - panY;
+
+    panX -= mouseX * (newScale / prevScale - 1);
+    panY -= mouseY * (newScale / prevScale - 1);
+    scale = newScale;
+
+    applyTransform();
+    updateSemanticZoom();
+  }
+
+  // EVENTOS DEL RATÓN: ARRASTRE (PAN)
+  viewport.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.hud-bar')) return;
+    isDragging = true;
+    startX = e.clientX - panX;
+    startY = e.clientY - panY;
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    panX = e.clientX - startX;
+    panY = e.clientY - startY;
+    applyTransform();
+  });
+
+  window.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+
+  // ZOOM POR RUEDA DEL RATÓN
+  viewport.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const factor = e.deltaY < 0 ? 1.12 : 0.89;
+    zoomAtPoint(factor, e.clientX, e.clientY);
+  }, { passive: false });
+
+  // BOTONES DEL HUD
+  document.getElementById('btnZoomIn').addEventListener('click', () => {
+    zoomAtPoint(1.20, window.innerWidth / 2, window.innerHeight / 2);
+  });
+
+  document.getElementById('btnZoomOut').addEventListener('click', () => {
+    zoomAtPoint(0.83, window.innerWidth / 2, window.innerHeight / 2);
+  });
+
+  document.getElementById('btnFit').addEventListener('click', fitToScreen);
+
+  document.getElementById('btnReset').addEventListener('click', () => {
+    scale = 1.0;
+    panX = (window.innerWidth - CANVAS_W) / 2;
+    panY = Math.max(12, (window.innerHeight - CANVAS_H) / 2);
+    applyTransform();
+    updateSemanticZoom();
+  });
+
+  btnToggleMode.addEventListener('click', () => {
+    if (userMode === 'auto') {
+      userMode = 'details';
+      btnToggleMode.textContent = 'Modo: SIEMPRE DETALLES';
+    } else {
+      userMode = 'auto';
+      btnToggleMode.textContent = 'Modo: AUTO (Semántico)';
+    }
+    updateSemanticZoom();
+  });
+
+  // CLIC EN CUALQUIER CAJA PARA CENTRAR Y ENFOCAR
+  document.querySelectorAll('.box-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.querySelectorAll('.box-card').forEach(c => c.classList.remove('focused'));
+      card.classList.add('focused');
+
+      const left = parseFloat(card.style.left);
+      const top = parseFloat(card.style.top);
+      const width = parseFloat(card.style.width || card.offsetWidth);
+      const height = parseFloat(card.style.height || card.offsetHeight);
+
+      const targetScale = Math.max(scale, 1.15);
+      scale = targetScale;
+      panX = (window.innerWidth / 2) - (left + width / 2) * scale;
+      panY = (window.innerHeight / 2) - (top + height / 2) * scale;
+
+      applyTransform();
+      updateSemanticZoom();
+    });
+  });
+
+  // CLIC EN EL FONDO DESENFOCA Y RESTAURA VISTA
+  viewport.addEventListener('click', (e) => {
+    if (!e.target.closest('.box-card')) {
+      document.querySelectorAll('.box-card').forEach(c => c.classList.remove('focused'));
+    }
+  });
+
+  // TECLAS RÁPIDAS
+  window.addEventListener('keydown', (e) => {
+    if (e.key === '+' || e.key === '=') {
+      zoomAtPoint(1.20, window.innerWidth / 2, window.innerHeight / 2);
+    } else if (e.key === '-') {
+      zoomAtPoint(0.83, window.innerWidth / 2, window.innerHeight / 2);
+    } else if (e.key === '0') {
+      fitToScreen();
+    } else if (e.key === 'Escape') {
+      document.querySelectorAll('.box-card').forEach(c => c.classList.remove('focused'));
+      fitToScreen();
+    }
+  });
+
+  window.addEventListener('resize', fitToScreen);
+  window.addEventListener('DOMContentLoaded', () => {
+    fitToScreen();
+  });
+
+  </script>
+</body>
+</html>

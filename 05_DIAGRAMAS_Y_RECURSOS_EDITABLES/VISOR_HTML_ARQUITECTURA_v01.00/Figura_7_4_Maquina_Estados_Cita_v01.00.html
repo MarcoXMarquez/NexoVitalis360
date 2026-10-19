@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fig 7.4 - Máquina de Estados del Ciclo de Vida de la Cita Médica | NexoVitalis360</title>
+  <style>
+    
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important; /* Esquinas 100% rectas y filosas */
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #ffffff;
+      color: #000000;
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Lienzo navegable interactivo */
+    .viewport {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      cursor: grab;
+      background-color: #ffffff;
+    }
+
+    .viewport:active {
+      cursor: grabbing;
+    }
+
+    .canvas-world {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+      background-color: #ffffff;
+    }
+
+    /* BARRA DE CONTROL SUPERIOR (HUD MINIMALISTA B&W) */
+    /* BARRA DE CONTROL FLOTANTE (HUD COMPACTO EN ESQUINA SUPERIOR DERECHA) */
+    .hud-bar {
+      position: fixed;
+      top: 10px;
+      right: 16px;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1.5px solid #000000;
+      padding: 5px 12px;
+      font-family: Arial, sans-serif;
+      font-size: 11.5px;
+      box-shadow: 2px 2px 0px #000000;
+    }
+
+    .hud-status-badge {
+      background: #000000;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      padding: 3px 7px;
+      text-transform: uppercase;
+      transition: background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .hud-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-hud {
+      background: #ffffff;
+      color: #000000;
+      border: 1.5px solid #000000;
+      padding: 4px 10px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .btn-hud:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .zoom-text {
+      font-weight: bold;
+      min-width: 44px;
+      text-align: center;
+      font-size: 11.5px;
+    }
+
+    .hud-hint {
+      font-size: 10.5px;
+      color: #666666;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+
+    /* ESTILO BASE DE CAJAS Y TARJETAS */
+    .box-card {
+      position: absolute;
+      border: 1.8px solid #000000;
+      background: #ffffff;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: background 0.15s ease, box-shadow 0.15s ease, border 0.15s ease;
+      z-index: 5;
+      box-sizing: border-box;
+    }
+
+    .box-card:hover {
+      background: #fafafa;
+      box-shadow: 3px 3px 0px #000000;
+    }
+
+    .box-card.focused {
+      background: #fcfcfc !important;
+      border: 2.5px solid #000000 !important;
+      box-shadow: 5px 5px 0px #000000 !important;
+      z-index: 50 !important;
+    }
+
+    .box-card.card-hub {
+      border: 2.5px solid #000000;
+      background: #fafafa;
+      box-shadow: 3px 3px 0px #000000;
+    }
+
+    .box-card.card-ext {
+      border: 1.8px solid #000000;
+      background: #ffffff;
+    }
+
+    .box-card.card-dashed {
+      border: 2px dashed #000000;
+      background: #ffffff;
+    }
+
+    .box-title {
+      font-weight: 800;
+      color: #000000;
+      line-height: 1.25;
+      transition: font-size 0.2s ease, margin 0.2s ease, text-align 0.2s ease;
+    }
+
+    .box-subtitle {
+      font-size: 10.5px;
+      font-weight: bold;
+      color: #333333;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 6px;
+    }
+
+    .box-tag {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 9.5px;
+      font-weight: bold;
+      background: #000000;
+      color: #ffffff;
+      padding: 2px 6px;
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    .box-content {
+      font-size: 11px;
+      line-height: 1.35;
+      color: #222222;
+      border-top: 1px solid #000000;
+      padding-top: 6px;
+      margin-top: 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: opacity 0.2s ease, max-height 0.25s ease;
+    }
+
+    .box-content p {
+      margin: 0;
+    }
+
+    /* ETIQUETAS DE FLECHAS Y CONECTORES CON REVELACIÓN PROGRESIVA */
+    .flow-pill {
+      position: absolute;
+      background: #ffffff;
+      border: 1.6px solid #000000;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #000000;
+      white-space: nowrap;
+      transform: translate(-50%, -50%);
+      z-index: 15;
+      pointer-events: auto;
+      cursor: pointer;
+      box-shadow: 2px 2px 0px #000000;
+      line-height: 1.25;
+      letter-spacing: 0.2px;
+      transition: all 0.15s ease;
+    }
+
+    .flow-pill:hover {
+      background: #000000;
+      color: #ffffff;
+      z-index: 100;
+      box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.5);
+    }
+
+    .flow-pill .pill-core {
+      font-weight: 800;
+    }
+
+    .flow-pill .pill-detail {
+      font-weight: normal;
+      font-size: 11px;
+    }
+
+    /* 1. MODO GENERAL (SIN ZOOM / VISTA MACRO - mode-titles-only): Muestra solo lo esencial */
+    body.mode-titles-only .flow-pill {
+      font-size: 12.5px !important;
+      font-weight: 800 !important;
+      padding: 3px 8px !important;
+      border: 1.8px solid #000000 !important;
+      box-shadow: 2px 2px 0px #000000 !important;
+    }
+
+    body.mode-titles-only .flow-pill .pill-detail {
+      display: none !important;
+    }
+
+    body.mode-titles-only .flow-pill:hover .pill-detail {
+      display: inline !important;
+      color: #ffffff !important;
+    }
+
+    /* 3. MODO DETALLE (CON ZOOM >= 0.82 O MODO FORZADO - mode-details-visible): Muestra todo */
+    body.mode-details-visible .flow-pill {
+      font-size: 12px;
+      padding: 3px 9px;
+    }
+
+    body.mode-details-visible .flow-pill .pill-detail {
+      display: inline !important;
+      color: #333333;
+    }
+
+    /* CÍRCULOS DE ESTADO UML */
+    .uml-state-circle {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transform: translate(-50%, -50%);
+      z-index: 6;
+      cursor: pointer;
+    }
+
+    .circle-initial {
+      width: 32px;
+      height: 32px;
+      background: #000000;
+      border-radius: 50% !important;
+      margin-bottom: 6px;
+    }
+
+    .circle-final-outer {
+      width: 36px;
+      height: 36px;
+      border: 2.2px solid #000000;
+      border-radius: 50% !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .circle-final-inner {
+      width: 22px;
+      height: 22px;
+      background: #000000;
+      border-radius: 50% !important;
+    }
+
+    .circle-label {
+      font-size: 11.5px;
+      font-weight: bold;
+      color: #000000;
+      white-space: nowrap;
+    }
+
+    .circle-sub {
+      font-size: 10px;
+      font-style: italic;
+      color: #444444;
+      white-space: nowrap;
+    }
+
+    /* BARRAS DE ACTIVACIÓN UML (SECUENCIA) */
+    .activation-bar {
+      position: absolute;
+      width: 16px;
+      border: 1.8px solid #000000;
+      background: #ffffff;
+      transform: translateX(-50%);
+      z-index: 4;
+    }
+
+    /* CAPA SVG */
+    .svg-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ESTILOS DE LEYENDA ARQUITECTÓNICA B&W */
+    .legend-box {
+      border: 1.8px solid #000000 !important;
+      background: #fafafa !important;
+      cursor: default !important;
+      box-shadow: 2px 2px 0px #000000;
+    }
+    .legend-box:hover {
+      box-shadow: 2px 2px 0px #000000 !important;
+      background: #fafafa !important;
+    }
+    .legend-item {
+      font-size: 11px;
+      line-height: 1.4;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+    .symbol-badge {
+      display: inline-block;
+      font-family: "Courier New", monospace;
+      font-weight: 900;
+      font-size: 11px;
+      background: #000000;
+      color: #ffffff;
+      padding: 1px 5px;
+      min-width: 44px;
+      text-align: center;
+    }
+
+    /* LÍNEAS DE VIDA (SECUENCIA) */
+    .lifeline-line {
+      stroke: #333333;
+      stroke-width: 2.0;
+      stroke-dasharray: 6, 5;
+    }
+
+    /* FLECHAS DIRECTAS Y RETORNOS REFORZADOS */
+    .msg-arrow-call {
+      stroke: #000000;
+      stroke-width: 2.8;
+      fill: none;
+    }
+
+    .msg-arrow-return {
+      stroke: #000000;
+      stroke-width: 2.2;
+      stroke-dasharray: 7, 4;
+      fill: none;
+    }
+
+    /* ========================================================= */
+    /* SEMANTIC ZOOM AVANZADO: MODO VISTA GENERAL VS MODO DETALLE */
+    /* ========================================================= */
+
+    /* 1. MODO GENERAL (SIN ZOOM / VISTA MACRO - mode-titles-only) */
+    body.mode-titles-only .box-card {
+      justify-content: center !important;
+      align-items: center !important;
+      text-align: center !important;
+      padding: 10px 14px !important;
+    }
+
+    body.mode-titles-only .box-card .box-title {
+      font-size: 19px !important;
+      font-weight: 900 !important;
+      letter-spacing: 0.5px !important;
+      text-align: center !important;
+      margin: 0 !important;
+      width: 100% !important;
+      line-height: 1.25 !important;
+      text-transform: uppercase !important;
+    }
+
+    body.mode-titles-only .box-card.card-hub .box-title {
+      font-size: 23px !important;
+      letter-spacing: 0.8px !important;
+    }
+
+    body.mode-titles-only .box-card .box-subtitle,
+    body.mode-titles-only .box-card .box-tag,
+    body.mode-titles-only .box-card .box-content {
+      display: none !important;
+      opacity: 0 !important;
+      max-height: 0 !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      pointer-events: none !important;
+    }
+
+    /* EXCEPCIÓN: La tarjeta de leyenda permanece legible en modo títulos para orientar al observador */
+    body.mode-titles-only .legend-box {
+      justify-content: flex-start !important;
+      align-items: stretch !important;
+      text-align: left !important;
+    }
+
+    body.mode-titles-only .legend-box .box-title {
+      font-size: 12px !important;
+      text-align: left !important;
+      margin-bottom: 2px !important;
+      text-transform: uppercase !important;
+    }
+
+    body.mode-titles-only .legend-box .box-subtitle {
+      display: block !important;
+      opacity: 1 !important;
+      max-height: 40px !important;
+      margin-bottom: 4px !important;
+    }
+
+    body.mode-titles-only .legend-box .box-content {
+      display: flex !important;
+      opacity: 1 !important;
+      max-height: 240px !important;
+      overflow: visible !important;
+      pointer-events: auto !important;
+      border-top: 1px solid #000000 !important;
+      padding-top: 4px !important;
+    }
+
+    body.mode-titles-only .box-card.card-dashed .box-title {
+      font-size: 13px !important;
+    }
+
+    /* 2. NODO CON FOCO (CLICK EN MODO GENERAL): Revela sus detalles sin alterar los demás */
+    body.mode-titles-only .box-card.focused {
+      justify-content: flex-start !important;
+      align-items: stretch !important;
+      text-align: left !important;
+      padding: 12px 14px !important;
+      background: #fcfcfc !important;
+      box-shadow: 5px 5px 0px #000000 !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-title {
+      font-size: 13.5px !important;
+      font-weight: 800 !important;
+      text-align: left !important;
+      margin-bottom: 3px !important;
+      width: auto !important;
+    }
+
+    body.mode-titles-only .box-card.focused.card-hub .box-title {
+      font-size: 15px !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-subtitle {
+      display: block !important;
+      opacity: 1 !important;
+      max-height: 40px !important;
+      margin-bottom: 6px !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-tag {
+      display: inline-block !important;
+      opacity: 1 !important;
+      margin-bottom: 6px !important;
+    }
+
+    body.mode-titles-only .box-card.focused .box-content {
+      display: flex !important;
+      opacity: 1 !important;
+      max-height: 450px !important;
+      border-top: 1px solid #000000 !important;
+      padding-top: 6px !important;
+      margin-top: 2px !important;
+      pointer-events: auto !important;
+    }
+
+    /* 3. MODO DETALLE (CON ZOOM >= 0.85 O MODO FORZADO - mode-details-visible) */
+    body.mode-details-visible .box-card {
+      justify-content: flex-start;
+      align-items: stretch;
+      text-align: left;
+      padding: 12px 14px;
+    }
+
+    body.mode-details-visible .box-card .box-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      text-align: left;
+      margin-bottom: 3px;
+    }
+
+    body.mode-details-visible .box-card.card-hub .box-title {
+      font-size: 15px;
+    }
+
+    body.mode-details-visible .box-card .box-subtitle {
+      display: block;
+      opacity: 1;
+    }
+
+    body.mode-details-visible .box-card .box-tag {
+      display: inline-block;
+      opacity: 1;
+    }
+
+    body.mode-details-visible .box-card .box-content {
+      display: flex;
+      opacity: 1;
+      max-height: 480px;
+      overflow: visible;
+      pointer-events: auto;
+    }
+
+  </style>
+</head>
+<body class="mode-titles-only">
+
+  <!-- BARRA DE CONTROL FLOTANTE (HUD COMPACTO) -->
+  <header class="hud-bar">
+    <span class="hud-status-badge" id="statusBadge">MODO TÍTULOS</span>
+    <span class="hud-hint">Arrastrar: Pan | Rueda: Zoom</span>
+    <div class="hud-controls">
+      <button class="btn-hud" id="btnZoomOut">− Zoom</button>
+      <span class="zoom-text" id="zoomText">100%</span>
+      <button class="btn-hud" id="btnZoomIn">+ Zoom</button>
+      <button class="btn-hud" id="btnFit">Ajustar</button>
+      <button class="btn-hud" id="btnReset">Reset</button>
+      <button class="btn-hud" id="btnToggleMode">Modo: AUTO</button>
+    </div>
+  </header>
+
+  <div class="viewport" id="viewport">
+    <div class="canvas-world" id="canvasWorld" style="width: 2240px; height: 1040px;">
+
+      <!-- CAPA SVG DE TRANSICIONES, FLECHAS Y CONECTORES REFORZADOS -->
+      <svg class="svg-layer" width="2240" height="1040">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#000000" />
+          </marker>
+        </defs>
+
+        <!-- 1. [*] Inicio -> 1. Solicitada -->
+        <line x1="90" y1="460" x2="190" y2="460" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+
+        <!-- 2. Solicitada -> 2. Pendiente -->
+        <line x1="460" y1="460" x2="590" y2="460" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+
+        <!-- 3. Pendiente -> 3. Confirmada -->
+        <line x1="860" y1="460" x2="1000" y2="460" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+
+        <!-- 4. Pendiente -> (*) Cita Caducada (Timeout 15 min - Brecha limpia por x=950 sin tocar No Asistió) -->
+        <path d="M 725 535 L 725 590 L 950 590 L 950 900 L 1135 900" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" fill="none" marker-end="url(#arrow)" />
+
+        <!-- 5. Confirmada -> 4. Reprogramada (Bucle Superior) -->
+        <path d="M 1080 370 L 1080 280" stroke="#000000" stroke-width="2.8" fill="none" marker-end="url(#arrow)" />
+
+        <!-- 6. Reprogramada -> Confirmada (Retorno Abajo) -->
+        <path d="M 1240 280 L 1240 370" stroke="#000000" stroke-width="2.8" fill="none" marker-end="url(#arrow)" />
+
+        <!-- 7. Confirmada -> 5. En Atención -->
+        <line x1="1320" y1="460" x2="1460" y2="460" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+
+        <!-- 8. En Atención -> 6. Atendida -->
+        <line x1="1730" y1="460" x2="1860" y2="460" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+
+        <!-- 9. Atendida -> (*) Cita Concluida (Éxito) -->
+        <line x1="1995" y1="535" x2="1995" y2="640" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+
+        <!-- 10. Confirmada -> 7. Cancelada (Abajo Izquierda) -->
+        <path d="M 1000 520 L 910 520 L 910 700 L 860 700" stroke="#000000" stroke-width="2.8" fill="none" marker-end="url(#arrow)" />
+
+        <!-- 11. Cancelada -> (*) Cita Anulada -->
+        <line x1="725" y1="815" x2="725" y2="905" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+
+        <!-- 12. Confirmada -> 8. No Asistió (Abajo Centro) -->
+        <line x1="1155" y1="550" x2="1155" y2="670" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+
+        <!-- 13. No Asistió -> (*) Cita Caducada -->
+        <line x1="1155" y1="815" x2="1155" y2="905" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+      </svg>
+
+      <!-- ETIQUETAS Y GUARDAS DE TRANSICIÓN (REVELACIÓN PROGRESIVA: CORTO EN VISTA GENERAL, DETALLE EN ZOOM/HOVER) -->
+      <div class="flow-pill" style="left: 140px; top: 432px;"><span class="pill-core">1. Solicitud</span><span class="pill-detail"> de Admisión</span></div>
+      <div class="flow-pill" style="left: 525px; top: 432px;"><span class="pill-core">[Pre-triaje OK]</span><span class="pill-detail"> &amp; Consentimiento</span></div>
+      <div class="flow-pill" style="left: 930px; top: 432px;"><span class="pill-core">[Voucher / Saldo OK]</span><span class="pill-detail"> (Pago verificado)</span></div>
+      <div class="flow-pill" style="left: 835px; top: 575px;"><span class="pill-core">[Timeout 15 min]</span><span class="pill-detail"> (Reserva expirada)</span></div>
+      <div class="flow-pill" style="left: 1080px; top: 255px;"><span class="pill-core">[Anticipación &gt;= 24h]</span><span class="pill-detail"> (Reprogramación)</span></div>
+      <div class="flow-pill" style="left: 1335px; top: 325px;"><span class="pill-core">[Nuevo horario]</span><span class="pill-detail"> asignado</span></div>
+      <div class="flow-pill" style="left: 1390px; top: 432px;"><span class="pill-core">[Apertura Meet]</span><span class="pill-detail"> / Llegada a sede</span></div>
+      <div class="flow-pill" style="left: 1795px; top: 432px;"><span class="pill-core">[Cierre clínico]</span><span class="pill-detail"> firmado</span></div>
+      <div class="flow-pill" style="left: 2110px; top: 585px;"><span class="pill-core">[Sesión deducida]</span><span class="pill-detail"> &amp; Liquidación</span></div>
+      <div class="flow-pill" style="left: 995px; top: 610px;"><span class="pill-core">[Cancelación &gt;= 24h]</span><span class="pill-detail"> (Apoderado)</span></div>
+      <div class="flow-pill" style="left: 825px; top: 860px;"><span class="pill-core">[Franja liberada]</span><span class="pill-detail"> (Anulada)</span></div>
+      <div class="flow-pill" style="left: 1265px; top: 610px;"><span class="pill-core">[Tolerancia superada]</span><span class="pill-detail"> (15 min)</span></div>
+      <div class="flow-pill" style="left: 1255px; top: 860px;"><span class="pill-core">[Inasistencia]</span><span class="pill-detail"> registrada</span></div>
+
+      <!-- NODOS Y ESTADOS UML INTERACTIVOS -->
+
+      <!-- LEYENDA FORMAL UML MÁQUINA DE ESTADOS (ESPACIO VACÍO SUPERIOR IZQUIERDO) -->
+      <div class="box-card legend-box" style="left: 190px; top: 90px; width: 440px; height: 175px;">
+        <span class="box-tag">«legend» NOTACIÓN UML MÁQUINA DE ESTADOS</span>
+        <div class="box-title">Leyenda de Transiciones y Estados Clínicos</div>
+        <div class="box-subtitle">Convenciones Formales del Ciclo de Vida de Cita</div>
+        <div class="box-content">
+          <div class="legend-item"><span class="symbol-badge">●</span> <strong>Pseudoestado Inicial:</strong> Inicio del ciclo tras solicitud de admisión.</div>
+          <div class="legend-item"><span class="symbol-badge">────&gt;</span> <strong>Transición Disparada:</strong> Evento de usuario o webhook con condición de guarda.</div>
+          <div class="legend-item"><span class="symbol-badge">- - -&gt;</span> <strong>Transición Automática:</strong> Timeout del sistema por caducidad (15 min).</div>
+          <div class="legend-item"><span class="symbol-badge">⦿</span> <strong>Pseudoestado Final:</strong> Término definitivo (Atendida, Caducada, Anulada).</div>
+        </div>
+      </div>
+
+      <!-- [*] INICIO -->
+      <div class="uml-state-circle" style="left: 70px; top: 460px;">
+        <div class="circle-initial"></div>
+        <div class="circle-label">[*] Inicio</div>
+        <div class="circle-sub">Admisión</div>
+      </div>
+
+      <!-- 1. SOLICITADA -->
+      <div class="box-card" style="left: 190px; top: 385px; width: 270px; height: 150px;">
+        <div class="box-title">1. SOLICITADA</div>
+        <div class="box-subtitle">Estado Inicial de Admisión</div>
+        <span class="box-tag">EDU-0008, EDU-0012</span>
+        <div class="box-content">
+          <p><b>entry /</b> Generar ID único de cita en estado transitorio.</p>
+          <p><b>do /</b> Consultar disponibilidad de horarios y franjas libres.</p>
+        </div>
+      </div>
+
+      <!-- 2. PENDIENTE -->
+      <div class="box-card" style="left: 590px; top: 385px; width: 270px; height: 150px;">
+        <div class="box-title">2. PENDIENTE</div>
+        <div class="box-subtitle">Reserva Temporal Asegurada</div>
+        <span class="box-tag">RNF-0004 (Anticolisión)</span>
+        <div class="box-content">
+          <p><b>entry /</b> Adquirir bloqueo pesimista temporal de franja (15 min).</p>
+          <p><b>do /</b> Esperar verificación de voucher de pago o saldo paquete.</p>
+        </div>
+      </div>
+
+      <!-- 3. CONFIRMADA (PIVOTE) -->
+      <div class="box-card card-hub" style="left: 1000px; top: 370px; width: 320px; height: 180px;">
+        <div class="box-title" style="font-size: 15px;">3. CONFIRMADA (PIVOTE)</div>
+        <div class="box-subtitle">Turno Seguro y Aprovisionado</div>
+        <span class="box-tag">EDU-0012, EDU-0019</span>
+        <div class="box-content">
+          <p><b>entry /</b> Aprovisionar sala virtual Google Meet si es teleconsulta.</p>
+          <p><b>do /</b> Programar recordatorio automático T-24h por WhatsApp.</p>
+          <p><b>exit /</b> Notificar apertura de sala o cierre de franja asistencial.</p>
+        </div>
+      </div>
+
+      <!-- 4. REPROGRAMADA (SUPERIOR) -->
+      <div class="box-card" style="left: 1000px; top: 130px; width: 320px; height: 150px;">
+        <div class="box-title">4. REPROGRAMADA</div>
+        <div class="box-subtitle">Modificación de Turno Asistencial</div>
+        <span class="box-tag">EDU-0013 (Regla &gt;= 24h)</span>
+        <div class="box-content">
+          <p><b>entry /</b> Liberar franja médica anterior y bloquear nuevo turno.</p>
+          <p><b>do /</b> Dejar traza forense inmutable de reprogramación con IP y UTC.</p>
+        </div>
+      </div>
+
+      <!-- 5. EN ATENCIÓN -->
+      <div class="box-card" style="left: 1460px; top: 385px; width: 270px; height: 150px;">
+        <div class="box-title">5. EN ATENCIÓN</div>
+        <div class="box-subtitle">Consulta Médica en Curso</div>
+        <span class="box-tag">EDU-0025 (Evolución Clínica)</span>
+        <div class="box-content">
+          <p><b>entry /</b> Apertura de ficha médica pediátrica y pre-triaje.</p>
+          <p><b>do /</b> Registrar anamnesis, evolución médica y CIE-10/DSM-5.</p>
+        </div>
+      </div>
+
+      <!-- 6. ATENDIDA -->
+      <div class="box-card" style="left: 1860px; top: 385px; width: 270px; height: 150px;">
+        <div class="box-title">6. ATENDIDA</div>
+        <div class="box-subtitle">Atención Concluida con Éxito</div>
+        <span class="box-tag">EDU-0033, EDU-0038</span>
+        <div class="box-content">
+          <p><b>entry /</b> Consumir sesión de paquete en B8 y emitir receta.</p>
+          <p><b>do /</b> Habilitar turno para cómputo de liquidación profesional.</p>
+        </div>
+      </div>
+
+      <!-- (*) CITA CONCLUIDA (FINAL ÉXITO) -->
+      <div class="uml-state-circle" style="left: 1995px; top: 665px;">
+        <div class="circle-final-outer">
+          <div class="circle-final-inner"></div>
+        </div>
+        <div class="circle-label">(*) CITA CONCLUIDA</div>
+        <div class="circle-sub">Término Exitoso Asistencial</div>
+      </div>
+
+      <!-- 7. CANCELADA (INFERIOR IZQUIERDA) -->
+      <div class="box-card" style="left: 590px; top: 670px; width: 270px; height: 145px;">
+        <div class="box-title">7. CANCELADA</div>
+        <div class="box-subtitle">Anulación Anticipada</div>
+        <span class="box-tag">EDU-0018 (Liberación)</span>
+        <div class="box-content">
+          <p><b>entry /</b> Liberar franja horaria médica al catálogo público.</p>
+          <p><b>do /</b> Registrar motivo formal de cancelación y traza en B10.</p>
+        </div>
+      </div>
+
+      <!-- (*) CITA ANULADA (FINAL) -->
+      <div class="uml-state-circle" style="left: 725px; top: 935px;">
+        <div class="circle-final-outer">
+          <div class="circle-final-inner"></div>
+        </div>
+        <div class="circle-label">(*) CITA ANULADA</div>
+        <div class="circle-sub">Término por Cancelación</div>
+      </div>
+
+      <!-- 8. NO ASISTIÓ (INFERIOR CENTRO) -->
+      <div class="box-card" style="left: 1020px; top: 670px; width: 270px; height: 145px;">
+        <div class="box-title">8. NO ASISTIÓ</div>
+        <div class="box-subtitle">Inasistencia del Paciente</div>
+        <span class="box-tag">Regla Asistencial</span>
+        <div class="box-content">
+          <p><b>entry /</b> Marcar inasistencia médica y penalidad institucional.</p>
+          <p><b>do /</b> Notificar contingencia a administración de sede.</p>
+        </div>
+      </div>
+
+      <!-- (*) CITA CADUCADA (FINAL) -->
+      <div class="uml-state-circle" style="left: 1155px; top: 935px;">
+        <div class="circle-final-outer">
+          <div class="circle-final-inner"></div>
+        </div>
+        <div class="circle-label">(*) CITA CADUCADA</div>
+        <div class="circle-sub">Inasistencia o Expiración 15m</div>
+      </div>
+
+      <!-- PANEL INFERIOR DE 3 ESTADOS FINALES EXPLICATIVOS -->
+      <div class="box-card card-dashed" style="left: 1330px; top: 670px; width: 580px; height: 155px; cursor: default;">
+        <div class="box-title" style="text-align: center; border-bottom: 1px solid #000; padding-bottom: 4px;">
+          SEMÁNTICA DE ESTADOS FINALES (UML 2.5)
+        </div>
+        <div class="box-content" style="border-top: none; gap: 6px; font-size: 11px;">
+          <p>• <b>(*) Cita Concluida:</b> Cierre clínico por especialista con receta emitida y sesión devengada en finanzas.</p>
+          <p>• <b>(*) Cita Anulada:</b> Cancelación anticipada registrada antes de 24h con liberación automática de franja horaria.</p>
+          <p>• <b>(*) Cita Caducada:</b> Expiración de los 15 min de reserva temporal sin pago o inasistencia del paciente al turno.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const CANVAS_W = 2240;
+    const CANVAS_H = 1040;
+    
+  // ============================================================
+  // MOTOR DE NAVEGACIÓN, PAN, ZOOM Y SEMÁNTICA INTERACTIVA B&W
+  // ============================================================
+  const viewport = document.getElementById('viewport');
+  const canvasWorld = document.getElementById('canvasWorld');
+  const zoomText = document.getElementById('zoomText');
+  const statusBadge = document.getElementById('statusBadge');
+  const btnToggleMode = document.getElementById('btnToggleMode');
+
+  let scale = 1.0;
+  let panX = 0;
+  let panY = 0;
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+
+  // Modos: 'auto' (semántico dinámico) o 'details' (siempre forzado)
+  let userMode = 'auto';
+
+  function applyTransform() {
+    canvasWorld.style.transform = `matrix(${scale}, 0, 0, ${scale}, ${panX}, ${panY})`;
+    zoomText.textContent = `${Math.round(scale * 100)}%`;
+  }
+
+  function updateSemanticZoom() {
+    if (userMode === 'details') {
+      document.body.classList.remove('mode-titles-only');
+      document.body.classList.add('mode-details-visible');
+      statusBadge.textContent = 'MODO DETALLE (FORZADO)';
+      statusBadge.style.background = '#000000';
+      statusBadge.style.color = '#ffffff';
+      return;
+    }
+
+    // En modo 'auto': si scale < 0.82 muestra solo títulos grandes; si scale >= 0.82 revela detalles completos
+    if (scale >= 0.82) {
+      document.body.classList.remove('mode-titles-only');
+      document.body.classList.add('mode-details-visible');
+      statusBadge.textContent = 'MODO DETALLE';
+      statusBadge.style.background = '#000000';
+      statusBadge.style.color = '#ffffff';
+    } else {
+      document.body.classList.remove('mode-details-visible');
+      document.body.classList.add('mode-titles-only');
+      statusBadge.textContent = 'MODO TÍTULOS';
+      statusBadge.style.background = '#444444';
+      statusBadge.style.color = '#ffffff';
+    }
+  }
+
+  function fitToScreen() {
+    const padX = 40;
+    const padY = 35;
+    const availW = window.innerWidth - padX;
+    const availH = window.innerHeight - padY;
+    const sW = availW / CANVAS_W;
+    const sH = availH / CANVAS_H;
+    const s = Math.min(sW, sH);
+    scale = Math.max(0.25, Math.min(s, 1.0));
+    panX = (window.innerWidth - CANVAS_W * scale) / 2;
+    panY = Math.max(12, (window.innerHeight - CANVAS_H * scale) / 2);
+    applyTransform();
+    updateSemanticZoom();
+  }
+
+  function zoomAtPoint(factor, clientX, clientY) {
+    const prevScale = scale;
+    const newScale = Math.min(Math.max(0.25, scale * factor), 2.8);
+    if (newScale === prevScale) return;
+
+    // Zoom centrado en el punto del cursor
+    const mouseX = clientX - panX;
+    const mouseY = clientY - panY;
+
+    panX -= mouseX * (newScale / prevScale - 1);
+    panY -= mouseY * (newScale / prevScale - 1);
+    scale = newScale;
+
+    applyTransform();
+    updateSemanticZoom();
+  }
+
+  // EVENTOS DEL RATÓN: ARRASTRE (PAN)
+  viewport.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.hud-bar')) return;
+    isDragging = true;
+    startX = e.clientX - panX;
+    startY = e.clientY - panY;
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    panX = e.clientX - startX;
+    panY = e.clientY - startY;
+    applyTransform();
+  });
+
+  window.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+
+  // ZOOM POR RUEDA DEL RATÓN
+  viewport.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const factor = e.deltaY < 0 ? 1.12 : 0.89;
+    zoomAtPoint(factor, e.clientX, e.clientY);
+  }, { passive: false });
+
+  // BOTONES DEL HUD
+  document.getElementById('btnZoomIn').addEventListener('click', () => {
+    zoomAtPoint(1.20, window.innerWidth / 2, window.innerHeight / 2);
+  });
+
+  document.getElementById('btnZoomOut').addEventListener('click', () => {
+    zoomAtPoint(0.83, window.innerWidth / 2, window.innerHeight / 2);
+  });
+
+  document.getElementById('btnFit').addEventListener('click', fitToScreen);
+
+  document.getElementById('btnReset').addEventListener('click', () => {
+    scale = 1.0;
+    panX = (window.innerWidth - CANVAS_W) / 2;
+    panY = Math.max(12, (window.innerHeight - CANVAS_H) / 2);
+    applyTransform();
+    updateSemanticZoom();
+  });
+
+  btnToggleMode.addEventListener('click', () => {
+    if (userMode === 'auto') {
+      userMode = 'details';
+      btnToggleMode.textContent = 'Modo: SIEMPRE DETALLES';
+    } else {
+      userMode = 'auto';
+      btnToggleMode.textContent = 'Modo: AUTO (Semántico)';
+    }
+    updateSemanticZoom();
+  });
+
+  // CLIC EN CUALQUIER CAJA PARA CENTRAR Y ENFOCAR
+  document.querySelectorAll('.box-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.querySelectorAll('.box-card').forEach(c => c.classList.remove('focused'));
+      card.classList.add('focused');
+
+      const left = parseFloat(card.style.left);
+      const top = parseFloat(card.style.top);
+      const width = parseFloat(card.style.width || card.offsetWidth);
+      const height = parseFloat(card.style.height || card.offsetHeight);
+
+      const targetScale = Math.max(scale, 1.15);
+      scale = targetScale;
+      panX = (window.innerWidth / 2) - (left + width / 2) * scale;
+      panY = (window.innerHeight / 2) - (top + height / 2) * scale;
+
+      applyTransform();
+      updateSemanticZoom();
+    });
+  });
+
+  // CLIC EN EL FONDO DESENFOCA Y RESTAURA VISTA
+  viewport.addEventListener('click', (e) => {
+    if (!e.target.closest('.box-card')) {
+      document.querySelectorAll('.box-card').forEach(c => c.classList.remove('focused'));
+    }
+  });
+
+  // TECLAS RÁPIDAS
+  window.addEventListener('keydown', (e) => {
+    if (e.key === '+' || e.key === '=') {
+      zoomAtPoint(1.20, window.innerWidth / 2, window.innerHeight / 2);
+    } else if (e.key === '-') {
+      zoomAtPoint(0.83, window.innerWidth / 2, window.innerHeight / 2);
+    } else if (e.key === '0') {
+      fitToScreen();
+    } else if (e.key === 'Escape') {
+      document.querySelectorAll('.box-card').forEach(c => c.classList.remove('focused'));
+      fitToScreen();
+    }
+  });
+
+  window.addEventListener('resize', fitToScreen);
+  window.addEventListener('DOMContentLoaded', () => {
+    fitToScreen();
+  });
+
+  </script>
+</body>
+</html>
