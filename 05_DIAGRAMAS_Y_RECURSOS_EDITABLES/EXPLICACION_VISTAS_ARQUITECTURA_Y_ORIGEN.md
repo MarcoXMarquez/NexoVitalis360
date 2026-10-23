@@ -70,7 +70,20 @@ La Vista Lógica se desprende directamente de las **27 educciones activas** (`ED
 
 ---
 
-#### 2. Figura 7.2 / 3.2: Diagrama de Clases UML 2.5 y Modelo de Dominio
+#### 2. Figura 7.2: Diagrama de Bloques Funcionales Nivel 1 (Cuerpo Principal - Sección 7.3)
+* **Archivo Interactivo:** [`fig7_3_bloques_funcionales_nivel1.html`](file:///C:/Users/marco/Desktop/TEO-DAS/DAS-GITHUB/05_DIAGRAMAS_Y_RECURSOS_EDITABLES/VISOR_HTML_ARQUITECTURA_v01.00/fig7_3_bloques_funcionales_nivel1.html) / [`Figura_3_3_Vista_Logica_Bloques_Funcionales_v01.00.html`](file:///C:/Users/marco/Desktop/TEO-DAS/DAS-GITHUB/05_DIAGRAMAS_Y_RECURSOS_EDITABLES/03_Vista_Logica/Figura_3_3_Vista_Logica_Bloques_Funcionales_v01.00.html)
+* **Render Gráfico Hi-DPI:** [`Figura_3_3_Vista_Logica_Bloques_Funcionales_v01.00.png`](file:///C:/Users/marco/Desktop/TEO-DAS/DAS-GITHUB/05_DIAGRAMAS_Y_RECURSOS_EDITABLES/03_Vista_Logica/Figura_3_3_Vista_Logica_Bloques_Funcionales_v01.00.png)
+* **¿Qué contiene?:**
+  Conforme al feedback docente (M.Sc. Percy Oscar Huertas Niquén), este diagrama representa formalmente la descomposición funcional del sistema en 11 bloques modulares (**B1** a **B11**), su frontera del sistema y el catálogo exhaustivo de los **28 flujos correlativos** (**F1** a **F28**) que cubren el 100% de las 28 educciones en el cuerpo principal de la Vista Lógica.
+
+---
+
+### C. Anexo 1: Diagrama de Clases UML 2.5 y Modelo de Dominio Clínico (Sección 11 - Bajo Nivel)
+* **Archivo Interactivo:** [`Anexo_1_Vista_Logica_Clases_UML.html`](file:///C:/Users/marco/Desktop/TEO-DAS/DAS-GITHUB/05_DIAGRAMAS_Y_RECURSOS_EDITABLES/09_Anexos/Anexo_1_Vista_Logica_Clases_UML.html) / [`fig3_2_vista_logica_clases_uml.html`](file:///C:/Users/marco/Desktop/TEO-DAS/DAS-GITHUB/05_DIAGRAMAS_Y_RECURSOS_EDITABLES/VISOR_HTML_ARQUITECTURA_v01.00/fig3_2_vista_logica_clases_uml.html)
+* **Render Gráfico Hi-DPI:** [`08_vista_logica_clases_uml.png`](file:///C:/Users/marco/Desktop/TEO-DAS/scratch_img/08_vista_logica_clases_uml.png) (3569 × 2358 px)
+* **¿Por qué se ubica como Anexo?:**
+  Siguiendo las indicaciones del docente, el diagrama de clases UML 2.5 describe la estructura interna de bajo nivel (atributos, operaciones CRUD, visibilidad pública/privada y mapeo relacional a tablas `TB_*`). Por ello, se traslada formalmente a la sección de **Anexos** (Anexo 1 del documento y sección dedicada en el Visor HTML), preservando su valor de diseño detallado sin sobrecargar el cuerpo principal de la Vista Lógica.
+* **¿Qué contiene?:**
 * **Archivo Interactivo:** [`Figura_3_2_Vista_Logica_Clases_UML_v01.00.html`](file:///C:/Users/marco/Desktop/TEO-DAS/DAS-GITHUB/05_DIAGRAMAS_Y_RECURSOS_EDITABLES/03_Vista_Logica/Figura_3_2_Vista_Logica_Clases_UML_v01.00.html)
 * **Render Gráfico Hi-DPI:** [`08_vista_logica_clases_uml.png`](file:///C:/Users/marco/Desktop/TEO-DAS/scratch_img/08_vista_logica_clases_uml.png) (3569 × 2358 px)
 * **¿Qué contiene?:**

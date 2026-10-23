@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fig 7.3 - Bloques Funcionales Nivel 1 | NexoVitalis360</title>
+  <title>Figura 7.2 - Vista Lógica Bloques Funcionales Nivel 1 | NexoVitalis360</title>
   <style>
     
     *, *::before, *::after {
@@ -495,12 +495,85 @@
       pointer-events: auto;
     }
 
+    /* MODAL DE RENDER PNG 300-DPI (MODO DUAL-VIEW) */
+    .image-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 3000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .image-modal.open {
+      display: flex;
+    }
+
+    .image-modal-content {
+      position: relative;
+      background: #ffffff;
+      border: 2px solid #000000;
+      box-shadow: 6px 6px 0px #000000;
+      max-width: 95vw;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .image-modal-header {
+      background: #000000;
+      color: #ffffff;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .btn-close-modal {
+      background: #ffffff;
+      color: #000000;
+      border: 1.5px solid #ffffff;
+      padding: 3px 8px;
+      font-weight: 800;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .btn-close-modal:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .image-modal-body {
+      overflow: auto;
+      padding: 12px;
+      background: #ffffff;
+      text-align: center;
+    }
+
+    .image-modal-body img {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #000000;
+    }
+
   </style>
 </head>
 <body class="mode-titles-only">
 
   <!-- BARRA DE CONTROL FLOTANTE (HUD COMPACTO) -->
   <header class="hud-bar">
+    <span style="font-weight: 800; font-size: 11px; margin-right: 6px; border-right: 1.5px solid #000000; padding-right: 8px;">Figura 7.2 - Vista Lógica Bloques Funcionales</span>
     <span class="hud-status-badge" id="statusBadge">MODO TÍTULOS</span>
     <span class="hud-hint">Arrastrar: Pan | Rueda: Zoom</span>
     <div class="hud-controls">
@@ -510,172 +583,164 @@
       <button class="btn-hud" id="btnFit">Ajustar</button>
       <button class="btn-hud" id="btnReset">Reset</button>
       <button class="btn-hud" id="btnToggleMode">Modo: AUTO</button>
+      <button class="btn-hud" id="btnToggleImage" title="Ver render oficial 300 DPI">Render PNG 300-DPI</button>
     </div>
   </header>
 
+  <!-- MODAL DE VISUALIZACIÓN DE RENDER EN ALTA DEFINICIÓN (DUAL-VIEW) -->
+  <div class="image-modal" id="imageModal">
+    <div class="image-modal-content">
+      <div class="image-modal-header">
+        <span>RENDER OFICIAL 300-DPI — Figura 7.2 - Vista Lógica Bloques Funcionales Nivel 1</span>
+        <button class="btn-close-modal" id="btnCloseModal">✕ Cerrar</button>
+      </div>
+      <div class="image-modal-body">
+        <img src="fig7_3_bloques_funcionales_nivel1.png" alt="Render Oficial 300 DPI - Figura 7.2 - Vista Lógica Bloques Funcionales Nivel 1" />
+      </div>
+    </div>
+  </div>
+
   <div class="viewport" id="viewport">
-    <div class="canvas-world" id="canvasWorld" style="width: 2460px; height: 1300px;">
+    <div class="canvas-world" id="canvasWorld" style="width: 2300px; height: 1300px;">
 
       <!-- FRONTERA DEL SISTEMA (LÍNEA DISCONTINUA) -->
-      <div style="position: absolute; left: 520px; top: 230px; width: 1480px; height: 950px; border: 2.2px dashed #000000; pointer-events: none; z-index: 1;">
+      <div style="position: absolute; left: 360px; top: 230px; width: 1480px; height: 950px; border: 2.2px dashed #000000; pointer-events: none; z-index: 1;">
         <div style="position: absolute; left: 20px; top: 12px; background: #000000; color: #ffffff; padding: 4px 12px; font-weight: bold; font-size: 11px; letter-spacing: 0.5px;">
           FRONTERA DEL SISTEMA: NEXOVITALIS360 (NIVEL 1)
         </div>
       </div>
 
       <!-- CAPA SVG DE LOS 28 FLUJOS CORRELATIVOS (F1 A F28) REFORZADOS -->
-      <svg class="svg-layer" width="2460" height="1300">
+      <svg class="svg-layer" width="2300" height="1300">
         <defs>
           <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
             <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#000000" />
           </marker>
         </defs>
 
-        
-        <!-- ===================================================================== -->
-        <!-- ESTÍMULOS CONCURRENTES EXTERNOS: PARALELISMO (3 PUNTOS Y LÍNEAS GUÍA) -->
-        <!-- ===================================================================== -->
-        <!-- 1. Estímulo paralelo a Apoderado / Paciente -->
-        <circle cx="80" cy="365" r="14" fill="#000000" style="cursor: pointer;">
-          <title>Estímulo Externo Concurrente / Paralelismo: Apoderado / Paciente</title>
-        </circle>
-        <line x1="94" y1="365" x2="192" y2="365" stroke="#000000" stroke-width="2.6" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+        <!-- F1: Apoderado (x=300, y=340) -> B1 (x=420, y=340) -->
+        <line x1="300" y1="340" x2="420" y2="340" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- 2. Estímulo paralelo a Asistente / Administrador -->
-        <circle cx="80" cy="645" r="14" fill="#000000" style="cursor: pointer;">
-          <title>Estímulo Externo Concurrente / Paralelismo: Asistente / Administrador</title>
-        </circle>
-        <line x1="94" y1="645" x2="192" y2="645" stroke="#000000" stroke-width="2.6" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+        <!-- F2: Apoderado (x=300, y=380) -> B2 (x=420, y=510) -->
+        <line x1="300" y1="380" x2="420" y2="510" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- 3. Estímulo paralelo a Gerencia General / Dirección -->
-        <circle cx="80" cy="945" r="14" fill="#000000" style="cursor: pointer;">
-          <title>Estímulo Externo Concurrente / Paralelismo: Gerencia General / Dirección</title>
-        </circle>
-        <line x1="94" y1="945" x2="192" y2="945" stroke="#000000" stroke-width="2.6" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+        <!-- F3: Asistente (x=300, y=650) -> B3 (x=420, y=680) -->
+        <line x1="300" y1="650" x2="420" y2="680" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F1: Apoderado (x=460, y=340) -> B1 (x=580, y=340) -->
-        <line x1="460" y1="340" x2="580" y2="340" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F4: Asistente (x=300, y=700) -> B4 (x=900, y=650) a través de la brecha y=800 -->
+        <path d="M 300 700 L 360 700 L 360 800 L 840 800 L 840 650 L 900 650" stroke="#000000" stroke-width="2.8" fill="none" marker-end="url(#arrow)" />
 
-        <!-- F2: Apoderado (x=460, y=380) -> B2 (x=580, y=510) -->
-        <line x1="460" y1="380" x2="580" y2="510" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F5: Especialista (x=1900, y=510) -> B7 (x=1780, y=510) -->
+        <line x1="1900" y1="510" x2="1780" y2="510" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F3: Asistente (x=460, y=650) -> B3 (x=580, y=680) -->
-        <line x1="460" y1="650" x2="580" y2="680" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F6: Gerencia (x=300, y=940) -> B10 (x=420, y=940) - HORIZONTAL DIRECTO SIN FANTASMAS -->
+        <line x1="300" y1="940" x2="420" y2="940" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F4: Asistente (x=460, y=700) -> B4 (x=1060, y=650) a través de la brecha y=800 -->
-        <path d="M 460 700 L 520 700 L 520 800 L 1000 800 L 1000 650 L 1060 650" stroke="#000000" stroke-width="2.8" fill="none" marker-end="url(#arrow)" />
+        <!-- F7: B1 (x=700, y=365) -> B4 (x=900, y=560) -->
+        <line x1="700" y1="365" x2="900" y2="560" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F5: Especialista (x=2060, y=510) -> B7 (x=1940, y=510) -->
-        <line x1="2060" y1="510" x2="1940" y2="510" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F8: B2 (x=700, y=520) -> B4 (x=900, y=600) -->
+        <line x1="700" y1="520" x2="900" y2="600" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F6: Gerencia (x=460, y=940) -> B10 (x=580, y=940) - HORIZONTAL DIRECTO SIN FANTASMAS -->
-        <line x1="460" y1="940" x2="580" y2="940" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F9: B3 (x=700, y=680) -> B4 (x=900, y=670) -->
+        <line x1="700" y1="680" x2="900" y2="670" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F7: B1 (x=860, y=365) -> B4 (x=1060, y=560) -->
-        <line x1="860" y1="365" x2="1060" y2="560" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F10: B8 (x=1500, y=700) -> B4 (x=1300, y=700) -->
+        <line x1="1500" y1="700" x2="1300" y2="700" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F8: B2 (x=860, y=520) -> B4 (x=1060, y=600) -->
-        <line x1="860" y1="520" x2="1060" y2="600" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F11: B4 (x=1300, y=740) -> B8 (x=1500, y=740) -->
+        <line x1="1300" y1="740" x2="1500" y2="740" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F9: B3 (x=860, y=680) -> B4 (x=1060, y=670) -->
-        <line x1="860" y1="680" x2="1060" y2="670" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F12: B4 (x=1080, y=520) -> B5 (x=1080, y=430) -->
+        <line x1="1080" y1="520" x2="1080" y2="430" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F10: B8 (x=1660, y=700) -> B4 (x=1460, y=700) -->
-        <line x1="1660" y1="700" x2="1460" y2="700" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F13: B5 (x=1120, y=430) -> B4 (x=1120, y=520) -->
+        <line x1="1120" y1="430" x2="1120" y2="520" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
 
-        <!-- F11: B4 (x=1460, y=740) -> B8 (x=1660, y=740) -->
-        <line x1="1460" y1="740" x2="1660" y2="740" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
-
-        <!-- F12: B4 (x=1240, y=520) -> B5 (x=1240, y=430) -->
-        <line x1="1240" y1="520" x2="1240" y2="430" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
-
-        <!-- F13: B5 (x=1280, y=430) -> B4 (x=1280, y=520) -->
-        <line x1="1280" y1="430" x2="1280" y2="520" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
-
-        <!-- F14: B4 (x=1460, y=560) -> B6 (x=1660, y=365) -->
-        <line x1="1460" y1="560" x2="1660" y2="365" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F14: B4 (x=1300, y=560) -> B6 (x=1500, y=365) -->
+        <line x1="1300" y1="560" x2="1500" y2="365" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
         <!-- F15, F16, F17: B4 <-> B7 TRES LÍNEAS HORIZONTALES PARALELAS LIMPIAS (SIN CRUCES) -->
-        <!-- F15: B4 (x=1460, y=500) -> B7 (x=1660, y=500) -->
-        <line x1="1460" y1="500" x2="1660" y2="500" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F15: B4 (x=1300, y=500) -> B7 (x=1500, y=500) -->
+        <line x1="1300" y1="500" x2="1500" y2="500" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F16: B7 (x=1660, y=545) -> B4 (x=1460, y=545) -->
-        <line x1="1660" y1="545" x2="1460" y2="545" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F16: B7 (x=1500, y=545) -> B4 (x=1300, y=545) -->
+        <line x1="1500" y1="545" x2="1300" y2="545" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F17: B7 (x=1660, y=590) -> B4 (x=1460, y=590) -->
-        <line x1="1660" y1="590" x2="1460" y2="590" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+        <!-- F17: B7 (x=1500, y=590) -> B4 (x=1300, y=590) -->
+        <line x1="1500" y1="590" x2="1300" y2="590" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
 
-        <!-- F18: B4 (x=1380, y=780) -> B9 (x=1660, y=920) -->
-        <path d="M 1380 780 L 1380 830 L 1580 830 L 1580 920 L 1660 920" stroke="#000000" stroke-width="2.8" fill="none" marker-end="url(#arrow)" />
+        <!-- F18: B4 (x=1220, y=780) -> B9 (x=1500, y=920) -->
+        <path d="M 1220 780 L 1220 830 L 1420 830 L 1420 920 L 1500 920" stroke="#000000" stroke-width="2.8" fill="none" marker-end="url(#arrow)" />
 
-        <!-- F19: B4 (x=1060, y=730) -> B10 (x=860, y=910) -->
-        <line x1="1060" y1="730" x2="860" y2="910" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F19: B4 (x=900, y=730) -> B10 (x=700, y=910) -->
+        <line x1="900" y1="730" x2="700" y2="910" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F20: B10 (x=860, y=950) -> B4 (x=1060, y=760) -->
-        <line x1="860" y1="950" x2="1060" y2="760" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F20: B10 (x=700, y=950) -> B4 (x=900, y=760) -->
+        <line x1="700" y1="950" x2="900" y2="760" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F21: B4 (x=1260, y=780) -> B11 (x=1260, y=880) -->
-        <line x1="1260" y1="780" x2="1260" y2="880" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F21: B4 (x=1100, y=780) -> B11 (x=1100, y=880) -->
+        <line x1="1100" y1="780" x2="1100" y2="880" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F22: B5 (x=1260, y=300) <-> Google Meet (x=1260, y=215) -->
-        <line x1="1245" y1="300" x2="1245" y2="215" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
-        <line x1="1275" y1="215" x2="1275" y2="300" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+        <!-- F22: B5 (x=1100, y=300) <-> Google Meet (x=1100, y=215) -->
+        <line x1="1085" y1="300" x2="1085" y2="215" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="1115" y1="215" x2="1115" y2="300" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
 
-        <!-- F23: B6 (x=1720, y=300) <-> WhatsApp (x=1720, y=215) -->
-        <line x1="1705" y1="300" x2="1705" y2="215" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
-        <line x1="1735" y1="215" x2="1735" y2="300" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F23: B6 (x=1560, y=300) <-> WhatsApp (x=1560, y=215) -->
+        <line x1="1545" y1="300" x2="1545" y2="215" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="1575" y1="215" x2="1575" y2="300" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F24: WhatsApp (x=1720, y=140) -> Apoderado (x=330, y=300) por el perímetro superior externo -->
-        <path d="M 1720 140 L 1720 115 L 330 115 L 330 300" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" fill="none" marker-end="url(#arrow)" />
+        <!-- F24: WhatsApp (x=1560, y=140) -> Apoderado (x=170, y=300) por el perímetro superior externo -->
+        <path d="M 1560 140 L 1560 115 L 170 115 L 170 300" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" fill="none" marker-end="url(#arrow)" />
 
-        <!-- F25: B8 (x=1940, y=660) <-> SUNAT (x=2060, y=660) -->
-        <line x1="1940" y1="650" x2="2060" y2="650" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
-        <line x1="2060" y1="675" x2="1940" y2="675" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
+        <!-- F25: B8 (x=1780, y=660) <-> SUNAT (x=1900, y=660) -->
+        <line x1="1780" y1="650" x2="1900" y2="650" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <line x1="1900" y1="675" x2="1780" y2="675" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" marker-end="url(#arrow)" />
 
-        <!-- F26: Pasarela (x=2060, y=810) -> B8 (x=1940, y=740) -->
-        <line x1="2060" y1="810" x2="1940" y2="740" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
+        <!-- F26: Pasarela (x=1900, y=810) -> B8 (x=1780, y=740) -->
+        <line x1="1900" y1="810" x2="1780" y2="740" stroke="#000000" stroke-width="2.8" marker-end="url(#arrow)" />
 
-        <!-- F27: B8 (x=1940, y=770) -> Apoderado (x=200, y=400) por el perímetro exterior inferior -->
-        <path d="M 1940 770 L 2020 770 L 2020 1240 L 20 1240 L 20 400 L 200 400" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" fill="none" marker-end="url(#arrow)" />
+        <!-- F27: B8 (x=1780, y=770) -> Apoderado por el perímetro exterior inferior -->
+        <path d="M 1780 770 L 1860 770 L 1860 1240 L 20 1240 L 20 400 L 40 400" stroke="#000000" stroke-width="2.2" stroke-dasharray="6,4" fill="none" marker-end="url(#arrow)" />
 
-        <!-- F28: B9 (x=1800, y=1010) -> Gerencia (x=330, y=1010) por el canal inferior limpio -->
-        <path d="M 1800 1010 L 1800 1150 L 330 1150 L 330 1010" stroke="#000000" stroke-width="2.8" fill="none" marker-end="url(#arrow)" />
+        <!-- F28: B9 (x=1640, y=1010) -> Gerencia (x=170, y=1010) por el canal inferior limpio -->
+        <path d="M 1640 1010 L 1640 1150 L 170 1150 L 170 1010" stroke="#000000" stroke-width="2.8" fill="none" marker-end="url(#arrow)" />
       </svg>
 
       <!-- ETIQUETAS DE LOS 28 FLUJOS (REVELACIÓN PROGRESIVA: CORTO EN VISTA GENERAL, DETALLE EN ZOOM/HOVER) -->
-      <div class="flow-pill" style="left: 520px; top: 316px;"><span class="pill-core">F1: Filiación</span><span class="pill-detail"> menor y apoderado</span></div>
-      <div class="flow-pill" style="left: 505px; top: 430px;"><span class="pill-core">F2: Pre-triaje</span><span class="pill-detail"> y consentimiento</span></div>
-      <div class="flow-pill" style="left: 515px; top: 645px;"><span class="pill-core">F3: Horarios</span><span class="pill-detail">, tarifas y turnos</span></div>
-      <div class="flow-pill" style="left: 760px; top: 778px;"><span class="pill-core">F4: Solicitud agendamiento</span><span class="pill-detail"> asistencial</span></div>
-      <div class="flow-pill" style="left: 2000px; top: 488px;"><span class="pill-core">F5: Evolución clínica</span><span class="pill-detail"> (CIE-10)</span></div>
-      <div class="flow-pill" style="left: 520px; top: 918px;"><span class="pill-core">F6: Políticas RBAC</span><span class="pill-detail"> (Seguridad)</span></div>
-      <div class="flow-pill" style="left: 940px; top: 435px;"><span class="pill-core">F7: Paciente validado</span><span class="pill-detail"> (Filiación OK)</span></div>
-      <div class="flow-pill" style="left: 945px; top: 535px;"><span class="pill-core">F8: Triaje OK</span><span class="pill-detail"> (Habilitación)</span></div>
-      <div class="flow-pill" style="left: 960px; top: 652px;"><span class="pill-core">F9: Franjas libres</span><span class="pill-detail"> disponibles</span></div>
-      <div class="flow-pill" style="left: 1560px; top: 678px;"><span class="pill-core">F10: Saldo paquetes</span><span class="pill-detail"> validado</span></div>
-      <div class="flow-pill" style="left: 1560px; top: 762px;"><span class="pill-core">F11: Sesión atendida</span><span class="pill-detail"> deducida</span></div>
-      <div class="flow-pill" style="left: 1155px; top: 475px;"><span class="pill-core">F12: Solicitud Meet</span><span class="pill-detail"> (OAuth2)</span></div>
-      <div class="flow-pill" style="left: 1365px; top: 475px;"><span class="pill-core">F13: URL Meet</span><span class="pill-detail"> (Room Token)</span></div>
-      <div class="flow-pill" style="left: 1575px; top: 435px;"><span class="pill-core">F14: Aviso T-24h</span><span class="pill-detail"> (Programar)</span></div>
-      <div class="flow-pill" style="left: 1560px; top: 480px;"><span class="pill-core">F15: Cita 'En Atención'</span><span class="pill-detail"> (Inicio)</span></div>
-      <div class="flow-pill" style="left: 1560px; top: 526px;"><span class="pill-core">F16: Interconsulta</span><span class="pill-detail"> (Cita médica)</span></div>
-      <div class="flow-pill" style="left: 1560px; top: 610px;"><span class="pill-core">F17: Banderas rojas</span><span class="pill-detail"> (Alerta clínica)</span></div>
-      <div class="flow-pill" style="left: 1480px; top: 810px;"><span class="pill-core">F18: Turnos liquidación</span><span class="pill-detail"> (Auditoría)</span></div>
-      <div class="flow-pill" style="left: 935px; top: 800px;"><span class="pill-core">F19: Traza forense</span><span class="pill-detail"> (Logs)</span></div>
-      <div class="flow-pill" style="left: 985px; top: 875px;"><span class="pill-core">F20: Permisos RBAC</span><span class="pill-detail"> (Verificado)</span></div>
-      <div class="flow-pill" style="left: 1380px; top: 830px;"><span class="pill-core">F21: Persistencia ACID</span><span class="pill-detail"> (PostgreSQL)</span></div>
-      <div class="flow-pill" style="left: 1370px; top: 255px;"><span class="pill-core">F22: API Meet</span><span class="pill-detail"> (OAuth2)</span></div>
-      <div class="flow-pill" style="left: 1830px; top: 255px;"><span class="pill-core">F23: WhatsApp</span><span class="pill-detail"> (Avisos T-24h)</span></div>
-      <div class="flow-pill" style="left: 1025px; top: 95px;"><span class="pill-core">F24: Recordatorio T-24h</span><span class="pill-detail"> (Apoderado)</span></div>
-      <div class="flow-pill" style="left: 2000px; top: 628px;"><span class="pill-core">F25: Comprobante XML</span><span class="pill-detail"> (SUNAT)</span></div>
-      <div class="flow-pill" style="left: 2015px; top: 755px;"><span class="pill-core">F26: Voucher pasarela</span><span class="pill-detail"> (Validación)</span></div>
-      <div class="flow-pill" style="left: 1110px; top: 1218px;"><span class="pill-core">F27: Factura electrónica</span><span class="pill-detail"> (Apoderado)</span></div>
-      <div class="flow-pill" style="left: 1060px; top: 1128px;"><span class="pill-core">F28: Reporte liquidación</span><span class="pill-detail"> (Gerencia)</span></div>
+      <div class="flow-pill" style="left: 360px; top: 316px;"><span class="pill-core">F1: Filiación</span><span class="pill-detail"> menor y apoderado</span></div>
+      <div class="flow-pill" style="left: 345px; top: 430px;"><span class="pill-core">F2: Pre-triaje</span><span class="pill-detail"> y consentimiento</span></div>
+      <div class="flow-pill" style="left: 355px; top: 645px;"><span class="pill-core">F3: Horarios</span><span class="pill-detail">, tarifas y turnos</span></div>
+      <div class="flow-pill" style="left: 600px; top: 778px;"><span class="pill-core">F4: Solicitud agendamiento</span><span class="pill-detail"> asistencial</span></div>
+      <div class="flow-pill" style="left: 1840px; top: 488px;"><span class="pill-core">F5: Evolución clínica</span><span class="pill-detail"> (CIE-10)</span></div>
+      <div class="flow-pill" style="left: 360px; top: 918px;"><span class="pill-core">F6: Políticas RBAC</span><span class="pill-detail"> (Seguridad)</span></div>
+      <div class="flow-pill" style="left: 780px; top: 435px;"><span class="pill-core">F7: Paciente validado</span><span class="pill-detail"> (Filiación OK)</span></div>
+      <div class="flow-pill" style="left: 785px; top: 535px;"><span class="pill-core">F8: Triaje OK</span><span class="pill-detail"> (Habilitación)</span></div>
+      <div class="flow-pill" style="left: 800px; top: 652px;"><span class="pill-core">F9: Franjas libres</span><span class="pill-detail"> disponibles</span></div>
+      <div class="flow-pill" style="left: 1400px; top: 678px;"><span class="pill-core">F10: Saldo paquetes</span><span class="pill-detail"> validado</span></div>
+      <div class="flow-pill" style="left: 1400px; top: 762px;"><span class="pill-core">F11: Sesión atendida</span><span class="pill-detail"> deducida</span></div>
+      <div class="flow-pill" style="left: 995px; top: 475px;"><span class="pill-core">F12: Solicitud Meet</span><span class="pill-detail"> (OAuth2)</span></div>
+      <div class="flow-pill" style="left: 1205px; top: 475px;"><span class="pill-core">F13: URL Meet</span><span class="pill-detail"> (Room Token)</span></div>
+      <div class="flow-pill" style="left: 1415px; top: 435px;"><span class="pill-core">F14: Aviso T-24h</span><span class="pill-detail"> (Programar)</span></div>
+      <div class="flow-pill" style="left: 1400px; top: 480px;"><span class="pill-core">F15: Cita 'En Atención'</span><span class="pill-detail"> (Inicio)</span></div>
+      <div class="flow-pill" style="left: 1400px; top: 526px;"><span class="pill-core">F16: Interconsulta</span><span class="pill-detail"> (Cita médica)</span></div>
+      <div class="flow-pill" style="left: 1400px; top: 610px;"><span class="pill-core">F17: Banderas rojas</span><span class="pill-detail"> (Alerta clínica)</span></div>
+      <div class="flow-pill" style="left: 1320px; top: 810px;"><span class="pill-core">F18: Turnos liquidación</span><span class="pill-detail"> (Auditoría)</span></div>
+      <div class="flow-pill" style="left: 775px; top: 800px;"><span class="pill-core">F19: Traza forense</span><span class="pill-detail"> (Logs)</span></div>
+      <div class="flow-pill" style="left: 825px; top: 875px;"><span class="pill-core">F20: Permisos RBAC</span><span class="pill-detail"> (Verificado)</span></div>
+      <div class="flow-pill" style="left: 1220px; top: 830px;"><span class="pill-core">F21: Persistencia ACID</span><span class="pill-detail"> (PostgreSQL)</span></div>
+      <div class="flow-pill" style="left: 1210px; top: 255px;"><span class="pill-core">F22: API Meet</span><span class="pill-detail"> (OAuth2)</span></div>
+      <div class="flow-pill" style="left: 1670px; top: 255px;"><span class="pill-core">F23: WhatsApp</span><span class="pill-detail"> (Avisos T-24h)</span></div>
+      <div class="flow-pill" style="left: 865px; top: 95px;"><span class="pill-core">F24: Recordatorio T-24h</span><span class="pill-detail"> (Apoderado)</span></div>
+      <div class="flow-pill" style="left: 1840px; top: 628px;"><span class="pill-core">F25: Comprobante XML</span><span class="pill-detail"> (SUNAT)</span></div>
+      <div class="flow-pill" style="left: 1855px; top: 755px;"><span class="pill-core">F26: Voucher pasarela</span><span class="pill-detail"> (Validación)</span></div>
+      <div class="flow-pill" style="left: 950px; top: 1218px;"><span class="pill-core">F27: Factura electrónica</span><span class="pill-detail"> (Apoderado)</span></div>
+      <div class="flow-pill" style="left: 900px; top: 1128px;"><span class="pill-core">F28: Reporte liquidación</span><span class="pill-detail"> (Gerencia)</span></div>
 
       <!-- 11 BLOQUES FUNCIONALES INTERNOS (B1 A B11) -->
 
       <!-- B1: Pacientes y Apoderados -->
-      <div class="box-card" style="left: 580px; top: 300px; width: 280px; height: 130px;">
+      <div class="box-card" style="left: 420px; top: 300px; width: 280px; height: 130px;">
         <div class="box-title">B1. Pacientes y Apoderados</div>
         <div class="box-subtitle">Filiación y Validación Legal</div>
         <span class="box-tag">EDU-0014, EDU-0021</span>
@@ -686,7 +751,7 @@
       </div>
 
       <!-- B2: Pre-triaje y Consentimiento -->
-      <div class="box-card" style="left: 580px; top: 470px; width: 280px; height: 130px;">
+      <div class="box-card" style="left: 420px; top: 470px; width: 280px; height: 130px;">
         <div class="box-title">B2. Pre-triaje y Consentimiento</div>
         <div class="box-subtitle">Habilitación Clínica</div>
         <span class="box-tag">EDU-0023, EDU-0029</span>
@@ -697,7 +762,7 @@
       </div>
 
       <!-- B3: Especialistas y Horarios -->
-      <div class="box-card" style="left: 580px; top: 640px; width: 280px; height: 130px;">
+      <div class="box-card" style="left: 420px; top: 640px; width: 280px; height: 130px;">
         <div class="box-title">B3. Especialistas y Horarios</div>
         <div class="box-subtitle">Gestión de Disponibilidad</div>
         <span class="box-tag">EDU-0016, EDU-0017</span>
@@ -708,7 +773,7 @@
       </div>
 
       <!-- B10: Permisos y Auditoría (RBAC) -->
-      <div class="box-card" style="left: 580px; top: 880px; width: 280px; height: 130px;">
+      <div class="box-card" style="left: 420px; top: 880px; width: 280px; height: 130px;">
         <div class="box-title">B10. Permisos y Auditoría (RBAC)</div>
         <div class="box-subtitle">Seguridad y Trazabilidad</div>
         <span class="box-tag">EDU-0009, EDU-0011</span>
@@ -719,7 +784,7 @@
       </div>
 
       <!-- B4: Gestión de Citas y Agendas (NÚCLEO ORQUESTADOR) -->
-      <div class="box-card card-hub" style="left: 1060px; top: 520px; width: 400px; height: 260px;">
+      <div class="box-card card-hub" style="left: 900px; top: 520px; width: 400px; height: 260px;">
         <div class="box-title">B4. GESTIÓN DE CITAS Y AGENDAS</div>
         <div class="box-subtitle">[Núcleo Orquestador Central de Comportamiento]</div>
         <span class="box-tag">EDU-0008, EDU-0012, EDU-0013, EDU-0018</span>
@@ -732,7 +797,7 @@
       </div>
 
       <!-- B5: Videoconferencia y Telemedicina -->
-      <div class="box-card" style="left: 1120px; top: 300px; width: 280px; height: 130px;">
+      <div class="box-card" style="left: 960px; top: 300px; width: 280px; height: 130px;">
         <div class="box-title">B5. Videoconferencia</div>
         <div class="box-subtitle">Telemedicina WebRTC</div>
         <span class="box-tag">EDU-0019</span>
@@ -743,7 +808,7 @@
       </div>
 
       <!-- B6: Mensajería de Citas -->
-      <div class="box-card" style="left: 1660px; top: 300px; width: 280px; height: 130px;">
+      <div class="box-card" style="left: 1500px; top: 300px; width: 280px; height: 130px;">
         <div class="box-title">B6. Mensajería de Citas</div>
         <div class="box-subtitle">Notificaciones Transaccionales</div>
         <span class="box-tag">EDU-0020</span>
@@ -754,7 +819,7 @@
       </div>
 
       <!-- B7: Historia Clínica Digital -->
-      <div class="box-card" style="left: 1660px; top: 470px; width: 280px; height: 140px;">
+      <div class="box-card" style="left: 1500px; top: 470px; width: 280px; height: 140px;">
         <div class="box-title">B7. Historia Clínica Digital</div>
         <div class="box-subtitle">Expediente Pediátrico</div>
         <span class="box-tag">EDU-0015, EDU-0025, EDU-0028</span>
@@ -765,7 +830,7 @@
       </div>
 
       <!-- B8: Paquetes y Facturas -->
-      <div class="box-card" style="left: 1660px; top: 670px; width: 280px; height: 130px;">
+      <div class="box-card" style="left: 1500px; top: 670px; width: 280px; height: 130px;">
         <div class="box-title">B8. Paquetes y Facturas</div>
         <div class="box-subtitle">Finanzas y Facturación</div>
         <span class="box-tag">EDU-0033, EDU-0036</span>
@@ -776,7 +841,7 @@
       </div>
 
       <!-- B9: Liquidación Profesional -->
-      <div class="box-card" style="left: 1660px; top: 880px; width: 280px; height: 130px;">
+      <div class="box-card" style="left: 1500px; top: 880px; width: 280px; height: 130px;">
         <div class="box-title">B9. Liquidación Profesional</div>
         <div class="box-subtitle">Cierre y Honorarios</div>
         <span class="box-tag">EDU-0038</span>
@@ -787,7 +852,7 @@
       </div>
 
       <!-- B11: Repositorio de Datos (PostgreSQL) -->
-      <div class="box-card card-hub" style="left: 1060px; top: 880px; width: 400px; height: 140px;">
+      <div class="box-card card-hub" style="left: 900px; top: 880px; width: 400px; height: 140px;">
         <div class="box-title">B11. REPOSITORIO DE DATOS - POSTGRESQL</div>
         <div class="box-subtitle">Capa 4: Persistencia ACID (Vitalis_BD)</div>
         <span class="box-tag">Transacciones ACID y Aislamiento</span>
@@ -800,48 +865,48 @@
       <!-- ENTIDADES EXTERNAS PERIMETRALES (FUERA DE LA FRONTERA) -->
 
       <!-- Actores de Entrada (Izquierda) -->
-      <div class="box-card card-ext" style="left: 200px; top: 300px; width: 260px; height: 130px;">
+      <div class="box-card card-ext" style="left: 40px; top: 300px; width: 260px; height: 130px;">
         <div class="box-title">Apoderado / Paciente</div>
         <div class="box-subtitle">[Actor Humano Externo]</div>
         <span class="box-tag">Perímetro Asistencial</span>
       </div>
 
-      <div class="box-card card-ext" style="left: 200px; top: 580px; width: 260px; height: 130px;">
+      <div class="box-card card-ext" style="left: 40px; top: 580px; width: 260px; height: 130px;">
         <div class="box-title">Asistente / Administrador</div>
         <div class="box-subtitle">[Actor Humano Externo]</div>
         <span class="box-tag">Perímetro Administrativo</span>
       </div>
 
-      <div class="box-card card-ext" style="left: 200px; top: 880px; width: 260px; height: 130px;">
+      <div class="box-card card-ext" style="left: 40px; top: 880px; width: 260px; height: 130px;">
         <div class="box-title">Gerencia General / Dirección</div>
         <div class="box-subtitle">[Actor Gobernanza y Finanzas]</div>
         <span class="box-tag">Gobernanza Institucional</span>
       </div>
 
       <!-- Servicios Externos Superiores (Capa 5) -->
-      <div class="box-card card-ext" style="left: 1120px; top: 140px; width: 280px; height: 75px;">
+      <div class="box-card card-ext" style="left: 960px; top: 140px; width: 280px; height: 75px;">
         <div class="box-title">Google Meet API</div>
         <div class="box-subtitle">[Servicio Externo Capa 5]</div>
       </div>
 
-      <div class="box-card card-ext" style="left: 1660px; top: 140px; width: 280px; height: 75px;">
+      <div class="box-card card-ext" style="left: 1500px; top: 140px; width: 280px; height: 75px;">
         <div class="box-title">WhatsApp / Telefonía</div>
         <div class="box-subtitle">[Pasarela Mensajería Externa]</div>
       </div>
 
       <!-- Actores y Servicios Externos (Derecha) -->
-      <div class="box-card card-ext" style="left: 2060px; top: 300px; width: 260px; height: 130px;">
+      <div class="box-card card-ext" style="left: 1900px; top: 300px; width: 260px; height: 130px;">
         <div class="box-title">Especialista Clínico</div>
         <div class="box-subtitle">[Actor Humano Externo]</div>
         <span class="box-tag">Perímetro Asistencial</span>
       </div>
 
-      <div class="box-card card-ext" style="left: 2060px; top: 620px; width: 260px; height: 95px;">
+      <div class="box-card card-ext" style="left: 1900px; top: 620px; width: 260px; height: 95px;">
         <div class="box-title">SUNAT API</div>
         <div class="box-subtitle">[Ente Tributario]</div>
       </div>
 
-      <div class="box-card card-ext" style="left: 2060px; top: 760px; width: 260px; height: 95px;">
+      <div class="box-card card-ext" style="left: 1900px; top: 760px; width: 260px; height: 95px;">
         <div class="box-title">Pasarela de Pagos</div>
         <div class="box-subtitle">[Entidad Financiera]</div>
       </div>
@@ -850,7 +915,7 @@
   </div>
 
   <script>
-    const CANVAS_W = 2460;
+    const CANVAS_W = 2300;
     const CANVAS_H = 1300;
     
   // ============================================================
@@ -971,6 +1036,26 @@
   });
 
   document.getElementById('btnFit').addEventListener('click', fitToScreen);
+
+  const btnToggleImage = document.getElementById('btnToggleImage');
+  const imageModal = document.getElementById('imageModal');
+  const btnCloseModal = document.getElementById('btnCloseModal');
+
+  if (btnToggleImage && imageModal && btnCloseModal) {
+    btnToggleImage.addEventListener('click', () => {
+      imageModal.classList.add('open');
+    });
+
+    btnCloseModal.addEventListener('click', () => {
+      imageModal.classList.remove('open');
+    });
+
+    imageModal.addEventListener('click', (e) => {
+      if (e.target === imageModal) {
+        imageModal.classList.remove('open');
+      }
+    });
+  }
 
   document.getElementById('btnReset').addEventListener('click', () => {
     scale = 1.0;

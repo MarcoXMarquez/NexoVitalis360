@@ -396,7 +396,7 @@
             <span class="folder-arrow">▼</span>
             <span class="folder-name">2. Diagramas Comportamiento</span>
           </div>
-          <span class="folder-badge">5 Diagramas</span>
+          <span class="folder-badge">4 Diagramas</span>
         </div>
         <div class="folder-items">
           <div class="menu-item active" onclick="loadDiagram('fig7_1_contexto_modular_citas.html', this, 'Figura 7.1: Diagrama de Contexto Modular (Subsistema B4 Gestión de Citas y Agendas)', 'Delimita la frontera del módulo central B4, sus 5 responsabilidades nucleares, interacción con 3 actores humanos, 6 subsistemas hermanos del dominio y la API externa de Google Meet. Cobertura: EDU-0008, EDU-0012, EDU-0013, EDU-0018.')">
@@ -409,12 +409,6 @@
             <span class="item-title">7.2 Contexto Global (Nivel 0)</span>
             <span class="item-sub">NexoVitalis360 caja negra y 8 entidades perimetrales</span>
             <span class="item-tag">Caja Negra (Nivel 0)</span>
-          </div>
-
-          <div class="menu-item" onclick="loadDiagram('fig7_3_bloques_funcionales_nivel1.html', this, 'Figura 7.3: Diagrama de Bloques Funcionales Nivel 1', 'Descomposición formal de la frontera del sistema en 11 bloques funcionales (B1 a B11) con mapeo explícito de las 28 EDUs y el catálogo completo de los 28 flujos de datos correlativos (F1 a F28). Cobertura: 100% de requisitos funcionales.')">
-            <span class="item-title">7.3 Bloques Funcionales (Nivel 1)</span>
-            <span class="item-sub">11 bloques funcionales y 28 flujos de datos correlativos</span>
-            <span class="item-tag">Descomposición Funcional</span>
           </div>
 
           <div class="menu-item" onclick="loadDiagram('fig7_4_maquina_estados_cita.html', this, 'Figura 7.4: Diagrama de Máquina de Estados del Ciclo de Vida de la Cita Médica', 'Autómata finito determinista modelando los 8 estados asistenciales de la Cita (Solicitada, Pendiente, Confirmada, Reprogramada, En Atención, Atendida, Cancelada, No Asistió) con acciones entry/do, guardas formales y 3 estados finales (Concluida, Anulada, Caducada).')">
@@ -431,7 +425,7 @@
         </div>
       </div>
 
-      <!-- CARPETAS DE HITOS / PLANTILLAS SIGUIENTES (PREPARADAS) -->
+      <!-- CARPETA 3: VISTA LÓGICA (ACTUALIZADA CON BLOQUES FUNCIONALES SEGÚN FEEDBACK DOCENTE) -->
       <div class="folder-group open" id="group-vista-logica">
         <div class="folder-header" onclick="toggleFolder('group-vista-logica')">
           <div class="folder-title-row">
@@ -446,10 +440,10 @@
             <span class="item-sub">27 Educciones en 6 paquetes funcionales</span>
             <span class="item-tag">Módulos Funcionales (Cero RNF)</span>
           </div>
-          <div class="menu-item" onclick="loadDiagram('fig3_2_vista_logica_clases_uml.html', this, 'Figura 7.2: Vista Lógica — Diagrama de Clases UML 2.5 y Modelo de Dominio', 'Modelo de dominio clínico con clases tipadas, operaciones CRUD, jerarquía de herencia Persona, relaciones de composición/agregación y mapeo a tablas TB_*.')">
-            <span class="item-title">7.2 Diagrama de Clases UML</span>
-            <span class="item-sub">Entidades del dominio, herencia y tablas TB_*</span>
-            <span class="item-tag">Modelo de Dominio UML 2.5</span>
+          <div class="menu-item" onclick="loadDiagram('fig7_3_bloques_funcionales_nivel1.html', this, 'Figura 7.2: Vista Lógica — Diagrama de Bloques Funcionales Nivel 1', 'Descomposición formal de la frontera del sistema en 11 bloques modulares funcionales (B1 a B11) con mapeo exhaustivo de las 28 EDUs y el catálogo completo de los 28 flujos correlativos (F1 a F28). Integrado formalmente al cuerpo principal de la Vista Lógica conforme a las observaciones del docente.')">
+            <span class="item-title">7.2 Bloques Funcionales (Nivel 1)</span>
+            <span class="item-sub">11 bloques modulares (B1 a B11) y 28 flujos correlativos (F1 a F28)</span>
+            <span class="item-tag">Descomposición Funcional</span>
           </div>
         </div>
       </div>
@@ -494,6 +488,24 @@
             <span class="item-title">7.1 Diagrama de Despliegue UML</span>
             <span class="item-sub">Hardware, Software, pagefile.sys y RNF-0001 a RNF-0025</span>
             <span class="item-tag">Topología Física Completa</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN DE ANEXOS ARQUITECTÓNICOS (DETALLE DE BAJO NIVEL) -->
+      <div class="folder-group open" id="group-anexos">
+        <div class="folder-header" onclick="toggleFolder('group-anexos')">
+          <div class="folder-title-row">
+            <span class="folder-arrow">▼</span>
+            <span class="folder-name">Anexos Arquitectónicos</span>
+          </div>
+          <span class="folder-badge">1 Diagrama</span>
+        </div>
+        <div class="folder-items">
+          <div class="menu-item" onclick="loadDiagram('fig3_2_vista_logica_clases_uml.html', this, 'Anexo 1: Vista Lógica — Diagrama de Clases UML 2.5 y Modelo de Dominio Clínico (Bajo Nivel)', 'Modelo de dominio de bajo nivel con clases tipadas, operaciones CRUD, jerarquía de herencia Persona, relaciones de composición/agregación y mapeo a tablas TB_* de PostgreSQL. Ubicado como Anexo 1 según feedback del docente.')">
+            <span class="item-title">Anexo 1: Clases UML y Dominio</span>
+            <span class="item-sub">Detalle de bajo nivel: Entidades, operaciones y tablas TB_*</span>
+            <span class="item-tag">Anexo: Modelo de Dominio</span>
           </div>
         </div>
       </div>
