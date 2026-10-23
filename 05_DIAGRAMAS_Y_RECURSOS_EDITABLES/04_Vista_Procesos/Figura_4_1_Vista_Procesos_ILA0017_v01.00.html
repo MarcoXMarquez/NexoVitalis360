@@ -731,6 +731,7 @@
 
   <!-- BARRA DE CONTROL FLOTANTE (HUD COMPACTO) -->
   <header class="hud-bar">
+    <span style="font-weight: 800; font-size: 11px; margin-right: 6px; border-right: 1.5px solid #000000; padding-right: 8px;">Figura 7.1 - Vista de Procesos ILA-0017</span>
     <span class="hud-status-badge" id="statusBadge">SOLO TÍTULOS</span>
     <span class="hud-hint">Arrastrar: Pan | Rueda: Zoom</span>
     <div class="hud-controls">
@@ -759,12 +760,6 @@
 
   <div class="viewport" id="viewport">
     <div class="canvas-world" id="canvasWorld" style="width: 2360px; height: 1450px;">
-
-      <!-- ENCABEZADO SUPERIOR DEL DIAGRAMA -->
-      <div class="diagram-title-block">
-        <h1>SISTEMA NEXOVITALIS360 — VISTA DE PROCESOS: PROCESO 01 (ILA-0017 REGISTRO DE CITA MÉDICA)</h1>
-        <p>Diagrama de Flujo y Orquestación BPMN 2.0 en Bonita BPM con 5 Carriles (Swimlanes), Compuertas Exclusivas XOR, Eventos y Bloqueo Pesimista ACID</p>
-      </div>
 
       <!-- CAPA SVG DE CONEXIONES Y FLECHAS (z-index: 10 para cero superposición de cajas) -->
       <svg class="svg-layer" width="2360" height="1450">
@@ -813,6 +808,9 @@
       <!-- Gateway XOR 1: Rama NO (Conflicto) -->
       <line x1="1040" y1="678" x2="1040" y2="520" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow)" />
       
+      <!-- Notificar Conflicto a Fin de Cancelación -->
+      <line x1="1145" y1="465" x2="1185" y2="465" stroke="#000000" stroke-width="2.0" marker-end="url(#arrow)" />
+
       <!-- Gateway XOR 1: Rama SÍ -> Task 5 (Modalidad) -->
       <path d="M 1062 700 L 1140 700 L 1140 240 L 1260 240" fill="none" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow)" />
 
@@ -823,7 +821,7 @@
       <line x1="1470" y1="722" x2="1470" y2="1160" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow)" />
       
       <!-- Meet API a Task 7 -->
-      <path d="M 1710 1220 L 1735 1220 L 1735 700 L 1760 700" fill="none" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow)" />
+      <path d="M 1590 1220 L 1735 1220 L 1735 700 L 1760 700" fill="none" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow)" />
 
       <!-- Gateway XOR 2: Rama NO (Presencial directo a Task 7) -->
       <line x1="1492" y1="700" x2="1760" y2="700" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow)" />
@@ -832,7 +830,7 @@
       <line x1="1880" y1="765" x2="1880" y2="920" stroke="#000000" stroke-width="2.4" marker-end="url(#arrow)" />
 
       <!-- Task 8 a Task 9 (WhatsApp) -->
-      <path d="M 1990 980 L 2015 980 L 2015 1220 L 2040 1220" fill="none" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow)" />
+      <path d="M 2000 980 L 2020 980 L 2020 1220 L 2040 1220" fill="none" stroke="#000000" stroke-width="2.2" marker-end="url(#arrow)" />
 
       <!-- Task 9 a Fin (Lane 1) -->
       <path d="M 2150 1160 L 2150 258" fill="none" stroke="#000000" stroke-width="2.4" marker-end="url(#arrow)" />
@@ -887,7 +885,7 @@
         </div>
       </div>
 
-      <div class="box-card" style="left: 980px; top: 410px; width: 230px; height: 125px;">
+      <div class="box-card" style="left: 440px; top: 410px; width: 230px; height: 125px;">
         <span class="box-tag">Paso 2 &bull; Admisión</span>
         <div class="box-title">Verificar Afiliación y Tutela</div>
         <div class="box-subtitle">Lane: Recepción</div>
@@ -921,13 +919,21 @@
       <div class="bpmn-gateway-label" style="left: 1040px; top: 738px;">¿Slot Libre?</div>
 
       <!-- TAREA DE CONFLICTO (RAMA NO) -->
-      <div class="box-card" style="left: 1250px; top: 410px; width: 210px; height: 110px;">
+      <div class="box-card" style="left: 935px; top: 410px; width: 210px; height: 110px;">
         <span class="box-tag">Excepción</span>
         <div class="box-title">Notificar Conflicto de Agenda</div>
         <div class="box-subtitle">Lane: Recepción</div>
         <div class="box-content">
           <p>Slot no disponible o tomado simultáneamente; se proponen fechas alternativas.</p>
         </div>
+      </div>
+
+      <!-- EVENTO FIN DE CANCELACIÓN (RAMA CONFLICTO) -->
+      <div class="bpmn-event" style="left: 1205px; top: 465px;">
+        <div class="bpmn-circle-end">
+          <div class="bpmn-circle-end-inner"></div>
+        </div>
+        <span class="bpmn-event-label">Cita Cancelada</span>
       </div>
 
       <div class="box-card" style="left: 1260px; top: 175px; width: 230px; height: 125px;">
@@ -993,7 +999,7 @@
       <div class="flow-pill" style="left: 1040px; top: 600px;">
         <span class="pill-core">[No]</span> <span class="pill-detail">Conflicto</span>
       </div>
-      <div class="flow-pill" style="left: 1150px; top: 470px;">
+      <div class="flow-pill" style="left: 1140px; top: 470px;">
         <span class="pill-core">[Sí]</span> <span class="pill-detail">Slot Reservado</span>
       </div>
       <div class="flow-pill" style="left: 1470px; top: 930px;">

@@ -5,10 +5,12 @@ Desktop.ini
 $RECYCLE.BIN/
 .DS_Store
 
-# Archivos de bloqueo temporal de Microsoft Office
+# Archivos de bloqueo temporal de Microsoft Office y LibreOffice
 ~$*.docx
 ~$*.xlsx
 ~$*.pptx
+.~lock.*#
+.~lock.*
 
 # Python caches
 __pycache__/
