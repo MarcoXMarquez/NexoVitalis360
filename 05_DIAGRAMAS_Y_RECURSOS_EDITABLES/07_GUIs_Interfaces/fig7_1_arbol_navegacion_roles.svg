@@ -1,0 +1,208 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1400" width="2400" height="1400">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#000000" />
+    </marker>
+  </defs>
+
+  <!-- Fondo Blanco -->
+  <rect width="2400" height="1400" fill="#ffffff" />
+
+  <!-- Encabezado Institucional -->
+  <rect x="50" y="30" width="2300" height="90" fill="#ffffff" stroke="#000000" stroke-width="2.5" />
+  <text x="70" y="65" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#000000">NEXOVITALIS360 — ARQUITECTURA CENTRADA EN INTERFACES DE USUARIO (PLANTILLA 7)</text>
+  <text x="70" y="98" font-family="Arial, sans-serif" font-size="16" fill="#333333">FIGURA 7.1: ÁRBOL DE NAVEGACIÓN Y MAPA DE SITIO GLOBAL POR ROLES DE USUARIO (ESPECIALISTA, RECEPCIÓN, APODERADO)</text>
+  <text x="2150" y="80" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#000000">ESTÁNDAR W3C / ISO 25010</text>
+
+  <!-- Nodo Raíz: Portal Principal -->
+  <rect x="950" y="150" width="500" height="70" fill="#000000" stroke="#000000" stroke-width="2" />
+  <text x="1200" y="180" font-family="Arial, sans-serif" font-size="17" font-weight="bold" fill="#ffffff" text-anchor="middle">SISTEMA HOSPITALARIO NEXOVITALIS360</text>
+  <text x="1200" y="202" font-family="Courier, monospace" font-size="13" fill="#ffffff" text-anchor="middle">https://vitalis360.clinica.pe/ [Autenticación JWT / RBAC]</text>
+
+  <!-- Conectores Troncales hacia los 3 Roles -->
+  <path d="M 1200 220 L 1200 250" stroke="#000000" stroke-width="2.5" />
+  <path d="M 400 250 L 2000 250" stroke="#000000" stroke-width="2.5" />
+  <path d="M 400 250 L 400 290" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow)" />
+  <path d="M 1200 250 L 1200 290" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow)" />
+  <path d="M 2000 250 L 2000 290" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow)" />
+
+  <!-- =========================================================================
+       RAMA 1: PORTAL DEL ESPECIALISTA (X: 80 - 720)
+       ========================================================================= -->
+  <rect x="80" y="290" width="640" height="70" fill="#f4f4f4" stroke="#000000" stroke-width="2.5" />
+  <text x="400" y="320" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#000000" text-anchor="middle">ROL: MÉDICO ESPECIALISTA / NEUROPEDIATRA</text>
+  <text x="400" y="342" font-family="Courier, monospace" font-size="13" fill="#000000" text-anchor="middle">Ruta Base: /portal-especialista/* [MFA / Token Bearer]</text>
+
+  <!-- Bus Vertical Rama 1 -->
+  <path d="M 140 360 L 140 1200" stroke="#000000" stroke-width="2" />
+
+  <!-- Submódulos Rama 1 -->
+  <!-- 1. Dashboard -->
+  <path d="M 140 400 L 180 400" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <rect x="180" y="375" width="520" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="195" y="398" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">GUI-ESP-01: Dashboard del Especialista (/dashboard)</text>
+  <text x="195" y="416" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">Métricas del día, pacientes citados, alertas pendientes y teleconsultas en cola.</text>
+
+  <!-- 2. Agenda y Turnos -->
+  <path d="M 140 470 L 180 470" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <rect x="180" y="445" width="520" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="195" y="468" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">GUI-ESP-02: Agenda Semanal y Turnos (/agenda)</text>
+  <text x="195" y="486" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">Disponibilidad en consultorio, franjas WebRTC y bloqueo de horarios.</text>
+
+  <!-- 3. Consulta Presencial -->
+  <path d="M 140 540 L 180 540" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <rect x="180" y="515" width="520" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="195" y="538" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">GUI-ESP-03: Sala de Consulta Presencial (/atencion/presencial)</text>
+  <text x="195" y="556" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">Recepción física, validación de constantes vitales y pre-triaje.</text>
+
+  <!-- 4. Teleconsulta WebRTC -->
+  <path d="M 140 610 L 180 610" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <rect x="180" y="585" width="520" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="195" y="608" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">GUI-ESP-04: Sala de Teleconsulta WebRTC (/atencion/teleconsulta)</text>
+  <text x="195" y="626" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">Videollamada Google Meet integrada, chat cifrado y pizarra compartida.</text>
+
+  <!-- 5. Historia Clínica -->
+  <path d="M 140 680 L 180 680" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <rect x="180" y="655" width="520" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="195" y="678" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">GUI-ESP-05: Historia Clínica Pediátrica (/historia-clinica/:id)</text>
+  <text x="195" y="696" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">Evolución médica, antecedentes perinatales, hitos y escalas neurodivergentes.</text>
+
+  <!-- Modales Rama 1 -->
+  <path d="M 360 705 L 360 735" stroke="#000000" stroke-dasharray="3,3" stroke-width="1.5" />
+  <rect x="230" y="735" width="470" height="42" fill="#fafafa" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,3" />
+  <text x="245" y="754" font-family="Arial, sans-serif" font-size="12" font-weight="bold">MDL-ESP-01: Modal Cierre de Historia y Diagnóstico CIE-10</text>
+  <text x="245" y="770" font-family="Arial, sans-serif" font-size="11" fill="#555555">Validación de campos obligatorios, CIE-10/DSM-5 y firma digital médica.</text>
+
+  <path d="M 360 777 L 360 805" stroke="#000000" stroke-dasharray="3,3" stroke-width="1.5" />
+  <rect x="230" y="805" width="470" height="42" fill="#fafafa" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,3" />
+  <text x="245" y="824" font-family="Arial, sans-serif" font-size="12" font-weight="bold">MDL-ESP-02: Modal Emisión de Receta Médica Cifrada</text>
+  <text x="245" y="840" font-family="Arial, sans-serif" font-size="11" fill="#555555">Dosificación pediátrica en mg/kg, código QR y despacho a MinIO S3.</text>
+
+  <!-- =========================================================================
+       RAMA 2: PORTAL DE ADMISIÓN Y RECEPCIÓN (X: 880 - 1520)
+       ========================================================================= -->
+  <rect x="880" y="290" width="640" height="70" fill="#f4f4f4" stroke="#000000" stroke-width="2.5" />
+  <text x="1200" y="320" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#000000" text-anchor="middle">ROL: RECEPCIONISTA / ASISTENTE DE ADMISIÓN</text>
+  <text x="1200" y="342" font-family="Courier, monospace" font-size="13" fill="#000000" text-anchor="middle">Ruta Base: /admision-recepcion/* [Session Auth]</text>
+
+  <!-- Bus Vertical Rama 2 -->
+  <path d="M 940 360 L 940 1200" stroke="#000000" stroke-width="2" />
+
+  <!-- Submódulos Rama 2 -->
+  <!-- 1. Panel de Recepción -->
+  <path d="M 940 400 L 980 400" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <rect x="980" y="375" width="520" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="995" y="398" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">GUI-REC-01: Panel de Control de Admisión (/recepcion)</text>
+  <text x="995" y="416" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">Monitoreo de salas de espera, llegadas de pacientes y check-in asistencial.</text>
+
+  <!-- 2. Agendamiento Multimodal -->
+  <path d="M 940 470 L 980 470" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <rect x="980" y="445" width="520" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="995" y="468" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">GUI-REC-02: Bandeja de Agendamiento Multimodal (/citas/nueva)</text>
+  <text x="995" y="486" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">Selección de canal: presencial, virtual WebRTC o terapeuta a domicilio.</text>
+
+  <!-- Modales Agendamiento -->
+  <path d="M 1160 495 L 1160 520" stroke="#000000" stroke-dasharray="3,3" stroke-width="1.5" />
+  <rect x="1030" y="520" width="470" height="42" fill="#fafafa" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,3" />
+  <text x="1045" y="539" font-family="Arial, sans-serif" font-size="12" font-weight="bold">MDL-REC-01: Modal Reserva y Bloqueo Pesimista (SELECT FOR UPDATE)</text>
+  <text x="1045" y="555" font-family="Arial, sans-serif" font-size="11" fill="#555555">Bloqueo atómico anticolisión de 10 min en TB_HORARIOS (RNF-0004).</text>
+
+  <!-- 3. Filiación -->
+  <path d="M 940 595 L 980 595" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <rect x="980" y="570" width="520" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="995" y="593" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">GUI-REC-03: Filiación del Menor y Apoderado (/pacientes/registro)</text>
+  <text x="995" y="611" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">Separación jurídica: paciente infante vs. apoderado tutor (TB_APODERADOS).</text>
+
+  <!-- 4. Pre-Triaje Clínico -->
+  <path d="M 940 655 L 980 655" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <rect x="980" y="630" width="520" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="995" y="653" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">GUI-REC-04: Módulo de Pre-Triaje y Consentimiento (/triaje)</text>
+  <text x="995" y="671" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">Captura de SpO2, FC, PA y verificación de consentimiento bioético.</text>
+
+  <!-- Modales Pre-triaje -->
+  <path d="M 1160 680 L 1160 705" stroke="#000000" stroke-dasharray="3,3" stroke-width="1.5" />
+  <rect x="1030" y="705" width="470" height="42" fill="#fafafa" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,3" />
+  <text x="1045" y="724" font-family="Arial, sans-serif" font-size="12" font-weight="bold">MDL-REC-02: Modal Alerta Roja Vital Pediátrica (SpO2 &lt; 92%)</text>
+  <text x="1045" y="740" font-family="Arial, sans-serif" font-size="11" fill="#555555">Conmutación alerta_roja=true y notificación WebSockets a guardia médica.</text>
+
+  <!-- 5. Caja y Facturación -->
+  <path d="M 940 780 L 980 780" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <rect x="980" y="755" width="520" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="995" y="778" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">GUI-REC-05: Módulo de Caja y Facturación SUNAT (/caja)</text>
+  <text x="995" y="796" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">Liquidación de servicios, venta de paquetes de terapia y emisión de CPEs.</text>
+
+  <!-- Modales Caja -->
+  <path d="M 1160 805 L 1160 830" stroke="#000000" stroke-dasharray="3,3" stroke-width="1.5" />
+  <rect x="1030" y="830" width="470" height="42" fill="#fafafa" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,3" />
+  <text x="1045" y="849" font-family="Arial, sans-serif" font-size="12" font-weight="bold">MDL-REC-03: Modal Emisión Boleta/Factura XML UBL 2.1</text>
+  <text x="1045" y="865" font-family="Arial, sans-serif" font-size="11" fill="#555555">Validación RUC/DNI, firma X.509, envío a SUNAT y retorno de CDR en &lt;3s.</text>
+
+  <!-- =========================================================================
+       RAMA 3: PORTAL MÓVIL DEL APODERADO (X: 1680 - 2320)
+       ========================================================================= -->
+  <rect x="1680" y="290" width="640" height="70" fill="#f4f4f4" stroke="#000000" stroke-width="2.5" />
+  <text x="2000" y="320" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#000000" text-anchor="middle">ROL: APODERADO / TUTOR LEGAL (PWA MÓVIL)</text>
+  <text x="2000" y="342" font-family="Courier, monospace" font-size="13" fill="#000000" text-anchor="middle">Ruta Base: /portal-apoderado/* [PWA Android 11+ / iOS 15+]</text>
+
+  <!-- Bus Vertical Rama 3 -->
+  <path d="M 1740 360 L 1740 1200" stroke="#000000" stroke-width="2" />
+
+  <!-- Submódulos Rama 3 -->
+  <!-- 1. Inicio Móvil -->
+  <path d="M 1740 400 L 1780 400" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <rect x="1780" y="375" width="520" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="1795" y="398" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">GUI-APO-01: Portal Móvil del Paciente (/apoderado/inicio)</text>
+  <text x="1795" y="416" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">Ficha del menor, próximas citas y accesos rápidos de atención.</text>
+
+  <!-- 2. Solicitud de Cita -->
+  <path d="M 1740 470 L 1780 470" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <rect x="1780" y="445" width="520" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="1795" y="468" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">GUI-APO-02: Agendamiento y Reprogramación (/apoderado/citas)</text>
+  <text x="1795" y="486" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">Calendario interactivo con aplicación de regla de anticipación >= 24h.</text>
+
+  <!-- 3. Sala de Espera Virtual -->
+  <path d="M 1740 540 L 1780 540" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <rect x="1780" y="515" width="520" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="1795" y="538" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">GUI-APO-03: Sala de Espera de Teleconsulta (/apoderado/telemedicina)</text>
+  <text x="1795" y="556" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">Cuenta regresiva de turno, prueba de cámara/micrófono y enlace Meet.</text>
+
+  <!-- 4. Consentimiento y Documentos -->
+  <path d="M 1740 610 L 1780 610" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <rect x="1780" y="585" width="520" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="1795" y="608" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">GUI-APO-04: Documentos Clínicos y Facturas (/apoderado/documentos)</text>
+  <text x="1795" y="626" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">Descarga de recetas, actas firmadas y constancias de pago PDF/XML.</text>
+
+  <!-- Modales Apoderado -->
+  <path d="M 1960 635 L 1960 660" stroke="#000000" stroke-dasharray="3,3" stroke-width="1.5" />
+  <rect x="1830" y="660" width="470" height="42" fill="#fafafa" stroke="#000000" stroke-width="1.5" stroke-dasharray="4,3" />
+  <text x="1845" y="679" font-family="Arial, sans-serif" font-size="12" font-weight="bold">MDL-APO-01: Modal Firma de Consentimiento Bioético</text>
+  <text x="1845" y="695" font-family="Arial, sans-serif" font-size="11" fill="#555555">Lectura de términos, captura de trazabilidad (IP, DNI, Hash SHA-256).</text>
+
+  <!-- =========================================================================
+       PIE: CUADRO DE LEYENDA Y CONTROL DE SEGURIDAD
+       ========================================================================= -->
+  <rect x="80" y="1230" width="2240" height="120" fill="#ffffff" stroke="#000000" stroke-width="2" />
+  <text x="100" y="1258" font-family="Arial, sans-serif" font-size="14" font-weight="bold">LEYENDA Y CRITERIOS DE ARQUITECTURA DE INTERFACES (PLANTILLA 7):</text>
+
+  <!-- Elemento 1 -->
+  <rect x="100" y="1275" width="30" height="20" fill="#000000" />
+  <text x="140" y="1290" font-family="Arial, sans-serif" font-size="12">Portal Raíz / Autenticación Centralizada (JWT)</text>
+
+  <!-- Elemento 2 -->
+  <rect x="470" y="1275" width="30" height="20" fill="#f4f4f4" stroke="#000000" stroke-width="1.5" />
+  <text x="510" y="1290" font-family="Arial, sans-serif" font-size="12">Rutas Maestras por Rol (RBAC Clínico)</text>
+
+  <!-- Elemento 3 -->
+  <rect x="800" y="1275" width="30" height="20" fill="#ffffff" stroke="#000000" stroke-width="1.5" />
+  <text x="840" y="1290" font-family="Arial, sans-serif" font-size="12">Pantallas de Trabajo (GUI-* con layout unificado)</text>
+
+  <!-- Elemento 4 -->
+  <rect x="1210" y="1275" width="30" height="20" fill="#fafafa" stroke="#000000" stroke-width="1.5" stroke-dasharray="3,3" />
+  <text x="1250" y="1290" font-family="Arial, sans-serif" font-size="12">Modales Flotantes Contextuales (MDL-* sin pérdida de contexto)</text>
+
+  <!-- Elemento 5 -->
+  <line x1="1720" y1="1285" x2="1750" y2="1285" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="1760" y="1290" font-family="Arial, sans-serif" font-size="12">Navegación Jerárquica y Transición de Estados</text>
+
+  <text x="100" y="1330" font-family="Arial, sans-serif" font-size="12" fill="#555555">Cumplimiento Estricto: Heurísticas de Nielsen (Visibilidad, Consistencia, Prevención de Errores) &#8226; 8 Reglas de Oro de Shneiderman &#8226; RNF-0018 / RNF-0026.</text>
+</svg>

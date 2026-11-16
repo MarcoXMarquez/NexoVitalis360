@@ -371,6 +371,24 @@
 
     <nav class="sidebar-menu">
 
+      <!-- CARPETA 0: DIAGRAMA DEFINITIVO INTEGRAL (V02.10) -->
+      <div class="folder-group open" id="group-definitivo">
+        <div class="folder-header" onclick="toggleFolder('group-definitivo')">
+          <div class="folder-title-row">
+            <span class="folder-arrow">▼</span>
+            <span class="folder-name">0. Arquitectura Definitiva (v02.10)</span>
+          </div>
+          <span class="folder-badge">Integral 100%</span>
+        </div>
+        <div class="folder-items">
+          <div class="menu-item active" onclick="loadDiagram('fig_definitivo_bloques_funcionales_integral.html', this, 'Diagrama Definitivo de Bloques Funcionales Integral — NexoVitalis360 (v02.10)', 'Mapa navegable integral con Entry Points (EP-01..06), Actores reales, ubicación exacta de 28 GUIs / 140 Modales, Zonas VPC, Tuberías/Lotes (Plantilla 8), 27/27 EDU, 108/108 ILA + Riesgos, 104 ESP + 113 Pruebas T-*, 28/28 RNF (01..27), 27 Tablas TB_*, Pizarra Blackboard y 5 vistas Mermaid offline.')">
+            <span class="item-title">0.1 Bloques Funcionales Definitivo</span>
+            <span class="item-sub">EP-01..06 &bull; 28 GUIs &bull; 104 ESP &bull; 113 Pruebas &bull; Mermaid</span>
+            <span class="item-tag">Navegable Integral + Inspector</span>
+          </div>
+        </div>
+      </div>
+
       <!-- CARPETA 1: ARQUITECTURA GENÉRICA -->
       <div class="folder-group open" id="group-arq-gen">
         <div class="folder-header" onclick="toggleFolder('group-arq-gen')">
@@ -399,7 +417,7 @@
           <span class="folder-badge">4 Diagramas</span>
         </div>
         <div class="folder-items">
-          <div class="menu-item active" onclick="loadDiagram('fig7_1_contexto_modular_citas.html', this, 'Figura 7.1: Diagrama de Contexto Modular (Subsistema B4 Gestión de Citas y Agendas)', 'Delimita la frontera del módulo central B4, sus 5 responsabilidades nucleares, interacción con 3 actores humanos, 6 subsistemas hermanos del dominio y la API externa de Google Meet. Cobertura: EDU-0008, EDU-0012, EDU-0013, EDU-0018.')">
+          <div class="menu-item" onclick="loadDiagram('fig7_1_contexto_modular_citas.html', this, 'Figura 7.1: Diagrama de Contexto Modular (Subsistema B4 Gestión de Citas y Agendas)', 'Delimita la frontera del módulo central B4, sus 5 responsabilidades nucleares, interacción con 3 actores humanos, 6 subsistemas hermanos del dominio y la API externa de Google Meet. Cobertura: EDU-0008, EDU-0012, EDU-0013, EDU-0018.')">
             <span class="item-title">7.1 Contexto Modular (Citas B4)</span>
             <span class="item-sub">Frontera de interfaces y subsistemas hermanos</span>
             <span class="item-tag">Módulo Central (Capa 3)</span>
@@ -432,7 +450,7 @@
             <span class="folder-arrow">▼</span>
             <span class="folder-name">3. Vista Lógica</span>
           </div>
-          <span class="folder-badge">2 Diagramas</span>
+          <span class="folder-badge">3 Diagramas</span>
         </div>
         <div class="folder-items">
           <div class="menu-item" onclick="loadDiagram('fig3_1_vista_logica_educciones.html', this, 'Figura 7.1: Vista Lógica — Interconexión Modular de 27 Educciones', 'Agrupación funcional exhaustiva de EDU-0008 a EDU-0038 en 6 paquetes («subsystem») y dependencias lógicas «use» y «import». Cumple la regla estricta de cero RNF.')">
@@ -444,6 +462,11 @@
             <span class="item-title">7.2 Bloques Funcionales (Nivel 1)</span>
             <span class="item-sub">11 bloques modulares (B1 a B11) y 28 flujos correlativos (F1 a F28)</span>
             <span class="item-tag">Descomposición Funcional</span>
+          </div>
+          <div class="menu-item" onclick="loadDiagram('fig_definitivo_bloques_funcionales_integral.html', this, 'Diagrama Definitivo de Bloques Funcionales Integral — NexoVitalis360 (v02.10)', 'Evolución integral completa sobre Bloques Funcionales: EP-01..06, B0..B12, EXT-A1..A4, EXT-API1..4, 39 flujos, 27/27 EDU, 108/108 ILA + Riesgos, 104 ESP + 113 Pruebas, 28/28 RNF (01..27), 28 GUIs/140 MDL, 27 Tablas TB_* y 5 vistas Mermaid.')">
+            <span class="item-title">3.4 Bloques Funcionales Integral (Definitivo)</span>
+            <span class="item-sub">EP-01..06 &bull; 30 nodos &bull; 39 flujos &bull; 100% Catálogo &bull; Mermaid</span>
+            <span class="item-tag">Versión Definitiva v02.10</span>
           </div>
         </div>
       </div>
@@ -510,36 +533,46 @@
         </div>
       </div>
 
-      <div class="folder-group" id="group-arq-datos">
+      <div class="folder-group open" id="group-arq-datos">
         <div class="folder-header" onclick="toggleFolder('group-arq-datos')">
           <div class="folder-title-row">
             <span class="folder-arrow">▼</span>
             <span class="folder-name">6. Arquitectura Centrada en Datos</span>
           </div>
-          <span class="folder-badge pending">Próximamente</span>
+          <span class="folder-badge">2 Diagramas</span>
         </div>
         <div class="folder-items">
-          <div class="menu-item disabled">
-            <span class="item-title">Esquema Relacional y Almacén Blob</span>
-            <span class="item-sub">PostgreSQL transaccional y storage de expedientes</span>
-            <span class="item-tag pending">Plantilla 6 / Hito 2</span>
+          <div class="menu-item" onclick="loadDiagram('fig6_1_arquitectura_repositorio_datos.html', this, 'Figura 6.1: Arquitectura Centrada en Datos — Estilo Repositorio Centralizado (Vitalis_BD)', 'Topología de repositorio pasivo ACID PostgreSQL 16 con PgBouncer, MinIO Object Storage, sharding de auditoría y 6 clientes activos.')">
+            <span class="item-title">6.1 Repositorio Centralizado</span>
+            <span class="item-sub">PostgreSQL 16, PgBouncer, MinIO y 6 Clientes Activos</span>
+            <span class="item-tag">Estilo Repositorio Pasivo</span>
+          </div>
+          <div class="menu-item" onclick="loadDiagram('fig6_2_arquitectura_pizarra_clinica.html', this, 'Figura 6.2: Arquitectura Centrada en Datos — Estilo Pizarra / Blackboard (Pre-Triaje y Alerta Roja)', 'Estructura de Pizarra (Blackboard) para soporte a decisiones diagnósticas con 4 Fuentes de Conocimiento (KS) independientes, Control Heurístico y Notificaciones (RNF-0027).')">
+            <span class="item-title">6.2 Estilo Pizarra / Blackboard</span>
+            <span class="item-sub">Soporte a Decisiones Clínicas (4 KSs, Control Heurístico, RNF-0027)</span>
+            <span class="item-tag">Patrón Blackboard Clínico</span>
           </div>
         </div>
       </div>
 
-      <div class="folder-group" id="group-guis">
+      <div class="folder-group open" id="group-guis">
         <div class="folder-header" onclick="toggleFolder('group-guis')">
           <div class="folder-title-row">
             <span class="folder-arrow">▼</span>
             <span class="folder-name">7. GUIs e Interfaces</span>
           </div>
-          <span class="folder-badge pending">Próximamente</span>
+          <span class="folder-badge">2 Diagramas</span>
         </div>
         <div class="folder-items">
-          <div class="menu-item disabled">
-            <span class="item-title">Wireframes y Navegación SPA/PWA</span>
-            <span class="item-sub">Interfaces para tutor, médico y administrador</span>
-            <span class="item-tag pending">Plantilla 7 / Hito 2</span>
+          <div class="menu-item" onclick="loadDiagram('fig7_1_arbol_navegacion_roles.html', this, 'Figura 7.1: GUIs e Interfaces — Árbol de Navegación Jerárquico por Roles (RBAC)', 'Estructura jerárquica de vistas y rutas por roles (Tutor, Profesional de Salud, Administrador) y Módulo Común de Teleconsulta y Alerta Roja.')">
+            <span class="item-title">7.1 Árbol de Navegación por Roles</span>
+            <span class="item-sub">Vistas jerárquicas: Tutor, Médico, Administrador y Videoconsulta</span>
+            <span class="item-tag">Jerarquía UI y RBAC</span>
+          </div>
+          <div class="menu-item" onclick="loadDiagram('fig7_2_flujo_interfaces_modales.html', this, 'Figura 7.2: GUIs e Interfaces — Flujo de Interacción y Gestión de Modales Clínicos', 'Flujo operacional de interfaces, modales de confirmación, microinteracciones, pretriaje reactivo y protocolo de Alerta Roja según Shneiderman y Nielsen.')">
+            <span class="item-title">7.2 Flujo de Interfaces y Modales</span>
+            <span class="item-sub">Microinteracciones, modales críticos y Alerta Roja (Nielsen &amp; Shneiderman)</span>
+            <span class="item-tag">Flujo UI y Modales Críticos</span>
           </div>
         </div>
       </div>
@@ -576,7 +609,7 @@
     <div class="top-bar">
       <div class="top-bar-left">
         <button class="btn-toggle-sidebar" id="btnToggleSidebar" onclick="toggleSidebar()" title="Ocultar barra lateral para maximizar diagrama">◀ Ocultar Menú</button>
-        <h2 id="viewer-title" title="Delimita la frontera del módulo central B4, sus 5 responsabilidades nucleares, interacción con 3 actores humanos, 6 subsistemas hermanos del dominio y la API externa de Google Meet. Cobertura: EDU-0008, EDU-0012, EDU-0013, EDU-0018.">Figura 7.1: Diagrama de Contexto Modular (Subsistema B4 Gestión de Citas y Agendas)</h2>
+        <h2 id="viewer-title" title="Mapa navegable integral: Entry Points (EP-01..06), Actores, ubicación de 28 GUIs/140 MDL, 27/27 EDU, 108 ILA, 104 ESP, 113 Pruebas, 28 RNF (01..27), Tuberías/Lotes y 5 vistas Mermaid.">Diagrama Definitivo de Bloques Funcionales Integral — NexoVitalis360 (v02.10)</h2>
       </div>
       <div class="top-bar-actions">
         <button class="btn-top" onclick="openDiagramExternal()">Abrir Pestaña</button>
@@ -584,11 +617,11 @@
       </div>
     </div>
 
-    <iframe id="diagram-viewer" src="fig7_1_contexto_modular_citas.html"></iframe>
+    <iframe id="diagram-viewer" src="fig_definitivo_bloques_funcionales_integral.html"></iframe>
   </main>
 
   <script>
-    let currentUrl = 'fig7_1_contexto_modular_citas.html';
+    let currentUrl = 'fig_definitivo_bloques_funcionales_integral.html';
 
     function toggleFolder(groupId) {
       const group = document.getElementById(groupId);

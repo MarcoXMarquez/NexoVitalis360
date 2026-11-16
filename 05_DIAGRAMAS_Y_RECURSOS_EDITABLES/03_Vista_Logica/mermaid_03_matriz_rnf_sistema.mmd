@@ -1,0 +1,31 @@
+%%{init: {'theme': 'base', 'flowchart': {'curve': 'orthogonal', 'htmlLabels': true, 'nodeSpacing': 34, 'rankSpacing': 52}, 'themeVariables': {'primaryColor': '#ffffff', 'primaryTextColor': '#000000', 'primaryBorderColor': '#000000', 'lineColor': '#000000', 'secondaryColor': '#f4f4f4', 'tertiaryColor': '#fafafa', 'clusterBkg': '#fafafa', 'clusterBorder': '#000000', 'fontFamily': 'Arial, sans-serif'}}}%%
+flowchart LR
+    classDef pil fill:#000000,stroke:#000000,color:#ffffff
+    classDef rnf fill:#ffffff,stroke:#000000,stroke-width:1.8px,color:#000000
+    classDef comp fill:#f4f4f4,stroke:#000000,stroke-width:2.2px,color:#000000
+
+    P_SEC["SEGURIDAD Y PRIVACIDAD<br/>(ISO/IEC 25010)"]:::pil
+    P_REN["RENDIMIENTO Y CONCURRENCIA"]:::pil
+    P_INT["INTEROPERABILIDAD Y APIS"]:::pil
+    P_USA["USABILIDAD Y PORTABILIDAD"]:::pil
+    P_DAT["PERSISTENCIA Y PIZARRA CLINICA"]:::pil
+    P_INF["INFRAESTRUCTURA Y CODIFICADORES"]:::pil
+
+    R_S["RNF-0001 Acceso Doc/Interconsulta<br/>RNF-0002 Cifrado AES-256 Menores<br/>RNF-0003 Logs Auditoría Inmutables<br/>RNF-0013 JWT Stateless 15 min<br/>RNF-0014 Cifrado HTTPS TLS 1.3<br/>RNF-0024 MinIO Presigned URLs 300s<br/>RNF-0025 Red VPC, DMZ WAF & Puertos"]:::rnf
+
+    R_R["RNF-0004 (A) Algoritmo Anticolisión <2s<br/>RNF-0004 (B) Concurrencia Citas <2s<br/>RNF-0005 Búsqueda HCE <= 1.5s<br/>RNF-0015 API Disponibilidad GET <= 2.0s"]:::rnf
+
+    R_I["RNF-0008 Sync Auto Google Meet API<br/>RNF-0009 Notificaciones WhatsApp/SMS T-24h<br/>RNF-0023 Facturación SUNAT UBL 2.1 X.509 <3s"]:::rnf
+
+    R_U["RNF-0006 Alertas Rojas Visuales Inmediatas<br/>RNF-0007 Calendario Reprogramación Drag&Drop<br/>RNF-0018 PWA Móvil Multi-Fabricante Android/iOS<br/>RNF-0019 Motores Blink / Gecko / WebKit W3C"]:::rnf
+
+    R_D["RNF-0010 Restricción BD Consentimiento<br/>RNF-0011 Persistencia Relacional ACID PostgreSQL<br/>RNF-0027 Pizarra Blackboard Triaje SpO2<92%"]:::rnf
+
+    R_M["RNF-0012 Stack Python/Django + React JS<br/>RNF-0016 Hardware Cliente i5/Ryzen 5 Win10/11<br/>RNF-0017 Memoria Virtual pagefile.sys + V8<=350MB<br/>RNF-0020 Servidores Ubuntu 24.04 + Docker 26 WAL<br/>RNF-0021 Modelado Procesos Bonita BPM 2024.1<br/>RNF-0022 Modelado UML 2.5 300 DPI + HTML5<br/>RNF-0026 Perfil Equipo Codificadores Full-Stack"]:::rnf
+
+    P_SEC --> R_S --> C_SEC["EP-01..06 + B0 WAF/NGINX + B7 ACL + B10 RBAC + B11/B12 AES-256"]:::comp
+    P_REN --> R_R --> C_REN["B3 Agenda + B4 SELECT FOR UPDATE + B7 HCE + B11 PgBouncer"]:::comp
+    P_INT --> R_I --> C_INT["EP-06 Hooks + B5 Meet + B6 Celery + B8 Tubería SUNAT OSE"]:::comp
+    P_USA --> R_U --> C_USA["28 GUIs (EP-01..05) + B2 WSS Alertas + B4 Calendario + B5 WebRTC"]:::comp
+    P_DAT --> R_D --> C_DAT["B2 Pre-Triaje + B4 Citas + B11 Vitalis_BD 27 TB_* + B12 Redis KSs"]:::comp
+    P_INF --> R_M --> C_INF["Zona 1 HW + Zona 2 DMZ + Zona 3 App/Bonita + Zona 4 Ubuntu/Docker"]:::comp

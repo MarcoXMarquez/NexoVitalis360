@@ -6,6 +6,9 @@ Este directorio contiene el portal interactivo y la suite completa de diagramas 
 
 ## Estructura de Archivos y Cobertura de Plantillas
 
+### 0. Arquitectura Integral Definitiva (`v02.10`)
+- **`fig_definitivo_bloques_funcionales_integral.html`**: **Diagrama Definitivo de Bloques Funcionales Integral** con navegación interactiva B&W (*sharp edges*), columna de **Entry Points (`EP-01..EP-06`)** ("quién actúa y por dónde entra"), **franja explícita de ubicación de las 28 GUIs / 140 Modales**, bandas de Zonas de Despliegue VPC, Tuberías/Filtros (`B8`) y Lotes Secuenciales (`B9`), panel inspector lateral multi-pestaña (APIs REST/WSS/Hooks, EDUs + ILAs + **`104 ESP` + `113 Pruebas T-*`**, RNFs, GUIs & Tablas `TB_*`), búsqueda global instantánea, Matriz Total (`[C]`) y visor **Mermaid oficial 100% offline** (`vendor/mermaid.min.js` v10.9.1) con **5 vistas `.mmd`**.
+
 ### 1. Plantilla 1: Arquitectura Genérica
 - **`fig2_1_arquitectura_generica.html`**: Diagrama de Arquitectura Genérica en 5 capas desacopladas, API Gateway con JWT/RBAC, 6 subsistemas clínicos y persistencia ACID.
 
@@ -27,6 +30,14 @@ Este directorio contiene el portal interactivo y la suite completa de diagramas 
 
 ### 5. Plantilla 5: Vista Física (Hito 2)
 - **`fig5_1_vista_fisica_despliegue.html`**: Diagrama de Despliegue UML 2.5 con topología en 4 zonas físicas, affordance visual de hardware (PC, Laptop, Smartphone multi-fabricante, Tablet, Servidor Rack, Cilindros BD), software base, memoria virtual `pagefile.sys 8GB`, puertos TCP y correspondencia 100% con `RNF-0001` a `RNF-0025`.
+
+### 6. Plantilla 6: Arquitectura Centrada en Datos (Hito 3 / Fase 1)
+- **`fig6_1_arquitectura_repositorio_datos.html`**: Figura 6.1 — Estilo Repositorio Centralizado (`Vitalis_BD`). Detalla la topología de base de datos pasiva PostgreSQL 16 con PgBouncer, MinIO Object Storage, sharding de auditoría y 6 clientes activos del backend clínico. Trazabilidad con `RNF-0003`, `RNF-0006`, `RNF-0016`, `RNF-0021`.
+- **`fig6_2_arquitectura_pizarra_clinica.html`**: Figura 6.2 — Estilo Pizarra / Blackboard para Pre-Triaje Clínico y Alerta Roja. Implementa el patrón Blackboard clásico (Hayes-Roth, Tao) con Pizarra Central de Estado (`Blackboard`), 4 Fuentes de Conocimiento (KSs) autónomas, Módulo de Control Heurístico y Despachador de Alertas. Trazabilidad directa con `RNF-0027` y Diapositiva 70 del curso.
+
+### 7. Plantilla 7: GUIs e Interfaces (Hito 3 / Fase 1)
+- **`fig7_1_arbol_navegacion_roles.html`**: Figura 7.1 — Árbol de Navegación Jerárquico por Roles (RBAC). Especifica la jerarquía completa de rutas, layouts base y vistas segregadas para Tutor Legal (`/app/tutor/*`), Profesional de Salud (`/app/medico/*`), Administrador (`/app/admin/*`) y Sala Virtual de Teleconsulta y Alerta Roja. Trazabilidad con `RNF-0018` y `RNF-0026`.
+- **`fig7_2_flujo_interfaces_modales.html`**: Figura 7.2 — Flujo de Interacción y Gestión de Modales Clínicos. Modela el flujo operacional de interfaces, estados transaccionales, modales de confirmación, microinteracciones, pretriaje reactivo y protocolo de Alerta Roja bajo las 8 Reglas de Oro de Shneiderman y las Heurísticas de Nielsen. Trazabilidad con `RNF-0018` y `RNF-0026`.
 
 ---
 

@@ -1,0 +1,96 @@
+%%{init: {'theme': 'base', 'flowchart': {'curve': 'basis', 'htmlLabels': true, 'nodeSpacing': 20, 'rankSpacing': 44}, 'themeVariables': {'primaryColor': '#ffffff', 'primaryTextColor': '#000000', 'primaryBorderColor': '#000000', 'lineColor': '#000000', 'secondaryColor': '#f4f4f4', 'tertiaryColor': '#fafafa', 'clusterBkg': '#fafafa', 'clusterBorder': '#000000', 'fontFamily': 'Arial, sans-serif', 'fontSize': '12px'}}}%%
+flowchart TB
+    classDef ext fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    classDef ep fill:#fafafa,stroke:#000000,stroke-width:2.5px,stroke-dasharray:6 3,color:#000000
+    classDef gw fill:#f0f0f0,stroke:#000000,stroke-width:3.5px,color:#000000
+    classDef blk fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    classDef hub fill:#f0f0f0,stroke:#000000,stroke-width:3.5px,color:#000000
+    classDef db fill:#fafafa,stroke:#000000,stroke-width:3px,color:#000000
+    classDef meta fill:#ffffff,stroke:#000000,stroke-width:1.8px,stroke-dasharray:5 4,color:#000000
+
+    subgraph CAPA1["ZONA 1 — ACTORES & ENTRY POINTS FRONTALES (Quién Actúa y Por Dónde Entra)"]
+        direction TB
+        EXT_A1["EXT-A1: Apoderado / Menor<br/>PWA Android 11+/iOS 15+"]:::ext
+        EXT_A2["EXT-A2: Asistente ACT-0005<br/>PC Win10/11 pagefile.sys"]:::ext
+        EXT_A3["EXT-A3: Especialista Clínico<br/>Med/Nut/Psic (ACT-0002..04)"]:::ext
+        EXT_A4["EXT-A4: Gerencia ACT-0001..04<br/>ORG-0001..0003"]:::ext
+
+        EP1["EP-01: /app/tutor/* PWA<br/>GUI-0007,14,16,20,23,26"]:::ep
+        EP2["EP-02: /app/admin/* & /caja<br/>GUI-0001,05,06,09..11,13,24,27"]:::ep
+        EP3["EP-03: /app/medico/* SPA<br/>8 GUIs HCE (03..25) + WSS"]:::ep
+        EP4["EP-04: /auditoria & BI<br/>GUI-0002, GUI-0004, GUI-0028"]:::ep
+        EP5["EP-05: /app/teleconsulta/:id<br/>WebRTC + GUI-0012 + Alerta"]:::ep
+        EP6["EP-06: Ingress M2M<br/>Webhooks HMAC + Celery Beat"]:::ep
+    end
+
+    subgraph CAPA2["ZONA 2 DMZ — ADUANA PERIMETRAL ÚNICA (:443 WAF + JWT RBAC)"]
+        direction TB
+        B0["B0. API Gateway NGINX TLS 1.3 + WAF + JWT 15m<br/>DRF :8000 • Daphne ASGI WSS • RBAC RoleGuard"]:::gw
+    end
+
+    subgraph CAPA3["ZONA 3 VPC APP — 10 BLOQUES FUNCIONALES (27 EDU | 108 ILA | 104 ESP | 113 Pruebas | 28 GUIs)"]
+        direction TB
+        B1["B1. Pacientes y Apoderados<br/>EDU-0014, 21 | GUI-0007, 14"]:::blk
+        B2["B2. Pre-Triaje, Acta & Pizarra<br/>EDU-0023, 29 | Bonita ILA-0062<br/>GUI-0016, 20 | 4 KSs RNF-0027"]:::blk
+        B3["B3. Especialistas y Horarios<br/>EDU-0016, 17 | GUI-0009, 10<br/>API <=2s RNF-0015"]:::blk
+        B10["B10. RBAC y Auditoría Forense<br/>EDU-0009, 11 | GUI-0002, 04<br/>RNF-0001, 0003, 0013"]:::blk
+        B4["B4. NÚCLEO ORQUESTADOR CITAS<br/>EDU-0008,12,13,18 | Bonita ILA-0017<br/>GUI-0001,05,06,11 (20 MDL) • >=24h<br/>SELECT FOR UPDATE RNF-0004"]:::hub
+        B5["B5. Videoconf. WebRTC<br/>EDU-0019 | GUI-0012<br/>RNF-0008, 0019"]:::blk
+        B6["B6. Mensajería T-24h<br/>EDU-0020 | GUI-0013<br/>RNF-0009, 0026"]:::blk
+        B7["B7. HCE, CIE-10, Recetas, Intercons.<br/>8 EDU (32 ILA) | 8 GUIs / 40 MDL<br/>Lock 72h • Intercons 7d • RNF-0001,05"]:::blk
+        B8["B8. Paquetes, Pagos & SUNAT<br/>Tuberías 6 Filtros UBL 2.1<br/>GUI-0023,24,26,27 | Bonita ILA-0106"]:::blk
+        B9["B9. Liquidación Mensual<br/>Lotes Secuenciales 4 Fases<br/>EDU-0038 | GUI-0028"]:::blk
+    end
+
+    subgraph CAPA4["ZONA 4 VPC DATOS — POSTGRESQL 16, MINIO S3, REDIS BLACKBOARD & CODIFICACIÓN"]
+        B11[("B11. Vitalis_BD PG16 + PgBouncer 6432<br/>27 Tablas TB_* • ACID • AES-256<br/>WAL RPO<=15m RTO<=30m")]:::db
+        B12["B12. MinIO S3 (9000) + Redis 7.2 (6379)<br/>5 Buckets URLs 300s (RNF-0024)<br/>Pizarra HSET + Pub/Sub (RNF-0027)"]:::db
+        INFRA["Estándares & Codificadores<br/>Django 5 DRF + React 18 (RNF-0012/26)<br/>Ubuntu 24.04 + Docker 26 (RNF-0020)"]:::meta
+    end
+
+    subgraph CAPA5["CAPA 5 CLOUD — APIS EXTERNAS REGULADAS (HTTPS TLS 1.3)"]
+        EXT_API1["EXT-API1: Google Meet v2<br/>OAuth2 /spaces (RNF-0008)"]:::ext
+        EXT_API2["EXT-API2: WhatsApp / Twilio<br/>/messages T-24h + Hook"]:::ext
+        EXT_API3["EXT-API3: SUNAT OSE/PSE<br/>UBL 2.1 X.509 -> CDR <3s"]:::ext
+        EXT_API4["EXT-API4: Pasarelas Pago<br/>Niubiz/Izipay/Yape/Plin"]:::ext
+    end
+
+    EXT_A1 -->|"F1"| EP1
+    EXT_A2 -->|"F2"| EP2
+    EXT_A3 <-->|"F4"| EP3
+    EXT_A4 -->|"F3"| EP4
+    EXT_A1 & EXT_A3 -.-> EP5
+
+    EP1 & EP2 & EP4 -->|"F29: HTTPS/WSS :443 + JWT"| B0
+    EP3 <-->|"F37: HTTPS + WSS Alerta"| B0
+    EP5 <-->|"F5: Meet + WSS"| B0
+    EP6 -->|"F6: Webhooks HMAC"| B0
+
+    B0 -->|"F30: Bus /api/v1/* DRF + ASGI"| CAPA3
+    B0 <-->|"F31: RBAC"| B10
+
+    B1 -->|"F7"| B4
+    B2 -->|"F8"| B4
+    B3 -->|"F9"| B4
+    B10 -->|"F20"| B4
+    B4 -->|"F19"| B10
+    B4 <-->|"F12/F13"| B5
+    B4 -.->|"F14"| B6
+    B4 <-->|"F15/F16"| B7
+    B2 -.->|"F17: Alerta <2s"| B7
+    B4 <-->|"F10/F11"| B8
+    B4 -->|"F18"| B9
+
+    B4 <-->|"F21: ACID"| B11
+    B1 & B3 & B7 & B8 & B9 & B10 <-->|"F34: Pool 6432"| B11
+    B2 <-.->|"F32: KSs"| B12
+    B7 & B8 & B9 <-->|"F33: S3 300s"| B12
+    B6 & B9 <-.->|"F35: Celery Beat"| EP6 & B12
+    B11 ~~~ INFRA
+
+    B5 <-->|"F22"| EXT_API1
+    B6 -->|"F23"| EXT_API2
+    B8 <-->|"F25"| EXT_API3
+    B8 -->|"F26"| EXT_API4
+    EXT_API2 & EXT_API4 -.->|"F38/F39: Hooks"| EP6
+    CAPA4 ~~~ CAPA5

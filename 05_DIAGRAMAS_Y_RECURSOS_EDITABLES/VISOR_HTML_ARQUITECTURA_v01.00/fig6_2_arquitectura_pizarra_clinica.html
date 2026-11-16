@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Figura 6.2: Estilo Arquitectónico de Pizarra (Blackboard) para Soporte de Decisiones | NexoVitalis360</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important;
+    }
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #ffffff;
+      color: #000000;
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      user-select: none;
+    }
+    .viewport {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      cursor: grab;
+      background-color: #ffffff;
+    }
+    .viewport:active {
+      cursor: grabbing;
+    }
+    .canvas-world {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      background-color: #ffffff;
+    }
+    .hud-bar {
+      position: fixed;
+      top: 10px;
+      right: 16px;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1.5px solid #000000;
+      padding: 5px 12px;
+      font-size: 11.5px;
+      box-shadow: 2px 2px 0px #000000;
+    }
+    .hud-status-badge {
+      background: #000000;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 3px 7px;
+      text-transform: uppercase;
+    }
+    .btn-hud {
+      background: #ffffff;
+      color: #000000;
+      border: 1.5px solid #000000;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-hud:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="hud-bar">
+    <span class="hud-status-badge">OFICIAL V01.00</span>
+    <div style="font-weight:bold;">Figura 6.2: Estilo Arquitectónico de Pizarra (Blackboard) para Soporte de Decisiones</div>
+    <button class="btn-hud" id="btn-fit">Ajustar Vista</button>
+    <button class="btn-hud" id="btn-reset">Reset</button>
+    <button class="btn-hud" id="btn-zoomin">+</button>
+    <button class="btn-hud" id="btn-zoomout">-</button>
+  </div>
+  <div class="viewport" id="viewport">
+    <div class="canvas-world" id="canvas-world">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1450" width="2400" height="1450">
+  <defs>
+    <marker id="arrow4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#000000" />
+    </marker>
+  </defs>
+
+  <!-- Fondo Blanco -->
+  <rect width="2400" height="1450" fill="#ffffff" />
+
+  <!-- Encabezado -->
+  <rect x="50" y="30" width="2300" height="90" fill="#ffffff" stroke="#000000" stroke-width="2.5" />
+  <text x="70" y="65" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#000000">NEXOVITALIS360 — ARQUITECTURA CENTRADA EN DATOS (PLANTILLA 6)</text>
+  <text x="70" y="98" font-family="Arial, sans-serif" font-size="16" fill="#333333">FIGURA 6.2: ESTILO ARQUITECTÓNICO DE PIZARRA (BLACKBOARD) PARA SOPORTE DE DECISIONES CLÍNICAS Y ALERTA ROJA</text>
+  <text x="2100" y="80" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#000000">DIAPOSITIVA 70 DE CÁTEDRA</text>
+
+  <!-- =========================================================================
+       NÚCLEO CENTRAL: LA PIZARRA (MEMORIA COMPARTIDA DE TRABAJO)
+       ========================================================================= -->
+  <rect x="800" y="160" width="800" height="520" fill="#f8f8f8" stroke="#000000" stroke-width="3" />
+  <rect x="800" y="160" width="800" height="45" fill="#000000" />
+  <text x="1200" y="190" font-family="Arial, sans-serif" font-size="17" font-weight="bold" fill="#ffffff" text-anchor="middle">1. LA PIZARRA: MEMORIA DE TRABAJO COMPARTIDA (BLACKBOARD)</text>
+  <text x="1200" y="225" font-family="Courier, monospace" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">Objeto de Estado Transaccional: PizarraEvaluacionClinica</text>
+  <text x="1200" y="245" font-family="Arial, sans-serif" font-size="11.5" fill="#555555" text-anchor="middle">Almacenamiento Híbrido: Redis 7.2 (En memoria ultra-rápida) + PostgreSQL 16 (TB_PRETRIAJE_CLINICO)</text>
+
+  <!-- Cuadrantes de Estado en la Pizarra -->
+  <rect x="830" y="260" width="350" height="180" fill="#ffffff" stroke="#000000" stroke-width="1.5" />
+  <text x="845" y="285" font-family="Arial, sans-serif" font-size="13" font-weight="bold">Parámetros Biométricos Capturados:</text>
+  <text x="845" y="310" font-family="Courier, monospace" font-size="11.5" fill="#000000">• saturacion_spo2_pct: float (91.5 %)</text>
+  <text x="845" y="330" font-family="Courier, monospace" font-size="11.5" fill="#000000">• frecuencia_cardiaca_bpm: int (135 bpm)</text>
+  <text x="845" y="350" font-family="Courier, monospace" font-size="11.5" fill="#000000">• presion_arterial: string ("90/60 mmHg")</text>
+  <text x="845" y="370" font-family="Courier, monospace" font-size="11.5" fill="#000000">• temperatura_c: float (37.8 °C)</text>
+  <text x="845" y="390" font-family="Courier, monospace" font-size="11.5" fill="#000000">• frecuencia_respiratoria: int (28 rpm)</text>
+  <text x="845" y="415" font-family="Arial, sans-serif" font-size="10.5" fill="#666666">Actualizado por: Estación de Triaje</text>
+
+  <rect x="1220" y="260" width="350" height="180" fill="#ffffff" stroke="#000000" stroke-width="1.5" />
+  <text x="1235" y="285" font-family="Arial, sans-serif" font-size="13" font-weight="bold">Síntomas y Observaciones del Tutor:</text>
+  <text x="1235" y="310" font-family="Courier, monospace" font-size="11.5" fill="#000000">• edad_paciente_meses: int (42 meses)</text>
+  <text x="1235" y="330" font-family="Courier, monospace" font-size="11.5" fill="#000000">• hito_lenguaje_retraso: boolean (true)</text>
+  <text x="1235" y="350" font-family="Courier, monospace" font-size="11.5" fill="#000000">• contacto_visual_ausente: boolean (true)</text>
+  <text x="1235" y="370" font-family="Courier, monospace" font-size="11.5" fill="#000000">• episodios_convulsivos: boolean (false)</text>
+  <text x="1235" y="390" font-family="Courier, monospace" font-size="11.5" fill="#000000">• motivo_consulta: string ("Retraso habla")</text>
+  <text x="1235" y="415" font-family="Arial, sans-serif" font-size="10.5" fill="#666666">Ingresado por: Portal Apoderado PWA</text>
+
+  <!-- Estado Consolidado en Pizarra -->
+  <rect x="830" y="455" width="740" height="205" fill="#ffffff" stroke="#000000" stroke-width="2" />
+  <text x="850" y="480" font-family="Arial, sans-serif" font-size="13" font-weight="bold">Estado Dinámico de Diagnóstico y Banderas Heurísticas (Inscritas por KSs):</text>
+  <text x="850" y="505" font-family="Courier, monospace" font-size="12" font-weight="bold" fill="#000000">• bandera_alerta_roja: boolean = true [GATILLADA POR KS_01]</text>
+  <text x="850" y="525" font-family="Courier, monospace" font-size="12" fill="#000000">• clasificacion_triaje: string = "P1_EMERGENCIA_PEDIATRICA" [ALTO RIESGO VITAL]</text>
+  <text x="850" y="545" font-family="Courier, monospace" font-size="12" fill="#000000">• hipotesis_neurodesarrollo: string = "Sospecha Trastorno Espectro Autista (CIE-10 F84.0)"</text>
+  <text x="850" y="565" font-family="Courier, monospace" font-size="12" fill="#000000">• consentimiento_bioetico_valido: boolean = true (Hash SHA-256 verificado en TB_CONSENTIMIENTOS)</text>
+  <text x="850" y="585" font-family="Courier, monospace" font-size="12" fill="#000000">• agenda_bloqueada_temp: string = "Turno 10:30 Dr. Turpo (SELECT FOR UPDATE)"</text>
+  <text x="850" y="605" font-family="Courier, monospace" font-size="12" fill="#000000">• estado_evaluacion: string = "EVALUACION_COMPLETA_REQUIERE_DESPACHO"</text>
+  <text x="850" y="640" font-family="Arial, sans-serif" font-size="11" fill="#444444">Semántica de Pizarra: Cualquier fuente de conocimiento puede leer el estado global y aportar deducciones parciales.</text>
+
+  <!-- =========================================================================
+       FUENTES DE CONOCIMIENTO (KNOWLEDGE SOURCES - KS)
+       ========================================================================= -->
+  <!-- KS 1: Izquierda Arriba -->
+  <rect x="80" y="160" width="600" height="230" fill="#ffffff" stroke="#000000" stroke-width="2.5" />
+  <rect x="80" y="160" width="600" height="35" fill="#000000" />
+  <text x="95" y="184" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#ffffff">KS_01: ALERTA ROJA VITAL PEDIÁTRICA</text>
+  <text x="95" y="215" font-family="Arial, sans-serif" font-size="12" font-weight="bold">Responsabilidad Heurística (Prioridad 1 - Máxima):</text>
+  <text x="95" y="235" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Condición de Activación: SpO2 &lt; 92% OR Frecuencia Cardíaca &gt; 140 bpm.</text>
+  <text x="95" y="255" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Deducción: Conmuta atómicamente alerta_roja = true en la pizarra.</text>
+  <text x="95" y="275" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Efecto: Solicita al Control el disparo urgente de sirena visual y WebSockets.</text>
+  <text x="95" y="295" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Base Médica: Guía de Reanimación Pediátrica y Triage Manchester.</text>
+  <text x="95" y="325" font-family="Courier, monospace" font-size="11" fill="#000000">Trazabilidad: EDU-0023 / ILA-0062 / RNF-0027</text>
+
+  <!-- Flechas KS1 <-> Pizarra -->
+  <path d="M 680 275 L 800 275" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow4)" />
+  <path d="M 800 285 L 680 285" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow4)" stroke-dasharray="3,3" />
+
+  <!-- KS 2: Derecha Arriba -->
+  <rect x="1720" y="160" width="600" height="230" fill="#ffffff" stroke="#000000" stroke-width="2.5" />
+  <rect x="1720" y="160" width="600" height="35" fill="#000000" />
+  <text x="1735" y="184" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#ffffff">KS_02: CRIBADO NEUROPEDIÁTRICO (TEA/TDAH)</text>
+  <text x="1735" y="215" font-family="Arial, sans-serif" font-size="12" font-weight="bold">Responsabilidad Heurística (Prioridad 3 - Clínica):</text>
+  <text x="1735" y="235" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Condición de Activación: Presencia de cuestionario de desarrollo del apoderado.</text>
+  <text x="1735" y="255" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Deducción: Cruza hitos retrasados con criterios diagnósticos DSM-5 / CIE-10.</text>
+  <text x="1735" y="275" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Efecto: Sugiere paquete de estimulación temprana y especialista asignado.</text>
+  <text x="1735" y="295" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Base Médica: Escala M-CHAT-R/F para detección precoz de autismo.</text>
+  <text x="1735" y="325" font-family="Courier, monospace" font-size="11" fill="#000000">Trazabilidad: EDU-0010 / EDU-0025 / ILA-0054</text>
+
+  <!-- Flechas KS2 <-> Pizarra -->
+  <path d="M 1720 275 L 1600 275" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow4)" />
+  <path d="M 1600 285 L 1720 285" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow4)" stroke-dasharray="3,3" />
+
+  <!-- KS 3: Izquierda Abajo -->
+  <rect x="80" y="450" width="600" height="230" fill="#ffffff" stroke="#000000" stroke-width="2.5" />
+  <rect x="80" y="450" width="600" height="35" fill="#000000" />
+  <text x="95" y="474" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#ffffff">KS_03: CONSENTIMIENTO BIOÉTICO Y PATRIA POTESTAD</text>
+  <text x="95" y="505" font-family="Arial, sans-serif" font-size="12" font-weight="bold">Responsabilidad Heurística (Prioridad 2 - Legal):</text>
+  <text x="95" y="525" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Condición de Activación: Petición de atención presencial o teleconsulta.</text>
+  <text x="95" y="545" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Deducción: Inspecciona vigencia del acta de consentimiento en TB_CONSENTIMIENTOS.</text>
+  <text x="95" y="565" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Efecto: Si no hay firma válida, inhibe la confirmación y solicita firma inmediata.</text>
+  <text x="95" y="585" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Base Legal: Ley General de Salud N° 26842 y protección del menor.</text>
+  <text x="95" y="615" font-family="Courier, monospace" font-size="11" fill="#000000">Trazabilidad: EDU-0029 / ILA-0065 / RNF-0010</text>
+
+  <!-- Flechas KS3 <-> Pizarra -->
+  <path d="M 680 565 L 800 565" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow4)" />
+  <path d="M 800 575 L 680 575" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow4)" stroke-dasharray="3,3" />
+
+  <!-- KS 4: Derecha Abajo -->
+  <rect x="1720" y="450" width="600" height="230" fill="#ffffff" stroke="#000000" stroke-width="2.5" />
+  <rect x="1720" y="450" width="600" height="35" fill="#000000" />
+  <text x="1735" y="474" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#ffffff">KS_04: DISPONIBILIDAD Y DERIVACIÓN DE AGENDAS</text>
+  <text x="1735" y="505" font-family="Arial, sans-serif" font-size="12" font-weight="bold">Responsabilidad Heurística (Prioridad 4 - Operativa):</text>
+  <text x="1735" y="525" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Condición de Activación: Clasificación de triaje resuelta y consentimiento OK.</text>
+  <text x="1735" y="545" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Deducción: Busca médico disponible con subespecialidad neuropediátrica afín.</text>
+  <text x="1735" y="565" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Efecto: Adquiere bloqueo pesimista en TB_HORARIOS para evitar colisiones.</text>
+  <text x="1735" y="585" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Base Técnica: Control transaccional ACID contra colisiones (RNF-0004).</text>
+  <text x="1735" y="615" font-family="Courier, monospace" font-size="11" fill="#000000">Trazabilidad: EDU-0012 / ILA-0017 / RNF-0004</text>
+
+  <!-- Flechas KS4 <-> Pizarra -->
+  <path d="M 1720 565 L 1600 565" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow4)" />
+  <path d="M 1600 575 L 1720 575" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow4)" stroke-dasharray="3,3" />
+
+  <!-- =========================================================================
+       COMPONENTE DE CONTROL (ORQUESTADOR HEURÍSTICO) (Y: 720 - 1050)
+       ========================================================================= -->
+  <rect x="80" y="730" width="2240" height="320" fill="#f4f4f4" stroke="#000000" stroke-width="3" />
+  <rect x="80" y="730" width="2240" height="40" fill="#000000" />
+  <text x="1200" y="757" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">3. COMPONENTE DE CONTROL: ORQUESTADOR TRANSACCIONAL HEURÍSTICO</text>
+
+  <!-- Bucle de Control -->
+  <rect x="110" y="790" width="680" height="235" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="130" y="815" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">Bucle de Inspección y Cola de Prioridades:</text>
+  <text x="130" y="840" font-family="Courier, monospace" font-size="11.5" fill="#000000">1. Leer Pizarra cada vez que se produce un cambio de estado.</text>
+  <text x="130" y="860" font-family="Courier, monospace" font-size="11.5" fill="#000000">2. Evaluar candidatos ejecutables (KSs habilitadas).</text>
+  <text x="130" y="880" font-family="Courier, monospace" font-size="11.5" fill="#000000">3. Ejecutar KS_01 si hay signos vitales (Prioridad 100).</text>
+  <text x="130" y="900" font-family="Courier, monospace" font-size="11.5" fill="#000000">4. Ejecutar KS_03 si requiere validación legal (Prioridad 70).</text>
+  <text x="130" y="920" font-family="Courier, monospace" font-size="11.5" fill="#000000">5. Ejecutar KS_02 si hay cuestionario de síntomas (Prioridad 50).</text>
+  <text x="130" y="940" font-family="Courier, monospace" font-size="11.5" fill="#000000">6. Ejecutar KS_04 si se busca horario de especialista (Prioridad 30).</text>
+  <text x="130" y="960" font-family="Courier, monospace" font-size="11.5" fill="#000000">7. Repetir hasta que el estado sea 'EVALUACION_COMPLETA'.</text>
+  <text x="130" y="985" font-family="Arial, sans-serif" font-size="11" fill="#555555">Orquestación no lineal: las decisiones emergen de las fuentes de conocimiento.</text>
+
+  <!-- Despachador de Decisiones -->
+  <rect x="830" y="790" width="690" height="235" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="850" y="815" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">Despachador de Salidas y Efectos Perimetrales:</text>
+  <text x="850" y="845" font-family="Arial, sans-serif" font-size="12" font-weight="bold">• SI alerta_roja == true:</text>
+  <text x="870" y="865" font-family="Courier, monospace" font-size="11" fill="#000000">→ Emite evento WebSocket inmediato vía Daphne ASGI a /ws/urgencias/</text>
+  <text x="870" y="885" font-family="Courier, monospace" font-size="11" fill="#000000">→ Activa sirena visual y notificación de guardia en pantalla de shock trauma.</text>
+  <text x="870" y="905" font-family="Courier, monospace" font-size="11" fill="#000000">→ Interrumpe flujo estándar y genera ficha de ingreso prioritario.</text>
+  <text x="850" y="930" font-family="Arial, sans-serif" font-size="12" font-weight="bold">• SI alerta_roja == false &amp;&amp; consentimiento_valido == true:</text>
+  <text x="870" y="950" font-family="Courier, monospace" font-size="11" fill="#000000">→ Autoriza consolidación de la Cita Médica en TB_CITAS_MEDICAS.</text>
+  <text x="870" y="970" font-family="Courier, monospace" font-size="11" fill="#000000">→ Habilita la emisión del comprobante y pase a sala de espera.</text>
+  <text x="870" y="990" font-family="Courier, monospace" font-size="11" fill="#000000">→ Cierra el ciclo de la Pizarra liberando la clave transaccional en Redis.</text>
+
+  <!-- Receptor Perimetral -->
+  <rect x="1560" y="790" width="730" height="235" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="1580" y="815" font-family="Arial, sans-serif" font-size="13.5" font-weight="bold">Salidas Transaccionales Hacia el Ecosistema:</text>
+
+  <rect x="1580" y="835" width="690" height="48" fill="#f0f0f0" stroke="#000000" stroke-width="1" />
+  <text x="1595" y="855" font-family="Arial, sans-serif" font-size="12" font-weight="bold">A. Notificación de Emergencia (WebSockets WSS / Redis Pub-Sub):</text>
+  <text x="1595" y="872" font-family="Courier, monospace" font-size="11" fill="#333333">Dispara broadcast en &lt; 200 ms hacia estación de Enfermería y Médico de Guardia.</text>
+
+  <rect x="1580" y="895" width="690" height="48" fill="#f0f0f0" stroke="#000000" stroke-width="1" />
+  <text x="1595" y="915" font-family="Arial, sans-serif" font-size="12" font-weight="bold">B. Persistencia Definitiva en Repositorio Relacional (PostgreSQL):</text>
+  <text x="1595" y="932" font-family="Courier, monospace" font-size="11" fill="#333333">Inserta registro auditable en TB_PRETRIAJE_CLINICO con parámetros y diagnóstico.</text>
+
+  <rect x="1580" y="955" width="690" height="48" fill="#f0f0f0" stroke="#000000" stroke-width="1" />
+  <text x="1595" y="975" font-family="Arial, sans-serif" font-size="12" font-weight="bold">C. Generación de Enlace WebRTC (Google Meet API OAuth2):</text>
+  <text x="1595" y="992" font-family="Courier, monospace" font-size="11" fill="#333333">Si la cita es teleconsulta, emite enlace con PIN único para la sala virtual.</text>
+
+  <!-- Flechas de Control hacia la Pizarra -->
+  <path d="M 1200 730 L 1200 680" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow4)" />
+  <text x="1215" y="710" font-family="Courier, monospace" font-size="11" font-weight="bold">Inspección de Estado y Despacho Heurístico</text>
+
+  <!-- =========================================================================
+       PIE: FUNDAMENTACIÓN TEÓRICA (DIAPOSITIVA 70)
+       ========================================================================= -->
+  <rect x="80" y="1080" width="2240" height="320" fill="#ffffff" stroke="#000000" stroke-width="2" />
+  <text x="100" y="1115" font-family="Arial, sans-serif" font-size="15" font-weight="bold">FUNDAMENTACIÓN DEL ESTILO DE PIZARRA EN SALUD DIGITAL SEGÚN CÁTEDRA (DR. PERCY HUERTAS):</text>
+  <text x="100" y="1145" font-family="Arial, sans-serif" font-size="13" fill="#000000">1. Justificación de la Pizarra (Blackboard Architecture - Diapositiva 70):</text>
+  <text x="120" y="1170" font-family="Arial, sans-serif" font-size="12" fill="#333333">El docente señala que el estilo de pizarra es ideal para sistemas que manejan problemas complejos no deterministas, reconocimiento de patrones, diagnóstico clínico o compiladores (haciendo la analogía con una clase universitaria donde varios profesores expertos escriben y resuelven un problema colaborativamente sobre una misma pizarra).</text>
+
+  <text x="100" y="1205" font-family="Arial, sans-serif" font-size="13" font-weight="bold">2. Aplicación Concreta en Neuropediatría (NexoVitalis360):</text>
+  <text x="120" y="1230" font-family="Arial, sans-serif" font-size="12" fill="#333333">En la atención pediátrica no existe un flujo lineal rígido: un niño puede presentar signos de riesgo vital inmediato (hipoxemia SpO2 &lt; 92%), o bien una sospecha de trastorno del neurodesarrollo (TEA/TDAH) que requiere interconsulta, o requerir la firma urgente de su apoderado. La Pizarra permite que las 4 Fuentes de Conocimiento operen de forma totalmente desacoplada, aportando conocimiento incremental a la memoria compartida.</text>
+
+  <text x="100" y="1265" font-family="Arial, sans-serif" font-size="13" font-weight="bold">3. Implementación para el Codificador (RNF-0026 / RNF-0027):</text>
+  <text x="120" y="1290" font-family="Arial, sans-serif" font-size="12" fill="#333333">Para los desarrolladores de RuwayLabs, este patrón se implementa con Python 3.12 y Redis 7.2 (hashes HSET para la memoria de la pizarra), tareas Celery para la ejecución de las KSs y Daphne ASGI para el canal WebSocket de notificaciones en tiempo real, garantizando latencias de respuesta inferiores a 150 ms en emergencias médicas.</text>
+
+  <text x="100" y="1335" font-family="Arial, sans-serif" font-size="11.5" font-style="italic" fill="#555555">Referencias: Hayes-Roth, B. (1985). "A Blackboard Architecture for Control" &#8226; Lixin Tao (2010), Software Architecture Illuminated &#8226; Diapositiva 70 del curso.</text>
+</svg>
+    </div>
+  </div>
+  <script>
+    const viewport = document.getElementById('viewport');
+    const world = document.getElementById('canvas-world');
+    let scale = 1, panX = 0, panY = 0;
+    let isDragging = false, startX = 0, startY = 0;
+
+    function updateTransform() {
+      world.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+    }
+
+    function fitView() {
+      const vw = viewport.clientWidth;
+      const vh = viewport.clientHeight;
+      const dw = 2400;
+      const dh = 1450;
+      scale = Math.min((vw - 60) / dw, (vh - 60) / dh, 1.0);
+      panX = (vw - dw * scale) / 2;
+      panY = (vh - dh * scale) / 2;
+      updateTransform();
+    }
+
+    viewport.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.hud-bar')) return;
+      isDragging = true;
+      startX = e.clientX - panX;
+      startY = e.clientY - panY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      panX = e.clientX - startX;
+      panY = e.clientY - startY;
+      updateTransform();
+    });
+
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+      panX = mouseX - (mouseX - panX) * zoomFactor;
+      panY = mouseY - (mouseY - panY) * zoomFactor;
+      scale *= zoomFactor;
+      scale = Math.max(0.2, Math.min(scale, 4.0));
+      updateTransform();
+    }, { passive: false });
+
+    document.getElementById('btn-fit').onclick = fitView;
+    document.getElementById('btn-reset').onclick = () => { scale = 1; panX = 40; panY = 60; updateTransform(); };
+    document.getElementById('btn-zoomin').onclick = () => { scale = Math.min(scale * 1.2, 4.0); updateTransform(); };
+    document.getElementById('btn-zoomout').onclick = () => { scale = Math.max(scale * 0.8, 0.2); updateTransform(); };
+
+    window.addEventListener('load', fitView);
+    window.addEventListener('resize', fitView);
+  </script>
+</body>
+</html>

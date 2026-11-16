@@ -1,0 +1,30 @@
+%%{init: {'theme': 'base', 'flowchart': {'curve': 'orthogonal', 'htmlLabels': true, 'nodeSpacing': 34, 'rankSpacing': 52}, 'themeVariables': {'primaryColor': '#ffffff', 'primaryTextColor': '#000000', 'primaryBorderColor': '#000000', 'lineColor': '#000000', 'secondaryColor': '#f4f4f4', 'tertiaryColor': '#fafafa', 'clusterBkg': '#fafafa', 'clusterBorder': '#000000', 'fontFamily': 'Arial, sans-serif'}}}%%
+flowchart TD
+    classDef core fill:#f0f0f0,stroke:#000000,stroke-width:3px,color:#000000
+    classDef blk fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    classDef alert fill:#000000,stroke:#000000,color:#ffffff
+
+    subgraph PIZ["1. PLANTILLA 6 — PIZARRA CLÍNICA BLACKBOARD (B2 + B12 - RNF-0027 & ILA-0062)"]
+        BB["Memoria Compartida Redis HSET + TB_PRETRIAJE_CLINICO<br/>GUI-0016 (TRIAJE_001) • SpO2, FC, PA, Temp, Antecedentes TEA/TDAH"]:::core
+        KS1["KS_AlertaRoja: SpO2<92%, epilepsia, ideación"]:::blk
+        KS2["KS_Neuropediatria: Cribado TEA/TDAH"]:::blk
+        KS3["KS_Consentimiento: Verifica GUI-0020 (RNF-0010)"]:::blk
+        KS4["KS_Disponibilidad: Franjas B3"]:::blk
+        CTRL["Controlador Heurístico -> Riesgo Vital"]:::core
+        ALERT["ALERTA ROJA <2s wss://.../ws/alertas-rojas/ -> EP-03 / EP-05 (RNF-0006)"]:::alert
+
+        BB <--> KS1 & KS2 & KS3 & KS4
+        BB --> CTRL -->|"Si Riesgo Vital"| ALERT
+    end
+
+    subgraph PIPE["2. PLANTILLA 8 — TUBERÍAS Y FILTROS: FACTURACIÓN SUNAT (B8 - EDU-0037 / GUI-0027)"]
+        direction LR
+        P_IN["Payload Pago"]:::blk --> F1["1. Validador DNI/RUC"]:::blk --> F2["2. XML UBL 2.1"]:::blk --> F3["3. Firma X.509"]:::blk --> F4["4. ZIP Nomenc."]:::blk --> F5["5. SOAP OSE <3s"]:::core --> F6["6. CDR + PDF QR / Ctrl Interno"]:::blk
+    end
+
+    subgraph BATCH["3. PLANTILLA 8 — LOTES SECUENCIALES: LIQUIDACIÓN MENSUAL (B9 - EDU-0038 / GUI-0028)"]
+        direction LR
+        L1["Lote 1: Citas 'Atendida'"]:::blk --> L2["Lote 2: Tarifación Modalidad"]:::blk --> L3["Lote 3: Comisión 20% + Retenc. 8%"]:::blk --> L4["Lote 4: TB_LIQUIDACIONES + PDF -> EP-04"]:::core
+    end
+
+    PIZ ~~~ PIPE ~~~ BATCH

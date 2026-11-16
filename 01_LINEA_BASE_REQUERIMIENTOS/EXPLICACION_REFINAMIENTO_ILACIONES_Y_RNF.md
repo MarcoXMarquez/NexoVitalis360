@@ -92,7 +92,7 @@ Esta estandarización refleja que la conexión con el motor relacional (PostgreS
 
 El Catálogo de Requisitos original culminaba en `RNF-0010` o tenía duplicados, careciendo de especificaciones sobre el hardware de los clientes, la memoria virtual, los sistemas operativos, los motores de navegación y la infraestructura de servidores.
 
-Se depuraron los existentes y se incorporaron **10 nuevos RNF formales**, alcanzando un total de **25 requerimientos no funcionales (RNF-0001 a RNF-0025)** rigurosamente clasificados bajo la norma **ISO/IEC 25010**:
+Se depuraron los existentes y se incorporaron **12 nuevos RNF formales**, alcanzando un total de **27 requerimientos no funcionales (RNF-0001 a RNF-0027)** rigurosamente clasificados bajo la norma **ISO/IEC 25010**:
 
 ```mermaid
 graph LR
@@ -103,7 +103,7 @@ graph LR
         R4["RNF-0012: Stack Django + React + Redis"]
         R5["RNF-0013..0014: JWT y TLS 1.3 / HTTPS"]
     end
-    subgraph "Nuevos RNF Arquitectónicos (RNF-0016 a RNF-0025)"
+    subgraph "Nuevos RNF Arquitectónicos (RNF-0016 a RNF-0027)"
         R6["RNF-0016: Hardware Cliente (i5/8GB/SSD)"]
         R7["RNF-0017: Memoria Virtual pagefile.sys"]
         R8["RNF-0018: Móviles Android 11+ / iOS 15+"]
@@ -114,10 +114,12 @@ graph LR
         R13["RNF-0023: SUNAT UBL 2.1 / Firma X.509"]
         R14["RNF-0024: AWS S3 / MinIO Presigned URLs"]
         R15["RNF-0025: Topología VPC / DMZ / Firewall"]
+        R16["RNF-0026: Perfil Equipo Codificación"]
+        R17["RNF-0027: Arq. Pizarra Soporte Clínico"]
     end
 ```
 
-### Detalle de los 10 Nuevos RNF que Sustentan la Arquitectura
+### Detalle de los 12 Nuevos RNF que Sustentan la Arquitectura
 
 1. **`RNF-0016: Hardware y Sistema Operativo de Estaciones de Trabajo del Cliente`**
    - *¿Por qué se agregó?:* La cátedra exigió documentar con qué equipos cuenta el cliente.
@@ -158,6 +160,21 @@ graph LR
 10. **`RNF-0025: Topología de Red, Segmentación VPC y Firewall Perimetral`**
     - *¿Por qué se agregó?:* Especificación de los puertos y subredes dibujados en la Vista Física.
     - *Especificación:* Red Privada Virtual (VPC) con Subred Pública DMZ (Nginx puerto 443 HTTPS/WSS, Rate Limiting 100 req/min) y Subred Privada Aislada (Django puerto 8000, Redis puerto 6379 y PostgreSQL puerto 5432 sin acceso directo desde Internet).
+
+11. **`RNF-0026: Perfil y Competencias Técnicas del Equipo de Codificadores (Desarrollo)`**
+    - *¿Por qué se agregó?:* Mandato directo del docente en cátedra: *"¿Quién va a codificar? Es lo primero que tienen que hacer, y entra como parte de los requisitos no funcionales de la arquitectura. La arquitectura no es para el cliente, es para el codificador."*
+    - *Especificación:* El equipo de codificación está integrado por desarrolladores Full-Stack con dominio técnico en:
+      - *Frontend:* TypeScript 5.4, React 18, Vite 5.2, Tailwind CSS 3.4 y Progressive Web Apps (PWA) para clientes móviles.
+      - *Backend:* Python 3.12, Django 5.0, Django REST Framework 5.0, Daphne (servidor ASGI para WebSockets en tiempo real) y Celery 5.4 para tareas asíncronas.
+      - *Persistencia e Infraestructura:* PostgreSQL 16 con PgBouncer, Redis 7.2 y contenedores Docker Engine 26.x sobre Linux.
+      - *Nivel de Granularidad Arquitectónica:* Debido a que la arquitectura orienta el desarrollo constructivo sin ambigüedades, se exige modelado explícito de interfaces de usuario (`GUI-*`), modales (`MDL-*`), procesos algorítmicos paso a paso en BPMN 2.0 y flujos de datos específicos (Pipes & Filters y Lotes).
+
+12. **`RNF-0027: Arquitectura de Pizarra (Blackboard) para Soporte a Decisiones Clínicas Pediátricas`**
+    - *¿Por qué se agregó?:* Para sustentar la Plantilla 6 (Arquitectura Centrada en Datos) conforme a la Diapositiva 70 del docente ("Arquitectura de pizarra para reconocimiento y análisis especializado").
+    - *Especificación:* El subsistema de evaluación asistencial y pre-triaje opera bajo el patrón arquitectónico de Pizarra (*Blackboard Architecture*), compuesto por:
+      - *Memoria de Trabajo Compartida (Pizarra):* Instancia estructurada en Redis 7.2 y PostgreSQL que alberga los parámetros biométricos (frecuencia cardíaca, temperatura, presión arterial sistólica/diastólica y saturación $\text{SpO}_2$) junto con las observaciones iniciales del apoderado.
+      - *Fuentes de Conocimiento Especializadas (Knowledge Sources - KS):* Módulos heurísticos independientes desacoplados: `KS_AlertaRoja` (gatilla alarma si $\text{SpO}_2 < 92\%$), `KS_Neuropediatria` (cribado preliminar de rasgos TEA/TDAH), `KS_ConsentimientoBioetico` (validación de patria potestad del apoderado) y `KS_Disponibilidad` (resolución de franjas de agendas concurrentes).
+      - *Componente de Control:* Orquestador transaccional que evalúa periódicamente el estado de la pizarra, ejecuta las fuentes de conocimiento según prioridad médica y notifica de inmediato a la guardia médica vía WebSockets en caso de alerta vital.
 
 ---
 

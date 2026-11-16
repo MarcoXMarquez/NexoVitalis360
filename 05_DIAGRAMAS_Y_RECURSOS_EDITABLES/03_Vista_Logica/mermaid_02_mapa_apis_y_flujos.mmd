@@ -1,0 +1,46 @@
+%%{init: {'theme': 'base', 'flowchart': {'curve': 'orthogonal', 'htmlLabels': true, 'nodeSpacing': 34, 'rankSpacing': 52}, 'themeVariables': {'primaryColor': '#ffffff', 'primaryTextColor': '#000000', 'primaryBorderColor': '#000000', 'lineColor': '#000000', 'secondaryColor': '#f4f4f4', 'tertiaryColor': '#fafafa', 'clusterBkg': '#fafafa', 'clusterBorder': '#000000', 'fontFamily': 'Arial, sans-serif'}}}%%
+flowchart LR
+    classDef cli fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    classDef m2m fill:#fafafa,stroke:#000000,stroke-width:2px,stroke-dasharray:5 3,color:#000000
+    classDef gw fill:#f4f4f4,stroke:#000000,stroke-width:3px,color:#000000
+    classDef ep fill:#ffffff,stroke:#000000,stroke-width:1.8px,color:#000000
+    classDef ext fill:#fafafa,stroke:#000000,stroke-width:2px,stroke-dasharray:4 3,color:#000000
+
+    subgraph FRONT["ENTRY POINTS FRONTALES & M2M (QUIÉN ACTÚA / POR DÓNDE ENTRA)"]
+        R_TUT["EP-01: /app/tutor/* PWA<br/>Apoderado • GUI-0007,14,16,20,23,26"]:::cli
+        R_ADM["EP-02: /app/admin/* & /caja<br/>ACT-0005 • GUI-0001,05,06,09..11,13,24,27"]:::cli
+        R_MED["EP-03: /app/medico/* SPA<br/>Especialista • 8 GUIs HCE + Alerta"]:::cli
+        R_GOB["EP-04: /app/admin/gobernanza/*<br/>ACT-0001..04 • GUI-0002,04,28"]:::cli
+        R_TEL["EP-05: /app/teleconsulta/:id<br/>WebRTC + GUI-0012 + WSS"]:::cli
+        R_M2M["EP-06: Webhooks HMAC + Celery Beat<br/>/pagos/cb • /mensajeria/status/ • Cron T-24h/Mes"]:::m2m
+    end
+
+    GW["B0: NGINX DMZ + WAF + JWT RBAC<br/>HTTPS / WSS :443 TLS 1.3<br/>/api/v1/auth/jwt/* (exp 15m)<br/>RNF-0001, 0013, 0014, 0025"]:::gw
+
+    subgraph APIS["CONTRATOS API INTERNA DJANGO 5 DRF :8000 + DAPHNE ASGI + CELERY"]
+        API_ADM["Admitir & Agenda (B1, B3)<br/>/api/v1/pacientes/ (GUI-0007)<br/>/api/v1/apoderados/ (GUI-0014)<br/>/api/v1/especialistas/ (GUI-0009)<br/>/api/v1/horarios/disponibilidad/ <=2s (GUI-0010)"]:::ep
+        API_PIZ["Triaje, Consentimiento & WSS (B2)<br/>/api/v1/pretriage/ (GUI-0016, RNF-0027)<br/>/api/v1/consentimientos/ (GUI-0020, RNF-0010)<br/>wss://.../ws/alertas-rojas/ <150ms (RNF-0006)"]:::ep
+        API_CIT["Núcleo Orquestador Citas (B4)<br/>POST /api/v1/citas/ Lock <2s (GUI-0005, RNF-0004)<br/>PATCH /api/v1/citas/{id}/estado/ (GUI-0001)<br/>POST /api/v1/citas/{id}/reprogramar/ (GUI-0006)<br/>/api/v1/citas/{id}/modalidad/ (GUI-0011)"]:::ep
+        API_COM["Canales & Gobernanza (B5, B6, B10)<br/>/api/v1/teleconsulta/salas/ (GUI-0012)<br/>/api/v1/notificaciones/ + /reenviar/ (GUI-0013)<br/>/api/v1/permisos/roles/ & /auditoria/ (GUI-0002,04)"]:::ep
+        API_HCE["Historia Clínica Digital <=1.5s (B7)<br/>/api/v1/historias/ & /evoluciones/ 72h (GUI-0022,25)<br/>/api/v1/diagnosticos-cie10/ & /recetas/ (GUI-0021,19)<br/>/api/v1/documentos-adjuntos/ (GUI-0017)<br/>/api/v1/derivaciones/ & /interconsultas/ (GUI-0003,08,18)"]:::ep
+        API_FIN["Finanzas, Tubería SUNAT & Lotes Batch (B8, B9)<br/>/api/v1/paquetes/ (90d) & /descuentos/ (GUI-0023,24)<br/>/api/v1/pagos/ & /pagos/cb (GUI-0026)<br/>/api/v1/facturacion/cpe/ UBL 2.1 (GUI-0027)<br/>/api/v1/liquidaciones/ (Batch 4 Lotes, GUI-0028)"]:::ep
+    end
+
+    subgraph EXT_GW["DESTINOS DE DATOS & APIS EXTERNAS"]
+        DB_PG[("Vitalis_BD PG16 + PgBouncer 6432<br/>27 Tablas TB_* (RNF-0011)")]:::ext
+        DB_S3["MinIO S3 9000 + Redis 6379<br/>Presigned 300s (RNF-0024) & Pizarra (RNF-0027)"]:::ext
+        G_MEET["Google Meet REST v2 OAuth2 (RNF-0008)"]:::ext
+        G_WA["Meta WhatsApp Cloud / Twilio + Hook (RNF-0009)"]:::ext
+        G_SUNAT["SUNAT PSE/OSE XML UBL 2.1 X.509 (RNF-0023)"]:::ext
+        G_PAY["Niubiz / Izipay / Yape / Plin + Hook PCI-DSS"]:::ext
+    end
+
+    R_TUT & R_ADM & R_MED & R_GOB & R_TEL & R_M2M -->|"HTTPS/WSS 443 + JWT/HMAC"| GW
+    GW --> API_ADM & API_PIZ & API_CIT & API_COM & API_HCE & API_FIN
+
+    API_ADM & API_CIT & API_HCE & API_FIN -->|"SQL Pool 6432"| DB_PG
+    API_PIZ & API_HCE & API_FIN -->|"S3 / Redis 6379"| DB_S3
+    API_COM -->|"OAuth2 /spaces"| G_MEET
+    API_COM <-->|"REST + Hook EP-06"| G_WA
+    API_FIN <-->|"SOAP/REST <3s"| G_SUNAT
+    API_FIN <-->|"Charges + Hook EP-06"| G_PAY

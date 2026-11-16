@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Figura 7.2: Flujo de Interacción UI, Pantallas y Modales Flotantes | NexoVitalis360</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important;
+    }
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #ffffff;
+      color: #000000;
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      user-select: none;
+    }
+    .viewport {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      cursor: grab;
+      background-color: #ffffff;
+    }
+    .viewport:active {
+      cursor: grabbing;
+    }
+    .canvas-world {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      background-color: #ffffff;
+    }
+    .hud-bar {
+      position: fixed;
+      top: 10px;
+      right: 16px;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1.5px solid #000000;
+      padding: 5px 12px;
+      font-size: 11.5px;
+      box-shadow: 2px 2px 0px #000000;
+    }
+    .hud-status-badge {
+      background: #000000;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 3px 7px;
+      text-transform: uppercase;
+    }
+    .btn-hud {
+      background: #ffffff;
+      color: #000000;
+      border: 1.5px solid #000000;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-hud:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="hud-bar">
+    <span class="hud-status-badge">OFICIAL V01.00</span>
+    <div style="font-weight:bold;">Figura 7.2: Flujo de Interacción UI, Pantallas y Modales Flotantes</div>
+    <button class="btn-hud" id="btn-fit">Ajustar Vista</button>
+    <button class="btn-hud" id="btn-reset">Reset</button>
+    <button class="btn-hud" id="btn-zoomin">+</button>
+    <button class="btn-hud" id="btn-zoomout">-</button>
+  </div>
+  <div class="viewport" id="viewport">
+    <div class="canvas-world" id="canvas-world">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1400" width="2400" height="1400">
+  <defs>
+    <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#000000" />
+    </marker>
+  </defs>
+
+  <!-- Fondo Blanco -->
+  <rect width="2400" height="1400" fill="#ffffff" />
+
+  <!-- Encabezado -->
+  <rect x="50" y="30" width="2300" height="90" fill="#ffffff" stroke="#000000" stroke-width="2.5" />
+  <text x="70" y="65" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#000000">NEXOVITALIS360 — ARQUITECTURA CENTRADA EN INTERFACES DE USUARIO (PLANTILLA 7)</text>
+  <text x="70" y="98" font-family="Arial, sans-serif" font-size="16" fill="#333333">FIGURA 7.2: FLUJO DE INTERACCIÓN DE INTERFACES, PANTALLAS MAESTRAS (GUI) Y MODALES FLOTANTES (MDL)</text>
+  <text x="2100" y="80" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#000000">HEURÍSTICAS DE USABILIDAD</text>
+
+  <!-- =========================================================================
+       PASO 1: AGENDAMIENTO Y RESERVA (COLUMNA 1: X: 80 - 480)
+       ========================================================================= -->
+  <rect x="80" y="160" width="410" height="340" fill="#ffffff" stroke="#000000" stroke-width="2" />
+  <rect x="80" y="160" width="410" height="40" fill="#f0f0f0" stroke="#000000" stroke-width="2" />
+  <text x="100" y="186" font-family="Arial, sans-serif" font-size="14" font-weight="bold">ETAPA 1: SELECCIÓN DE CITA</text>
+
+  <rect x="100" y="215" width="370" height="95" fill="#ffffff" stroke="#000000" stroke-width="1.5" />
+  <text x="115" y="238" font-family="Arial, sans-serif" font-size="13" font-weight="bold">GUI-001: Calendario Multimodal</text>
+  <text x="115" y="258" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Filtro por especialidad neuropediátrica</text>
+  <text x="115" y="275" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Selector de modalidad: Presencial / WebRTC / Domicilio</text>
+  <text x="115" y="292" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Grid interactivo de franjas horarias libres</text>
+
+  <!-- Disparador Evento -->
+  <path d="M 285 310 L 285 345" stroke="#000000" stroke-width="2" marker-end="url(#arrow2)" />
+  <text x="295" y="333" font-family="Courier, monospace" font-size="11" font-weight="bold">onClick(BTN_SELECCIONAR_TURNO)</text>
+
+  <rect x="100" y="345" width="370" height="130" fill="#fafafa" stroke="#000000" stroke-width="1.8" stroke-dasharray="4,3" />
+  <text x="115" y="368" font-family="Arial, sans-serif" font-size="13" font-weight="bold">MDL-001: Modal Bloqueo Pesimista</text>
+  <text x="115" y="388" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Timer de retención: 10:00 minutos activos</text>
+  <text x="115" y="405" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Bloqueo atómico en BD: SELECT FOR UPDATE</text>
+  <text x="115" y="422" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Botón BTN_CONFIRMAR_RESERVA</text>
+  <text x="115" y="439" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Botón BTN_CANCELAR (libera franja en TB_HORARIOS)</text>
+  <rect x="115" y="450" width="340" height="18" fill="#e8e8e8" />
+  <text x="120" y="463" font-family="Arial, sans-serif" font-size="10" font-weight="bold">Heurística Nielsen #1: Visibilidad del Estado (Cuenta Regresiva)</text>
+
+  <!-- Conexión Etapa 1 a Etapa 2 -->
+  <path d="M 490 260 L 540 260" stroke="#000000" stroke-width="2" marker-end="url(#arrow2)" />
+  <text x="515" y="250" font-family="Courier, monospace" font-size="11" font-weight="bold" text-anchor="middle">HTTP 200 OK</text>
+
+  <!-- =========================================================================
+       PASO 2: PRE-TRIAJE Y ALERTA VITAL (COLUMNA 2: X: 540 - 940)
+       ========================================================================= -->
+  <rect x="540" y="160" width="410" height="340" fill="#ffffff" stroke="#000000" stroke-width="2" />
+  <rect x="540" y="160" width="410" height="40" fill="#f0f0f0" stroke="#000000" stroke-width="2" />
+  <text x="560" y="186" font-family="Arial, sans-serif" font-size="14" font-weight="bold">ETAPA 2: PRE-TRIAJE Y BIOÉTICA</text>
+
+  <rect x="560" y="215" width="370" height="95" fill="#ffffff" stroke="#000000" stroke-width="1.5" />
+  <text x="575" y="238" font-family="Arial, sans-serif" font-size="13" font-weight="bold">GUI-002: Formulario de Triaje y Consentimiento</text>
+  <text x="575" y="258" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Captura de Signos Vitales: SpO2, FC, PA, Temperatura</text>
+  <text x="575" y="275" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Verificación de Consentimiento Informado Legal</text>
+  <text x="575" y="292" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Botón BTN_EVALUAR_SIGNOS_VITALES</text>
+
+  <!-- Disparador Modal -->
+  <path d="M 745 310 L 745 345" stroke="#000000" stroke-width="2" marker-end="url(#arrow2)" />
+  <text x="755" y="333" font-family="Courier, monospace" font-size="11" font-weight="bold">onSubmit(EVALUAR)</text>
+
+  <rect x="560" y="345" width="370" height="130" fill="#fafafa" stroke="#000000" stroke-width="1.8" stroke-dasharray="4,3" />
+  <text x="575" y="368" font-family="Arial, sans-serif" font-size="13" font-weight="bold">MDL-002: Modal Evaluación de Alerta Roja</text>
+  <text x="575" y="388" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Regla Clínica: Si SpO2 &lt; 92% o FC crítica</text>
+  <text x="575" y="405" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Interfaz: Banner Parpadeante de Alto Contraste</text>
+  <text x="575" y="422" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Disparo WebSockets automático a central médica</text>
+  <text x="575" y="439" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Desvío inmediato a módulo de urgencias</text>
+  <rect x="575" y="450" width="340" height="18" fill="#e8e8e8" />
+  <text x="580" y="463" font-family="Arial, sans-serif" font-size="10" font-weight="bold">Heurística Nielsen #5: Prevención de Errores y RNF-0027</text>
+
+  <!-- Conexión Etapa 2 a Etapa 3 -->
+  <path d="M 950 260 L 1000 260" stroke="#000000" stroke-width="2" marker-end="url(#arrow2)" />
+  <text x="975" y="250" font-family="Courier, monospace" font-size="11" font-weight="bold" text-anchor="middle">Triaje OK</text>
+
+  <!-- =========================================================================
+       PASO 3: ATENCIÓN CLÍNICA Y CIE-10 (COLUMNA 3: X: 1000 - 1400)
+       ========================================================================= -->
+  <rect x="1000" y="160" width="410" height="340" fill="#ffffff" stroke="#000000" stroke-width="2" />
+  <rect x="1000" y="160" width="410" height="40" fill="#f0f0f0" stroke="#000000" stroke-width="2" />
+  <text x="1020" y="186" font-family="Arial, sans-serif" font-size="14" font-weight="bold">ETAPA 3: CONSULTA MÉDICA</text>
+
+  <rect x="1020" y="215" width="370" height="95" fill="#ffffff" stroke="#000000" stroke-width="1.5" />
+  <text x="1035" y="238" font-family="Arial, sans-serif" font-size="13" font-weight="bold">GUI-003: Estación de Consulta Médica</text>
+  <text x="1035" y="258" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Visor de Historia Clínica Electrónica</text>
+  <text x="1035" y="275" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Panel de Notas de Evolución en tiempo real</text>
+  <text x="1035" y="292" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Enlace Google Meet integrado para teleconsultas</text>
+
+  <!-- Disparador Modal -->
+  <path d="M 1205 310 L 1205 345" stroke="#000000" stroke-width="2" marker-end="url(#arrow2)" />
+  <text x="1215" y="333" font-family="Courier, monospace" font-size="11" font-weight="bold">onClick(BTN_FINALIZAR_SESION)</text>
+
+  <rect x="1020" y="345" width="370" height="130" fill="#fafafa" stroke="#000000" stroke-width="1.8" stroke-dasharray="4,3" />
+  <text x="1035" y="368" font-family="Arial, sans-serif" font-size="13" font-weight="bold">MDL-003: Modal Diagnóstico CIE-10 y Cierre</text>
+  <text x="1035" y="388" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Buscador predictivo de códigos CIE-10 / DSM-5</text>
+  <text x="1035" y="405" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Prescripción médica electrónica con posología</text>
+  <text x="1035" y="422" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Cierre inmutable de historia clínica</text>
+  <text x="1035" y="439" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Descuento automático de sesión de paquete</text>
+  <rect x="1035" y="450" width="340" height="18" fill="#e8e8e8" />
+  <text x="1040" y="463" font-family="Arial, sans-serif" font-size="10" font-weight="bold">Shneiderman Regla #3: Retroalimentación Informativa</text>
+
+  <!-- Conexión Etapa 3 a Etapa 4 -->
+  <path d="M 1410 260 L 1460 260" stroke="#000000" stroke-width="2" marker-end="url(#arrow2)" />
+  <text x="1435" y="250" font-family="Courier, monospace" font-size="11" font-weight="bold" text-anchor="middle">Sesión Fin</text>
+
+  <!-- =========================================================================
+       PASO 4: FACTURACIÓN Y LIQUIDACIÓN SUNAT (COLUMNA 4: X: 1460 - 1860)
+       ========================================================================= -->
+  <rect x="1460" y="160" width="410" height="340" fill="#ffffff" stroke="#000000" stroke-width="2" />
+  <rect x="1460" y="160" width="410" height="40" fill="#f0f0f0" stroke="#000000" stroke-width="2" />
+  <text x="1480" y="186" font-family="Arial, sans-serif" font-size="14" font-weight="bold">ETAPA 4: FACTURACIÓN SUNAT</text>
+
+  <rect x="1480" y="215" width="370" height="95" fill="#ffffff" stroke="#000000" stroke-width="1.5" />
+  <text x="1495" y="238" font-family="Arial, sans-serif" font-size="13" font-weight="bold">GUI-004: Módulo de Caja y Comprobantes</text>
+  <text x="1495" y="258" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Resumen de sesión atendida y tarifas</text>
+  <text x="1495" y="275" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Bifurcación: Boleta (DNI) vs. Factura (RUC)</text>
+  <text x="1495" y="292" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Integración de pago: POS, Yape, Tarjeta o Saldo</text>
+
+  <!-- Disparador Modal -->
+  <path d="M 1665 310 L 1665 345" stroke="#000000" stroke-width="2" marker-end="url(#arrow2)" />
+  <text x="1675" y="333" font-family="Courier, monospace" font-size="11" font-weight="bold">onClick(BTN_EMITIR_CPE)</text>
+
+  <rect x="1480" y="345" width="370" height="130" fill="#fafafa" stroke="#000000" stroke-width="1.8" stroke-dasharray="4,3" />
+  <text x="1495" y="368" font-family="Arial, sans-serif" font-size="13" font-weight="bold">MDL-004: Modal Emisión XML UBL 2.1</text>
+  <text x="1495" y="388" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Firma digital criptográfica X.509 en backend</text>
+  <text x="1495" y="405" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Transmisión segura mTLS hacia SUNAT/OSE</text>
+  <text x="1495" y="422" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Visualizador de CDR con estado APROBADO</text>
+  <text x="1495" y="439" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Botón de descarga PDF con código QR y Hash CPE</text>
+  <rect x="1495" y="450" width="340" height="18" fill="#e8e8e8" />
+  <text x="1500" y="463" font-family="Arial, sans-serif" font-size="10" font-weight="bold">Heurística Nielsen #9: Ayudar a Reconocer Errores (RNF-0023)</text>
+
+  <!-- =========================================================================
+       PASO 5: EXPERIENCIA MÓVIL DEL APODERADO (COLUMNA 5: X: 1920 - 2320)
+       ========================================================================= -->
+  <rect x="1920" y="160" width="400" height="340" fill="#ffffff" stroke="#000000" stroke-width="2" />
+  <rect x="1920" y="160" width="400" height="40" fill="#f0f0f0" stroke="#000000" stroke-width="2" />
+  <text x="1940" y="186" font-family="Arial, sans-serif" font-size="14" font-weight="bold">ETAPA 5: PORTAL APODERADO</text>
+
+  <rect x="1940" y="215" width="360" height="95" fill="#ffffff" stroke="#000000" stroke-width="1.5" />
+  <text x="1955" y="238" font-family="Arial, sans-serif" font-size="13" font-weight="bold">GUI-005: PWA Móvil del Tutor</text>
+  <text x="1955" y="258" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Historial y calendario familiar de terapias</text>
+  <text x="1955" y="275" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Botón de acceso directo a teleconsulta</text>
+  <text x="1955" y="292" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Descarga local en SessionStorage ante caídas 4G</text>
+
+  <!-- Disparador Modal -->
+  <path d="M 2120 310 L 2120 345" stroke="#000000" stroke-width="2" marker-end="url(#arrow2)" />
+  <text x="2130" y="333" font-family="Courier, monospace" font-size="11" font-weight="bold">onClick(BTN_FIRMAR_ACTA)</text>
+
+  <rect x="1940" y="345" width="360" height="130" fill="#fafafa" stroke="#000000" stroke-width="1.8" stroke-dasharray="4,3" />
+  <text x="1955" y="368" font-family="Arial, sans-serif" font-size="13" font-weight="bold">MDL-005: Modal Firma Biométrica</text>
+  <text x="1955" y="388" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Canvas de firma táctil sobre pantalla móvil</text>
+  <text x="1955" y="405" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Sellado de tiempo y hash SHA-256 inmutable</text>
+  <text x="1955" y="422" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Generación del acta probatoria en MinIO S3</text>
+  <text x="1955" y="439" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Notificación push y SMS de confirmación</text>
+  <rect x="1955" y="450" width="330" height="18" fill="#e8e8e8" />
+  <text x="1960" y="463" font-family="Arial, sans-serif" font-size="10" font-weight="bold">Norman: Affordance Real y Signifiers Táctiles</text>
+
+  <!-- =========================================================================
+       SECCIÓN INFERIOR: MATRIZ DE HEURÍSTICAS DE USABILIDAD (SHNEIDERMAN Y NIELSEN)
+       ========================================================================= -->
+  <rect x="80" y="540" width="2240" height="780" fill="#ffffff" stroke="#000000" stroke-width="2" />
+  <rect x="80" y="540" width="2240" height="45" fill="#f0f0f0" stroke="#000000" stroke-width="2" />
+  <text x="100" y="570" font-family="Arial, sans-serif" font-size="16" font-weight="bold">MATRIZ DE IMPLEMENTACIÓN ARQUITECTÓNICA: HEURÍSTICAS DE USABILIDAD Y ERGONOMÍA (PLANTILLA 7)</text>
+
+  <!-- Fila 1: Principios 1 a 4 -->
+  <rect x="100" y="605" width="530" height="160" fill="#fafafa" stroke="#000000" stroke-width="1.5" />
+  <text x="115" y="630" font-family="Arial, sans-serif" font-size="13" font-weight="bold">1. VISIBILIDAD DEL ESTADO DEL SISTEMA (NIELSEN #1)</text>
+  <text x="115" y="652" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• En GUI-001 y MDL-001: Indicadores claros de bloqueo pesimista con cronómetro.</text>
+  <text x="115" y="670" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• En GUI-004: Barra de progreso en 4 pasos para facturación electrónica.</text>
+  <text x="115" y="688" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• En Telemedicina: Semáforo de latencia de red (Verde &lt;100ms, Rojo &gt;300ms).</text>
+  <text x="115" y="706" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Trazabilidad: RNF-0004 y RNF-0015.</text>
+
+  <rect x="650" y="605" width="530" height="160" fill="#fafafa" stroke="#000000" stroke-width="1.5" />
+  <text x="665" y="630" font-family="Arial, sans-serif" font-size="13" font-weight="bold">2. CONTROL Y LIBERTAD DEL USUARIO (NIELSEN #3)</text>
+  <text x="665" y="652" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Botón explícito BTN_CANCELAR en todos los modales para salida segura.</text>
+  <text x="665" y="670" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Liberación inmediata de franjas bloqueadas en TB_HORARIOS sin penalidad.</text>
+  <text x="665" y="688" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Soporte de tecla ESC y clic fuera del backdrop para descartar ventanas.</text>
+  <text x="665" y="706" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Shneiderman Regla #2: Atajos universales y reversibilidad de acciones.</text>
+
+  <rect x="1200" y="605" width="530" height="160" fill="#fafafa" stroke="#000000" stroke-width="1.5" />
+  <text x="1215" y="630" font-family="Arial, sans-serif" font-size="13" font-weight="bold">3. CONSISTENCIA Y ESTÁNDARES (NIELSEN #4)</text>
+  <text x="1215" y="652" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Nomenclatura nemónica homogénea: BTN_*, FLD_*, SEL_*, MDL_*, TBL_*.</text>
+  <text x="1215" y="670" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Paleta B&amp;W de alto contraste con tipografía sans-serif de alta legibilidad.</text>
+  <text x="1215" y="688" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Mismo comportamiento de modales flotantes en Web Desktop y PWA Móvil.</text>
+  <text x="1215" y="706" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Cumplimiento de WCAG 2.1 AA para contraste y accesibilidad clínica.</text>
+
+  <rect x="1750" y="605" width="550" height="160" fill="#fafafa" stroke="#000000" stroke-width="1.5" />
+  <text x="1765" y="630" font-family="Arial, sans-serif" font-size="13" font-weight="bold">4. PREVENCIÓN DE ERRORES E INDULGENCIA (SHNEIDERMAN #5)</text>
+  <text x="1765" y="652" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Bloqueo preventivo de campos de texto con validación regex (DNI 8d, RUC 11d).</text>
+  <text x="1765" y="670" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Deshabilitación del botón BTN_EMITIR_CPE si faltan datos fiscales obligatorios.</text>
+  <text x="1765" y="688" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Alerta modal con doble confirmación antes de anular o reprogramar citas.</text>
+  <text x="1765" y="706" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Regla de 24 horas aplicada en frontend y validada por backend (ILA-0029).</text>
+
+  <!-- Fila 2: Principios 5 a 8 -->
+  <rect x="100" y="785" width="530" height="160" fill="#fafafa" stroke="#000000" stroke-width="1.5" />
+  <text x="115" y="810" font-family="Arial, sans-serif" font-size="13" font-weight="bold">5. RECONOCER ANTES QUE RECORDAR (NIELSEN #6)</text>
+  <text x="115" y="832" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Buscador con autocompletado en memoria de códigos CIE-10 neuropediátricos.</text>
+  <text x="115" y="850" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Despliegue de antecedentes y alergias del menor en el encabezado de consulta.</text>
+  <text x="115" y="868" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Listado desplegable de dosis pediátricas habituales por rango etario.</text>
+  <text x="115" y="886" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Reducción de la carga cognitiva en médicos y recepcionistas.</text>
+
+  <rect x="650" y="785" width="530" height="160" fill="#fafafa" stroke="#000000" stroke-width="1.5" />
+  <text x="665" y="810" font-family="Arial, sans-serif" font-size="13" font-weight="bold">6. FLEXIBILIDAD Y EFICIENCIA DE USO (NIELSEN #7)</text>
+  <text x="665" y="832" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Atajos de teclado para especialistas experimentados (Ctrl+S guardar, Ctrl+P receta).</text>
+  <text x="665" y="850" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Plantillas preconfiguradas de texto para notas de evolución frecuentes.</text>
+  <text x="665" y="868" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Acceso directo a emisión de comprobantes desde la agenda del día.</text>
+  <text x="665" y="886" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Shneiderman Regla #7: Apoyar el locus de control interno.</text>
+
+  <rect x="1200" y="785" width="530" height="160" fill="#fafafa" stroke="#000000" stroke-width="1.5" />
+  <text x="1215" y="810" font-family="Arial, sans-serif" font-size="13" font-weight="bold">7. DISEÑO ESTÉTICO Y MINIMALISTA (NIELSEN #8)</text>
+  <text x="1215" y="832" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Eliminación total de elementos distractores, bordes curvos o gradientes ruidosos.</text>
+  <text x="1215" y="850" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Espaciado uniforme de 8px en grilla CSS para alineación matemática.</text>
+  <text x="1215" y="868" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Jerarquía tipográfica rigurosa: 18pt títulos, 13pt campos, 11pt metadatos.</text>
+  <text x="1215" y="886" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Interfaz limpia (Clean UI) conforme a las diapositivas de cátedra (Diap. 118).</text>
+
+  <rect x="1750" y="785" width="550" height="160" fill="#fafafa" stroke="#000000" stroke-width="1.5" />
+  <text x="1765" y="810" font-family="Arial, sans-serif" font-size="13" font-weight="bold">8. RECUPERACIÓN ANTE ERRORES (NIELSEN #9)</text>
+  <text x="1765" y="832" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Mensajes de error constructivos con acción correctiva explícita.</text>
+  <text x="1765" y="850" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Si SUNAT rechaza comprobante: código específico (ej. Error 2014 RUC no habido).</text>
+  <text x="1765" y="868" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Si se pierde conexión WebRTC: reconexión automática en 3 reintentos con ICE.</text>
+  <text x="1765" y="886" font-family="Arial, sans-serif" font-size="11.5" fill="#333333">• Preservación del borrador de notas en LocalStorage para prevenir pérdida de datos.</text>
+
+  <!-- Fila 3: Conclusiones Ergonómicas -->
+  <rect x="100" y="965" width="2200" height="85" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="120" y="995" font-family="Arial, sans-serif" font-size="13" font-weight="bold">CONGRUENCIA CON EL DESARROLLADOR FRONTEND (RNF-0026):</text>
+  <text x="120" y="1018" font-family="Arial, sans-serif" font-size="12" fill="#333333">Cada pantalla GUI-* y modal MDL-* se implementa como un componente React 18 modular con TypeScript, utilizando estados desacoplados en React Context / Zustand, peticiones HTTP tipadas hacia Django REST Framework y validación formal de formularios con Zod y React Hook Form, garantizando una codificación sin ambigüedades técnicas.</text>
+</svg>
+    </div>
+  </div>
+  <script>
+    const viewport = document.getElementById('viewport');
+    const world = document.getElementById('canvas-world');
+    let scale = 1, panX = 0, panY = 0;
+    let isDragging = false, startX = 0, startY = 0;
+
+    function updateTransform() {
+      world.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+    }
+
+    function fitView() {
+      const vw = viewport.clientWidth;
+      const vh = viewport.clientHeight;
+      const dw = 2400;
+      const dh = 1400;
+      scale = Math.min((vw - 60) / dw, (vh - 60) / dh, 1.0);
+      panX = (vw - dw * scale) / 2;
+      panY = (vh - dh * scale) / 2;
+      updateTransform();
+    }
+
+    viewport.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.hud-bar')) return;
+      isDragging = true;
+      startX = e.clientX - panX;
+      startY = e.clientY - panY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      panX = e.clientX - startX;
+      panY = e.clientY - startY;
+      updateTransform();
+    });
+
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+      panX = mouseX - (mouseX - panX) * zoomFactor;
+      panY = mouseY - (mouseY - panY) * zoomFactor;
+      scale *= zoomFactor;
+      scale = Math.max(0.2, Math.min(scale, 4.0));
+      updateTransform();
+    }, { passive: false });
+
+    document.getElementById('btn-fit').onclick = fitView;
+    document.getElementById('btn-reset').onclick = () => { scale = 1; panX = 40; panY = 60; updateTransform(); };
+    document.getElementById('btn-zoomin').onclick = () => { scale = Math.min(scale * 1.2, 4.0); updateTransform(); };
+    document.getElementById('btn-zoomout').onclick = () => { scale = Math.max(scale * 0.8, 0.2); updateTransform(); };
+
+    window.addEventListener('load', fitView);
+    window.addEventListener('resize', fitView);
+  </script>
+</body>
+</html>

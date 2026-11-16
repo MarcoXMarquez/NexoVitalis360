@@ -41,3 +41,16 @@
    - En vista general o zoom reducido: Muestra de manera limpia los títulos de paquetes y entidades.
    - En zoom cercano ($\ge 1.18\times$) o haciendo **clic sobre cualquier tarjeta**: Se despliegan automáticamente los atributos, métodos, ilaciones asociadas y notas funcionales.
 4. Presione el botón **"Render PNG 300-DPI"** en la barra superior para inspeccionar el render gráfico oficial de alta resolución.
+
+---
+
+### Figura 3.4 (v02.10): Diagrama Definitivo de Bloques Funcionales Integral + Suite Mermaid (5 Vistas)
+- **Archivo Interactivo HTML Definitivo:** `Figura_3_4_Bloques_Funcionales_Integral_Definitivo_v02.00.html` (espejo idéntico de `../VISOR_HTML_ARQUITECTURA_v01.00/fig_definitivo_bloques_funcionales_integral.html`)
+- **Documento Mermaid Consolidado:** `DIAGRAMA_BLOQUES_FUNCIONALES_DEFINITIVO_MERMAID.md`
+- **Fuentes Editables `.mmd`:**
+  1. `mermaid_01_arquitectura_integral_definitiva.mmd` (Zonas + Entry Points EP-01..06 + B0..B12 + Flujos F1..F39)
+  2. `mermaid_02_mapa_apis_y_flujos.mmd` (Contratos REST `/api/v1/*`, WSS, Webhooks HMAC, Celery y Gateways)
+  3. `mermaid_03_matriz_rnf_sistema.mmd` (28 entradas `RNF-0001`..`RNF-0027` ISO/IEC 25010)
+  4. `mermaid_04_pizarra_y_circuitos_criticos.mmd` (Blackboard `RNF-0027` + Plantilla 8: Tuberías/Filtros B8 y Lotes Secuenciales B9)
+  5. `mermaid_05_entry_points_y_guis.mmd` (Actores → Entry Points `EP-01..06` → B0 → Ubicación Exacta de las 28 Secciones GUI / 140 MDL)
+- **Scripts Generadores Python:** `../scripts/build_definitive_diagram.py`, `../scripts/build_mermaid_suite.py` y `../scripts/definitive_arch_data.py`

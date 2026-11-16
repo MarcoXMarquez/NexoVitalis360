@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Figura 6.1: Estilo Arquitectónico de Repositorio Centralizado de Datos | NexoVitalis360</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important;
+    }
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #ffffff;
+      color: #000000;
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      user-select: none;
+    }
+    .viewport {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      cursor: grab;
+      background-color: #ffffff;
+    }
+    .viewport:active {
+      cursor: grabbing;
+    }
+    .canvas-world {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      background-color: #ffffff;
+    }
+    .hud-bar {
+      position: fixed;
+      top: 10px;
+      right: 16px;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1.5px solid #000000;
+      padding: 5px 12px;
+      font-size: 11.5px;
+      box-shadow: 2px 2px 0px #000000;
+    }
+    .hud-status-badge {
+      background: #000000;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 3px 7px;
+      text-transform: uppercase;
+    }
+    .btn-hud {
+      background: #ffffff;
+      color: #000000;
+      border: 1.5px solid #000000;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-hud:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="hud-bar">
+    <span class="hud-status-badge">OFICIAL V01.00</span>
+    <div style="font-weight:bold;">Figura 6.1: Estilo Arquitectónico de Repositorio Centralizado de Datos</div>
+    <button class="btn-hud" id="btn-fit">Ajustar Vista</button>
+    <button class="btn-hud" id="btn-reset">Reset</button>
+    <button class="btn-hud" id="btn-zoomin">+</button>
+    <button class="btn-hud" id="btn-zoomout">-</button>
+  </div>
+  <div class="viewport" id="viewport">
+    <div class="canvas-world" id="canvas-world">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1450" width="2400" height="1450">
+  <defs>
+    <marker id="arrow3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#000000" />
+    </marker>
+  </defs>
+
+  <!-- Fondo Blanco -->
+  <rect width="2400" height="1450" fill="#ffffff" />
+
+  <!-- Encabezado Institucional -->
+  <rect x="50" y="30" width="2300" height="90" fill="#ffffff" stroke="#000000" stroke-width="2.5" />
+  <text x="70" y="65" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#000000">NEXOVITALIS360 — ARQUITECTURA CENTRADA EN DATOS (PLANTILLA 6)</text>
+  <text x="70" y="98" font-family="Arial, sans-serif" font-size="16" fill="#333333">FIGURA 6.1: ESTILO ARQUITECTÓNICO DE REPOSITORIO CENTRALIZADO (Vitalis_BD EN POSTGRESQL 16 CON PGBOUNCER Y MINIO S3)</text>
+  <text x="2100" y="80" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#000000">DIAPOSITIVAS 67-69</text>
+
+  <!-- =========================================================================
+       CAPA 1: CLIENTES Y CONSUMIDORES CONCURRENTES (ARRIBA: Y: 150 - 280)
+       ========================================================================= -->
+  <rect x="80" y="150" width="2240" height="150" fill="#ffffff" stroke="#000000" stroke-width="2" />
+  <rect x="80" y="150" width="2240" height="35" fill="#f0f0f0" stroke="#000000" stroke-width="2" />
+  <text x="100" y="174" font-family="Arial, sans-serif" font-size="14" font-weight="bold">CAPA 1: CONSUMIDORES Y SUBSISTEMAS CONCURRENTES (CLIENTES ACTIVOS)</text>
+
+  <!-- Nodo 1: SPA Especialista -->
+  <rect x="110" y="200" width="400" height="80" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="130" y="225" font-family="Arial, sans-serif" font-size="13" font-weight="bold">SPA React 18: Especialista</text>
+  <text x="130" y="245" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Consultas masivas de historias clínicas</text>
+  <text x="130" y="262" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Escritura transaccional de notas de evolución</text>
+
+  <!-- Nodo 2: PWA Apoderado -->
+  <rect x="550" y="200" width="400" height="80" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="570" y="225" font-family="Arial, sans-serif" font-size="13" font-weight="bold">PWA Móvil: Apoderados</text>
+  <text x="570" y="245" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Agendamiento de citas concurrentes</text>
+  <text x="570" y="262" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Descarga segura de comprobantes y recetas</text>
+
+  <!-- Nodo 3: API REST Django -->
+  <rect x="990" y="200" width="400" height="80" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="1010" y="225" font-family="Arial, sans-serif" font-size="13" font-weight="bold">Backend: Django REST Framework</text>
+  <text x="1010" y="245" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Gobernanza de reglas de negocio y validación</text>
+  <text x="1010" y="262" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Transacciones atómicas ACID (select_for_update)</text>
+
+  <!-- Nodo 4: Daphne WebSockets -->
+  <rect x="1430" y="200" width="400" height="80" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="1450" y="225" font-family="Arial, sans-serif" font-size="13" font-weight="bold">ASGI Daphne: WebSockets en Tiempo Real</text>
+  <text x="1450" y="245" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Notificaciones de Alerta Roja Vital (&lt;92% SpO2)</text>
+  <text x="1450" y="262" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Sincronización de cola de atención médica</text>
+
+  <!-- Nodo 5: Celery Workers -->
+  <rect x="1870" y="200" width="420" height="80" fill="#ffffff" stroke="#000000" stroke-width="1.8" />
+  <text x="1890" y="225" font-family="Arial, sans-serif" font-size="13" font-weight="bold">Workers Asíncronos: Celery 5.4</text>
+  <text x="1890" y="245" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Procesamiento Batch de Liquidaciones a médicos</text>
+  <text x="1890" y="262" font-family="Arial, sans-serif" font-size="11.5" fill="#444444">• Envío SOAP UBL 2.1 a SUNAT y colas Redis</text>
+
+  <!-- Flechas hacia PgBouncer -->
+  <path d="M 1200 300 L 1200 370" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow3)" />
+  <text x="1215" y="340" font-family="Courier, monospace" font-size="12" font-weight="bold">TCP 5432 (Pool Connections / TLS 1.3)</text>
+
+  <!-- =========================================================================
+       CAPA 2: CONNECTION POOLING (PGBOUNCER) (Y: 370 - 480)
+       ========================================================================= -->
+  <rect x="300" y="370" width="1800" height="110" fill="#f4f4f4" stroke="#000000" stroke-width="2.5" />
+  <text x="1200" y="405" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">CAPA DE GESTIÓN Y POOLING DE CONEXIONES: PgBouncer 1.22</text>
+  <text x="1200" y="430" font-family="Courier, monospace" font-size="13" text-anchor="middle">Modo: Transaction Pooling | default_pool_size = 50 | max_client_conn = 500 | reserve_pool = 10</text>
+  <text x="1200" y="455" font-family="Arial, sans-serif" font-size="12" fill="#444444" text-anchor="middle">Absorbe ráfagas de concurrencia, reutiliza conexiones TCP activas y previene el desbordamiento de memoria RAM en el motor PostgreSQL.</text>
+
+  <!-- Flechas hacia PostgreSQL -->
+  <path d="M 1200 480 L 1200 540" stroke="#000000" stroke-width="2.5" marker-end="url(#arrow3)" />
+  <text x="1215" y="515" font-family="Courier, monospace" font-size="12" font-weight="bold">Pool Físico (50 Conexiones Dedicadas)</text>
+
+  <!-- =========================================================================
+       CAPA 3: MOTOR DE REPOSITORIO CENTRALIZADO: POSTGRESQL 16 (Y: 540 - 1180)
+       ========================================================================= -->
+  <rect x="80" y="540" width="2240" height="640" fill="#ffffff" stroke="#000000" stroke-width="2.5" />
+  <rect x="80" y="540" width="2240" height="40" fill="#000000" />
+  <text x="1200" y="567" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">REPOSITORIO CENTRAL PASIVO DE DATOS: INSTANCIA Vitalis_BD (POSTGRESQL 16 ENGINE)</text>
+
+  <!-- Sub-Bloque A: Tablas Maestras y Entidades del Dominio (X: 110 - 750) -->
+  <rect x="110" y="600" width="650" height="550" fill="#fafafa" stroke="#000000" stroke-width="1.8" />
+  <text x="130" y="630" font-family="Arial, sans-serif" font-size="14" font-weight="bold">A. ESQUEMA RELACIONAL Y TABLAS MAESTRAS</text>
+  <text x="130" y="650" font-family="Arial, sans-serif" font-size="11.5" fill="#555555">Persistencia normalizada bajo reglas de integridad referencial estricta (FKs ON DELETE RESTRICT):</text>
+
+  <!-- Tablas -->
+  <rect x="130" y="665" width="610" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.2" />
+  <text x="145" y="688" font-family="Courier, monospace" font-size="12" font-weight="bold">TB_PACIENTES &amp; TB_APODERADOS</text>
+  <text x="145" y="704" font-family="Arial, sans-serif" font-size="11" fill="#444444">Filiación clínica del menor, vínculo de patria potestad legal y antecedentes biológicos.</text>
+
+  <rect x="130" y="725" width="610" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.2" />
+  <text x="145" y="748" font-family="Courier, monospace" font-size="12" font-weight="bold">TB_ESPECIALISTAS &amp; TB_HORARIOS</text>
+  <text x="145" y="764" font-family="Arial, sans-serif" font-size="11" fill="#444444">Matriz de agendas, turnos disponibles y bloqueo pesimista atómico (SELECT FOR UPDATE).</text>
+
+  <rect x="130" y="785" width="610" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.2" />
+  <text x="145" y="808" font-family="Courier, monospace" font-size="12" font-weight="bold">TB_CITAS_MEDICAS &amp; TB_HISTORIAL_CITAS</text>
+  <text x="145" y="824" font-family="Arial, sans-serif" font-size="11" fill="#444444">Máquina de estados de la cita (Solicitada, Confirmada, Atendida) y registro de auditoría.</text>
+
+  <rect x="130" y="845" width="610" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.2" />
+  <text x="145" y="868" font-family="Courier, monospace" font-size="12" font-weight="bold">TB_PRETRIAJE_CLINICO &amp; TB_CONSENTIMIENTOS</text>
+  <text x="145" y="884" font-family="Arial, sans-serif" font-size="11" fill="#444444">Signos vitales pediátricos, bandera booleana alerta_roja y hash SHA-256 de firmas.</text>
+
+  <rect x="130" y="905" width="610" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.2" />
+  <text x="145" y="928" font-family="Courier, monospace" font-size="12" font-weight="bold">TB_HISTORIAS_CLINICAS &amp; TB_NOTAS_EVOLUCION</text>
+  <text x="145" y="944" font-family="Arial, sans-serif" font-size="11" fill="#444444">Evoluciones inmutables post-cierre, codificación CIE-10 / DSM-5 y recetas médicas.</text>
+
+  <rect x="130" y="965" width="610" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.2" />
+  <text x="145" y="988" font-family="Courier, monospace" font-size="12" font-weight="bold">TB_PAQUETES_SESIONES &amp; TB_COMPROBANTES</text>
+  <text x="145" y="1004" font-family="Arial, sans-serif" font-size="11" fill="#444444">Control de saldo de sesiones terapéuticas, Boletas/Facturas y CDR oficial de SUNAT.</text>
+
+  <rect x="130" y="1025" width="610" height="50" fill="#ffffff" stroke="#000000" stroke-width="1.2" />
+  <text x="145" y="1048" font-family="Courier, monospace" font-size="12" font-weight="bold">TB_LIQUIDACIONES_PROFESIONALES</text>
+  <text x="145" y="1064" font-family="Arial, sans-serif" font-size="11" fill="#444444">Consolidado mensual batch de honorarios, comisiones y retención de 4ta categoría.</text>
+
+  <!-- Sub-Bloque B: Mecanismos Arquitectónicos de Datos (X: 790 - 1580) -->
+  <rect x="790" y="600" width="760" height="550" fill="#fafafa" stroke="#000000" stroke-width="1.8" />
+  <text x="810" y="630" font-family="Arial, sans-serif" font-size="14" font-weight="bold">B. MECANISMOS AVANZADOS DE PERSISTENCIA Y RENDIMIENTO</text>
+
+  <!-- B1. Particionamiento -->
+  <rect x="810" y="665" width="720" height="85" fill="#ffffff" stroke="#000000" stroke-width="1.2" />
+  <text x="825" y="688" font-family="Arial, sans-serif" font-size="12.5" font-weight="bold">1. Particionamiento Relacional por Rangos Temporales (RANGE PARTITIONING)</text>
+  <text x="825" y="708" font-family="Courier, monospace" font-size="11" fill="#000000">PARTITION OF TB_HISTORIAL_CITAS FOR VALUES FROM ('2026-10-01') TO ('2026-11-01');</text>
+  <text x="825" y="726" font-family="Arial, sans-serif" font-size="11" fill="#444444">Aislamiento por mes de citas y notas de evolución para mantener índices B-Tree en memoria RAM y acelerar consultas forenses a menos de 50 ms.</text>
+
+  <!-- B2. Transacciones ACID y Bloqueos -->
+  <rect x="810" y="765" width="720" height="85" fill="#ffffff" stroke="#000000" stroke-width="1.2" />
+  <text x="825" y="788" font-family="Arial, sans-serif" font-size="12.5" font-weight="bold">2. Aislamiento Transaccional y Control de Concurrencia Pesimista (ACID)</text>
+  <text x="825" y="808" font-family="Courier, monospace" font-size="11" fill="#000000">SET TRANSACTION ISOLATION LEVEL READ COMMITTED; SELECT ... FOR UPDATE NOWAIT;</text>
+  <text x="825" y="826" font-family="Arial, sans-serif" font-size="11" fill="#444444">Garantiza atomicidad estricta en el débito de sesiones de paquetes y previene venta duplicada de franjas horarias ante reservas concurrentes.</text>
+
+  <!-- B3. Borrado Lógico Soft Delete -->
+  <rect x="810" y="865" width="720" height="85" fill="#ffffff" stroke="#000000" stroke-width="1.2" />
+  <text x="825" y="888" font-family="Arial, sans-serif" font-size="12.5" font-weight="bold">3. Política de Eliminación Lógica (SOFT DELETE Y AUDITORÍA FORENSE)</text>
+  <text x="825" y="908" font-family="Courier, monospace" font-size="11" fill="#000000">UPDATE TB_CITAS_MEDICAS SET estado = 'Cancelada', activo = false, updated_at = NOW();</text>
+  <text x="825" y="926" font-family="Arial, sans-serif" font-size="11" fill="#444444">Prohibición de sentencias DELETE físicas en tablas clínicas; preservación del historial médico para auditorías médico-legales y cumplimiento normativo.</text>
+
+  <!-- B4. Búsqueda Full-Text Search -->
+  <rect x="810" y="965" width="720" height="85" fill="#ffffff" stroke="#000000" stroke-width="1.2" />
+  <text x="825" y="988" font-family="Arial, sans-serif" font-size="12.5" font-weight="bold">4. Motor de Búsqueda de Texto Completo (FULL-TEXT SEARCH - GIN INDEX)</text>
+  <text x="825" y="1008" font-family="Courier, monospace" font-size="11" fill="#000000">CREATE INDEX idx_cie10_fts ON TB_CIE10 USING GIN (to_tsvector('spanish', descripcion));</text>
+  <text x="825" y="1026" font-family="Arial, sans-serif" font-size="11" fill="#444444">Búsqueda predictiva ultrarrápida de diagnósticos y tratamientos sin sobrecargar con LIKEs la base de datos relacional.</text>
+
+  <!-- B5. WAL y Replicación -->
+  <rect x="810" y="1065" width="720" height="70" fill="#ffffff" stroke="#000000" stroke-width="1.2" />
+  <text x="825" y="1088" font-family="Arial, sans-serif" font-size="12.5" font-weight="bold">5. Archivador Continuo WAL y Tolerancia a Desastres (DISASTER RECOVERY)</text>
+  <text x="825" y="1108" font-family="Arial, sans-serif" font-size="11" fill="#444444">Generación continua de Write-Ahead Logs replicados a disco secundario en SSD NVMe (RPO &lt;= 15 min, RTO &lt;= 30 min conforme a RNF-0020).</text>
+
+  <!-- Sub-Bloque C: Repositorio de Objetos BLOB Cifrados (X: 1580 - 2290) -->
+  <rect x="1580" y="600" width="710" height="550" fill="#fafafa" stroke="#000000" stroke-width="1.8" />
+  <text x="1600" y="630" font-family="Arial, sans-serif" font-size="14" font-weight="bold">C. ALMACÉN DE OBJETOS CIFRADOS (BLOB STORAGE)</text>
+  <text x="1600" y="650" font-family="Arial, sans-serif" font-size="11.5" fill="#555555">Almacenamiento desacoplado para documentos médicos pesados (MinIO / AWS S3):</text>
+
+  <rect x="1600" y="675" width="670" height="130" fill="#ffffff" stroke="#000000" stroke-width="1.2" />
+  <text x="1615" y="700" font-family="Courier, monospace" font-size="12" font-weight="bold">Bucket: vitalis-consentimientos-firmados</text>
+  <text x="1615" y="720" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Actas de consentimiento informado firmadas digitalmente por apoderados.</text>
+  <text x="1615" y="738" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Cifrado del lado del servidor: SSE-S3 con clave simétrica AES-256.</text>
+  <text x="1615" y="756" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Acceso temporal mediante URLs prefirmadas de 300 segundos de validez.</text>
+  <text x="1615" y="774" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Metadatos: Hash SHA-256 y dirección IP del firmante (RNF-0024).</text>
+
+  <rect x="1600" y="825" width="670" height="130" fill="#ffffff" stroke="#000000" stroke-width="1.2" />
+  <text x="1615" y="850" font-family="Courier, monospace" font-size="12" font-weight="bold">Bucket: vitalis-comprobantes-sunat-cpe</text>
+  <text x="1615" y="870" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Archivos XML UBL 2.1 firmados con certificado digital X.509.</text>
+  <text x="1615" y="888" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Constancias de Recepción (CDR) oficiales en formato ZIP/XML.</text>
+  <text x="1615" y="906" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Representaciones impresas PDF con Código de Barras Bidimensional QR.</text>
+  <text x="1615" y="924" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Retención fiscal legal obligatoria de 5 años inmutable.</text>
+
+  <rect x="1600" y="975" width="670" height="120" fill="#ffffff" stroke="#000000" stroke-width="1.2" />
+  <text x="1615" y="1000" font-family="Courier, monospace" font-size="12" font-weight="bold">Bucket: vitalis-recetas-e-informes-medicos</text>
+  <text x="1615" y="1020" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Informes de evaluación neuropediátrica, cribados TEA y electroencefalogramas.</text>
+  <text x="1615" y="1038" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Recetas médicas firmadas digitalmente con CMP / RNE del profesional.</text>
+  <text x="1615" y="1056" font-family="Arial, sans-serif" font-size="11" fill="#333333">• Validación estricta de extensiones y MIME-types (application/pdf).</text>
+
+  <!-- =========================================================================
+       PIE DE PÁGINA: JUSTIFICACIÓN DOCTRINAL DE CÁTEDRA
+       ========================================================================= -->
+  <rect x="80" y="1205" width="2240" height="200" fill="#f4f4f4" stroke="#000000" stroke-width="2" />
+  <text x="100" y="1235" font-family="Arial, sans-serif" font-size="14" font-weight="bold">FUNDAMENTACIÓN TÉCNICA DEL ESTILO DE REPOSITORIO SEGÚN LA CÁTEDRA (DR. PERCY HUERTAS):</text>
+  <text x="100" y="1260" font-family="Arial, sans-serif" font-size="12.5" fill="#000000">1. Naturaleza Pasiva del Repositorio: El almacén relacional Vitalis_BD opera de manera estrictamente pasiva; no inicia conexiones hacia los clientes, sino que reacciona ante solicitudes de lectura y escritura gobernadas por transacciones ACID.</text>
+  <text x="100" y="1285" font-family="Arial, sans-serif" font-size="12.5" fill="#000000">2. Desacoplamiento de Clientes Concurrentes: Los subsistemas (Citas, Triaje, Facturación, Telemedicina) se comunican de forma indirecta compartiendo datos en Vitalis_BD sin generar dependencias de invocación acopladas en memoria de aplicación.</text>
+  <text x="100" y="1310" font-family="Arial, sans-serif" font-size="12.5" fill="#000000">3. Absorción de Concurrencia con PgBouncer: La arquitectura soluciona la saturación de conexiones en sistemas clínicos mediante pooling transaccional, garantizando que hasta 500 sesiones de clientes coexistan con solo 50 conexiones físicas en PostgreSQL.</text>
+  <text x="100" y="1335" font-family="Arial, sans-serif" font-size="12.5" fill="#000000">4. Alivio del Motor Relacional mediante BLOB Storage: Toda la carga de archivos pesados (PDFs, imágenes de firmas y XMLs fiscales) se externaliza hacia buckets MinIO S3 cifrados con URLs prefirmadas temporales, preservando la ligereza y alta velocidad del motor relacional.</text>
+  <text x="100" y="1360" font-family="Arial, sans-serif" font-size="12" font-style="italic" fill="#555555">Trazabilidad Formal: RNF-0011 (PostgreSQL ACID), RNF-0012 (Stack Tecnológico), RNF-0020 (Servidores Producción), RNF-0024 (Blob Storage MinIO) y RNF-0026 (Codificadores).</text>
+</svg>
+    </div>
+  </div>
+  <script>
+    const viewport = document.getElementById('viewport');
+    const world = document.getElementById('canvas-world');
+    let scale = 1, panX = 0, panY = 0;
+    let isDragging = false, startX = 0, startY = 0;
+
+    function updateTransform() {
+      world.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+    }
+
+    function fitView() {
+      const vw = viewport.clientWidth;
+      const vh = viewport.clientHeight;
+      const dw = 2400;
+      const dh = 1450;
+      scale = Math.min((vw - 60) / dw, (vh - 60) / dh, 1.0);
+      panX = (vw - dw * scale) / 2;
+      panY = (vh - dh * scale) / 2;
+      updateTransform();
+    }
+
+    viewport.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.hud-bar')) return;
+      isDragging = true;
+      startX = e.clientX - panX;
+      startY = e.clientY - panY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      panX = e.clientX - startX;
+      panY = e.clientY - startY;
+      updateTransform();
+    });
+
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+      panX = mouseX - (mouseX - panX) * zoomFactor;
+      panY = mouseY - (mouseY - panY) * zoomFactor;
+      scale *= zoomFactor;
+      scale = Math.max(0.2, Math.min(scale, 4.0));
+      updateTransform();
+    }, { passive: false });
+
+    document.getElementById('btn-fit').onclick = fitView;
+    document.getElementById('btn-reset').onclick = () => { scale = 1; panX = 40; panY = 60; updateTransform(); };
+    document.getElementById('btn-zoomin').onclick = () => { scale = Math.min(scale * 1.2, 4.0); updateTransform(); };
+    document.getElementById('btn-zoomout').onclick = () => { scale = Math.max(scale * 0.8, 0.2); updateTransform(); };
+
+    window.addEventListener('load', fitView);
+    window.addEventListener('resize', fitView);
+  </script>
+</body>
+</html>

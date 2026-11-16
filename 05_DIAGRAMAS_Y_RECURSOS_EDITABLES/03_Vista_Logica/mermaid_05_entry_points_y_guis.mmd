@@ -1,0 +1,51 @@
+%%{init: {'theme': 'base', 'flowchart': {'curve': 'orthogonal', 'htmlLabels': true, 'nodeSpacing': 34, 'rankSpacing': 52}, 'themeVariables': {'primaryColor': '#ffffff', 'primaryTextColor': '#000000', 'primaryBorderColor': '#000000', 'lineColor': '#000000', 'secondaryColor': '#f4f4f4', 'tertiaryColor': '#fafafa', 'clusterBkg': '#fafafa', 'clusterBorder': '#000000', 'fontFamily': 'Arial, sans-serif'}}}%%
+flowchart LR
+    classDef act fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    classDef ep fill:#f4f4f4,stroke:#000000,stroke-width:3px,color:#000000
+    classDef gui fill:#ffffff,stroke:#000000,stroke-width:1.6px,color:#000000
+    classDef blk fill:#f0f0f0,stroke:#000000,stroke-width:2.5px,color:#000000
+    classDef m2m fill:#fafafa,stroke:#000000,stroke-width:2px,stroke-dasharray:5 3,color:#000000
+
+    subgraph ACTORES["1. QUIÉN ACTÚA (CATÁLOGO + OPERATIVOS)"]
+        A1["EXT-A1: Apoderado / Paciente Menor"]:::act
+        A2["EXT-A2: Asistente / Secretaria (ACT-0005)"]:::act
+        A3["EXT-A3: Especialista Clínico (Med/Nut/Psic)"]:::act
+        A4["EXT-A4: Gerencia & Jefaturas (ACT-0001..0004)"]:::act
+        A_M2M["APIs Externas & Cron Interno (Sin Usuario)"]:::m2m
+    end
+
+    subgraph EPS["2. POR DÓNDE ENTRA (ENTRY POINTS)"]
+        EP1["EP-01: PWA Móvil<br/>/app/tutor/* (:443 JWT)"]:::ep
+        EP2["EP-02: Consola Admisión & Caja<br/>/app/admin/* & /caja (:443 JWT)"]:::ep
+        EP3["EP-03: Estación Clínica<br/>/app/medico/* (:443 JWT + RNF-0001)"]:::ep
+        EP4["EP-04: Consola Gobernanza & BI<br/>/auditoria & /liquidaciones"]:::ep
+        EP5["EP-05: Sala WebRTC + Alerta WSS<br/>/app/teleconsulta/:id"]:::ep
+        EP6["EP-06: Webhooks & Beat Cron<br/>/pagos/cb • /mensajeria/status/"]:::m2m
+    end
+
+    GW["B0: DMZ WAF + NGINX<br/>JWT 15m + RBAC Guard"]:::ep
+
+    subgraph GUIS["3. ESTA GUI VA ACÁ (27 ACTIVAS + 1 EN BLANCO / 140 MDL)"]
+        G_B1["Bloque B1: GUI-0007 (Pacientes)<br/>GUI-0014 (Apoderados)"]:::gui
+        G_B2["Bloque B2: GUI-0016 (Pre-Triaje TRIAJE_001)<br/>GUI-0020 (Consentimiento Informado)"]:::gui
+        G_B3["Bloque B3: GUI-0009 (Especialistas/Tarifas)<br/>GUI-0010 (Horarios Semanales)"]:::gui
+        G_B4["Bloque B4: GUI-0001 (Estados), GUI-0005 (Citas)<br/>GUI-0006 (Reprog.), GUI-0011 (Modalidad)"]:::gui
+        G_B5["Bloque B5: GUI-0012 (Videoconf. Meet)"]:::gui
+        G_B6["Bloque B6: GUI-0013 (Mensajería T-24h)"]:::gui
+        G_B7["Bloque B7: GUI-0003, 0008, 0017, 0018,<br/>GUI-0019, 0021, 0022, 0025 (40 MDL)"]:::gui
+        G_B8["Bloque B8: GUI-0023 (Paq), GUI-0024 (Dscto)<br/>GUI-0026 (Pagos), GUI-0027 (Fact. SUNAT)"]:::gui
+        G_B9["Bloque B9: GUI-0028 (Liquidación Mensual)"]:::gui
+        G_B10["Bloque B10: GUI-0002 (Historial)<br/>GUI-0004 (Permisos RBAC)"]:::gui
+        G_CAT["Catálogo Base: GUI-0015 / EDU-0022<br/>(en blanco: MDL-0071..0075)"]:::m2m
+    end
+
+    A1 --> EP1 & EP5
+    A2 --> EP2
+    A3 --> EP3 & EP5
+    A4 --> EP4
+    A_M2M --> EP6
+
+    EP1 & EP2 & EP3 & EP4 & EP5 & EP6 --> GW
+
+    GW --> G_B1 & G_B2 & G_B3 & G_B4 & G_B5 & G_B6 & G_B7 & G_B8 & G_B9 & G_B10
+    G_B1 ~~~ G_CAT
